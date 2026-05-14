@@ -1,0 +1,38 @@
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+coverage/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# Android/iOS build output
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+DerivedData/
+
+# Symbols and obfuscation output
+app.*.symbols
+app.*.map.json
+
+# IDEs and local files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Environment and secrets
+.env
+.env.*
+*.key
+*.crt
