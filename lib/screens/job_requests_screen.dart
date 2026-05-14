@@ -1,0 +1,69 @@
+import 'package:flutter/material.dart';
+
+import '../app/app_routes.dart';
+import '../helper.dart';
+import '../spotter_widgets.dart';
+
+class JobRequestsScreen extends StatelessWidget {
+  const JobRequestsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SpotterScreen(
+      title: 'Route jobs',
+      subtitle: 'Accept what fits your route.',
+      content: [
+        _RequestCard(
+          title: 'Baner to Koregaon Park',
+          deviation: '1.2 km',
+          payout: 'Rs 390',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.jobDetail),
+        ),
+        const _RequestCard(
+          title: 'Aundh to Camp',
+          deviation: '5.1 km',
+          payout: 'Rs 620',
+        ),
+        const _RequestCard(
+          title: 'Viman Nagar to Kalyani Nagar',
+          deviation: '2.4 km',
+          payout: 'Rs 260',
+        ),
+      ],
+      bottom: const PrimaryAction(
+        label: 'View best request',
+        routeName: AppRoutes.jobDetail,
+      ),
+    );
+  }
+}
+
+class _RequestCard extends StatelessWidget {
+  final String title;
+  final String deviation;
+  final String payout;
+  final VoidCallback? onTap;
+
+  const _RequestCard({
+    required this.title,
+    required this.deviation,
+    required this.payout,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SpotterCard(
+      onTap: onTap,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        InfoRow(label: 'Deviation', value: deviation),
+        InfoRow(label: 'Payout', value: payout, valueColor: Helper.primary),
+      ],
+    );
+  }
+}
