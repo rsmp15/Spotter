@@ -16,6 +16,13 @@ class RideConfirmationScreen extends StatelessWidget {
       title: 'Confirm ride',
       subtitle: 'Review route, driver and payment before booking.',
       content: [
+        RecoveryBanner(state: ride.actionState, onRetry: ride.retryInitialize),
+        RideContextCard(
+          route: ride.routeLabel,
+          fare: ride.fareLabel,
+          driver: ride.selectedDriver?.name ?? 'Matching',
+          status: ride.status.name,
+        ),
         SpotterCard(
           children: [
             InfoRow(label: 'Pickup', value: ride.pickup.detail),

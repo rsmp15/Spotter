@@ -25,6 +25,16 @@ class _RatingScreenState extends State<RatingScreen> {
       title: 'Rate your ride',
       subtitle: 'Help keep Spotter reliable.',
       content: [
+        RecoveryBanner(
+          state: ride.actionState,
+          onRetry: () => ride.submitRating(rating: rating, tip: tip),
+        ),
+        RideContextCard(
+          route: ride.routeLabel,
+          fare: ride.fareLabel,
+          driver: ride.selectedDriver?.name ?? 'Matching',
+          status: ride.status.name,
+        ),
         SpotterCard(
           children: [
             Row(
@@ -92,9 +102,16 @@ class _RatingScreenState extends State<RatingScreen> {
       ],
       bottom: PrimaryAction(
         label: 'Submit rating',
-        onPressed: () {
+        onPressed: () async {
           final messenger = ScaffoldMessenger.of(context);
-          ride.submitRating(rating: rating, tip: tip);
+          final success = await ride.submitRating(rating: rating, tip: tip);
+          if (!context.mounted) return;
+          if (!success) {
+            messenger.showSnackBar(
+              const SnackBar(content: Text('Rating failed. Please try again.')),
+            );
+            return;
+          }
           Navigator.pushNamedAndRemoveUntil(
             context,
             AppRoutes.home,

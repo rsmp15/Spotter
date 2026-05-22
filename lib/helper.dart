@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
 
 class Helper {
-  static const Color ink = Color(0xFF101828);
-  static const Color muted = Color(0xFF667085);
-  static const Color softText = Color(0xFF98A2B3);
-  static const Color backgroundColor = Color(0xFFF4F7FB);
-  static const Color darkBackground = Color(0xFF050505);
+  static const Color ink = Color(0xFF000000);
+  static const Color muted = Color(0xFF5E5E5E);
+  static const Color softText = Color(0xFF8F8F8F);
+  static const Color backgroundColor = Color(0xFFF9FAFB);
+  static const Color darkBackground = Color(0xFF000000);
   static const Color cardColor = Colors.white;
-  static const Color lineColor = Color(0xFFE4E7EC);
-  static const Color primary = Color(0xFF1769FF);
-  static const Color success = Color(0xFF10B981);
+  static const Color lineColor = Color(0xFFE2E8F0);
+  static const Color primary = Color(0xFF000000);
+  static const Color success = Color(0xFF000000); // High contrast elegant black
   static const Color warning = Color(0xFFF97316);
   static const Color danger = Color(0xFFEF4444);
-  static const Color mapFill = Color(0xFFE8EDF2);
+  static const Color mapFill = Color(0xFFE2E8F0);
 
   static const BorderRadiusGeometry cardRadius = BorderRadius.all(
     Radius.circular(16),
   );
+
+  static const List<BoxShadow> premiumShadows = [
+    BoxShadow(
+      color: Color(0x0A000000),
+      blurRadius: 15,
+      offset: Offset(0, 10),
+    ),
+    BoxShadow(
+      color: Color(0x05000000),
+      blurRadius: 5,
+      offset: Offset(0, 2),
+    ),
+  ];
 
   static const TextStyle titleStyle = TextStyle(
     fontSize: 24,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/production_readiness_models.dart';
 import '../models/ride_models.dart';
 import '../repositories/ride_repository.dart';
 
@@ -26,6 +27,7 @@ class RideController extends ChangeNotifier {
   String cancellationReason = '';
   String? loadErrorMessage;
   String shareLink = MockRideRepository.seedData.shareLink;
+  RecoverableActionState actionState = RecoverableActionState.idle;
 
   bool _disposed = false;
 
@@ -37,6 +39,8 @@ class RideController extends ChangeNotifier {
   bool get isLoading => loadState == RideLoadState.loading;
 
   bool get hasLoadFailed => loadState == RideLoadState.failure;
+
+  bool get hasActionFailed => actionState.isFailure;
 
   String get routeLabel => '${pickup.title} -> ${destination.title}';
 
@@ -61,15 +65,29 @@ class RideController extends ChangeNotifier {
 
       _applyBootstrapData(data);
       loadState = RideLoadState.ready;
+      actionState = const RecoverableActionState(
+        action: RecoverableAction.refreshRideData,
+        status: RecoverableActionStatus.success,
+      );
       notifyListeners();
     } catch (_) {
       if (_disposed) return;
 
       loadState = RideLoadState.failure;
       loadErrorMessage = 'Unable to refresh ride data. Please try again.';
+      actionState = const RecoverableActionState(
+        action: RecoverableAction.refreshRideData,
+        status: RecoverableActionStatus.failure,
+        message:
+            'Unable to refresh ride data. Continue with safe defaults or retry.',
+        primaryRecovery: RecoveryAction.retry,
+        canRetry: true,
+      );
       notifyListeners();
     }
   }
+
+  Future<void> retryInitialize() => initialize();
 
   void updatePickup(LocationPoint value) {
     pickup = value;
@@ -114,18 +132,69 @@ class RideController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> cancelRide(String reason) async {
+  Future<bool> cancelRide(String reason) async {
     cancellationReason = reason;
-    status = TripStatus.cancelled;
+    actionState = const RecoverableActionState(
+      action: RecoverableAction.cancelRide,
+      status: RecoverableActionStatus.loading,
+    );
     notifyListeners();
-    await _repository.cancelRide(reason: reason);
+    try {
+      await _repository.cancelRide(reason: reason);
+      status = TripStatus.cancelled;
+      actionState = const RecoverableActionState(
+        action: RecoverableAction.cancelRide,
+        status: RecoverableActionStatus.success,
+      );
+      notifyListeners();
+      return true;
+    } catch (_) {
+      actionState = const RecoverableActionState(
+        action: RecoverableAction.cancelRide,
+        status: RecoverableActionStatus.failure,
+        message:
+            'We could not cancel this ride yet. Your trip details are still available.',
+        primaryRecovery: RecoveryAction.retry,
+        canRetry: true,
+      );
+      notifyListeners();
+      return false;
+    }
   }
 
-  Future<void> submitRating({required int rating, required int tip}) async {
+  Future<bool> submitRating({required int rating, required int tip}) async {
     driverRating = rating;
     tipAmount = tip;
+    actionState = const RecoverableActionState(
+      action: RecoverableAction.submitRating,
+      status: RecoverableActionStatus.loading,
+    );
     notifyListeners();
-    await _repository.submitRating(rating: rating, tip: tip);
+    try {
+      await _repository.submitRating(rating: rating, tip: tip);
+      actionState = const RecoverableActionState(
+        action: RecoverableAction.submitRating,
+        status: RecoverableActionStatus.success,
+      );
+      notifyListeners();
+      return true;
+    } catch (_) {
+      actionState = const RecoverableActionState(
+        action: RecoverableAction.submitRating,
+        status: RecoverableActionStatus.failure,
+        message:
+            'We could not submit your rating. Your ride context is still saved.',
+        primaryRecovery: RecoveryAction.retry,
+        canRetry: true,
+      );
+      notifyListeners();
+      return false;
+    }
+  }
+
+  void clearActionState() {
+    actionState = RecoverableActionState.idle;
+    notifyListeners();
   }
 
   void _applyBootstrapData(RideBootstrapData data) {

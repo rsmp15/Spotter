@@ -20,6 +20,13 @@ class FareEstimateScreen extends StatelessWidget {
       title: 'Price estimate',
       subtitle: 'Fare based on route, demand and ride type.',
       content: [
+        RecoveryBanner(state: ride.actionState, onRetry: ride.retryInitialize),
+        RideContextCard(
+          route: ride.routeLabel,
+          fare: ride.fareLabel,
+          driver: ride.selectedDriver?.name ?? 'Matching',
+          status: ride.status.name,
+        ),
         const MapPlaceholder(height: 160),
         SpotterCard(
           children: [

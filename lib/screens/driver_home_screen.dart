@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app/app_routes.dart';
+import '../controllers/ride_controller.dart';
 import '../helper.dart';
 import '../spotter_widgets.dart';
 
@@ -9,11 +10,20 @@ class DriverHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SpotterScreen(
+    final ride = RideScope.of(context);
+
+    return SpotterScreen(
       title: 'Earn on your trip',
       subtitle: 'Go online and accept nearby rides.',
       content: [
-        SpotterCard(
+        RecoveryBanner(state: ride.actionState, onRetry: ride.retryInitialize),
+        RideContextCard(
+          route: ride.routeLabel,
+          fare: ride.fareLabel,
+          driver: ride.selectedDriver?.name ?? 'Matching',
+          status: ride.status.name,
+        ),
+        const SpotterCard(
           children: [
             Text('Today earnings', style: TextStyle(color: Helper.muted)),
             SizedBox(height: 8),
@@ -25,7 +35,7 @@ class DriverHomeScreen extends StatelessWidget {
             InfoRow(label: 'Rating', value: '4.9', valueColor: Helper.success),
           ],
         ),
-        SpotterCard(
+        const SpotterCard(
           children: [
             Text(
               'Nearby requests',
@@ -41,8 +51,9 @@ class DriverHomeScreen extends StatelessWidget {
             InfoRow(label: 'Vehicle needed', value: 'Auto'),
           ],
         ),
+        const DriverRequestsAction(),
       ],
-      bottom: PrimaryAction(
+      bottom: const PrimaryAction(
         label: 'Add availability',
         routeName: AppRoutes.createTrip,
       ),

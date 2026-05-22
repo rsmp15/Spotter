@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'app/app_config.dart';
 import 'app/app_crash_reporter.dart';
 import 'app/app_error_screen.dart';
+import 'app/app_readiness.dart';
 import 'app/app_routes.dart';
 import 'controllers/ride_controller.dart';
 import 'helper.dart';
@@ -17,6 +18,13 @@ void main() {
       FlutterError.onError = AppCrashReporter.recordFlutterError;
       PlatformDispatcher.instance.onError =
           AppCrashReporter.recordPlatformError;
+      final readiness = AppReadiness.evaluate();
+      if (kDebugMode && !readiness.isProductionReady) {
+        debugPrint(
+          'Production readiness blocked: '
+          '${readiness.blockingChecks.map((check) => check.label).join(', ')}',
+        );
+      }
 
       ErrorWidget.builder = (details) {
         if (kDebugMode) {

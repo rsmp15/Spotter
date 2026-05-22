@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'custom_button.dart';
 import 'helper.dart';
+import 'models/production_readiness_models.dart';
 
 class SpotterScreen extends StatelessWidget {
   final String title;
@@ -24,14 +25,10 @@ class SpotterScreen extends StatelessWidget {
     final bottom = this.bottom;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            24,
-            24,
-            24,
-            24 + MediaQuery.viewPaddingOf(context).bottom,
-          ),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -62,6 +59,9 @@ class SpotterScreen extends StatelessWidget {
               const SizedBox(height: 22),
               Expanded(
                 child: ListView(
+                  padding: EdgeInsets.only(
+                    bottom: 12 + MediaQuery.viewPaddingOf(context).bottom,
+                  ),
                   children: [
                     ...content,
                     if (bottom != null) const SizedBox(height: 20),
@@ -95,8 +95,7 @@ class SpotterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final card = Ink(
-      height: height,
+    final cardContent = Ink(
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
@@ -111,12 +110,21 @@ class SpotterCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: children,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
       ),
     );
+    final card = height == null
+        ? cardContent
+        : ConstrainedBox(
+            constraints: BoxConstraints(minHeight: height!),
+            child: cardContent,
+          );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -149,6 +157,7 @@ class InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Text(
@@ -156,16 +165,95 @@ class InfoRow extends StatelessWidget {
               style: const TextStyle(color: Helper.muted, fontSize: 14),
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: valueColor,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+          const SizedBox(width: 12),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: valueColor,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class RideContextCard extends StatelessWidget {
+  final String route;
+  final String fare;
+  final String driver;
+  final String status;
+
+  const RideContextCard({
+    super.key,
+    required this.route,
+    required this.fare,
+    required this.driver,
+    required this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SpotterCard(
+      color: const Color(0xFFF8FAFC),
+      children: [
+        const StatusChip(label: 'Trip context'),
+        const SizedBox(height: 12),
+        InfoRow(label: 'Route', value: route),
+        InfoRow(label: 'Fare', value: fare, valueColor: Helper.primary),
+        InfoRow(label: 'Driver', value: driver),
+        InfoRow(label: 'Status', value: status),
+      ],
+    );
+  }
+}
+
+class RecoveryBanner extends StatelessWidget {
+  final RecoverableActionState state;
+  final VoidCallback? onRetry;
+
+  const RecoveryBanner({super.key, required this.state, this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!state.isFailure) return const SizedBox.shrink();
+
+    return SpotterCard(
+      color: const Color(0xFFFFF4E8),
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: Helper.warning),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                state.message ?? 'This action could not be completed.',
+                style: const TextStyle(
+                  color: Helper.warning,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (state.canRetry && onRetry != null) ...[
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Try again'),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

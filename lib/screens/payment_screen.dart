@@ -17,6 +17,13 @@ class PaymentScreen extends StatelessWidget {
       title: 'Payment',
       subtitle: 'Choose a secure online method.',
       content: [
+        RecoveryBanner(state: ride.actionState, onRetry: ride.retryInitialize),
+        RideContextCard(
+          route: ride.routeLabel,
+          fare: ride.fareLabel,
+          driver: ride.selectedDriver?.name ?? 'Matching',
+          status: ride.status.name,
+        ),
         for (final method in ride.paymentMethods)
           _PaymentTile(
             method: method,

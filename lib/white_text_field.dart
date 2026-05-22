@@ -6,6 +6,11 @@ class WhiteTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final String? hintText;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final TextInputAction? textInputAction;
+  final int maxLines;
 
   const WhiteTextField({
     super.key,
@@ -13,15 +18,25 @@ class WhiteTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.inputFormatters,
     this.hintText,
+    this.controller,
+    this.onChanged,
+    this.onSubmitted,
+    this.textInputAction,
+    this.maxLines = 1,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 66,
+      height: maxLines == 1 ? 66 : null,
       child: TextField(
+        controller: controller,
         keyboardType: keyboardType,
+        textInputAction: textInputAction,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
+        maxLines: maxLines,
         inputFormatters:
             inputFormatters ??
             (keyboardType == TextInputType.phone ||

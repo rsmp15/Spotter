@@ -17,6 +17,13 @@ class DriverMatchesScreen extends StatelessWidget {
       title: 'Driver matches',
       subtitle: 'Verified drivers already close to your route.',
       content: [
+        RecoveryBanner(state: ride.actionState, onRetry: ride.retryInitialize),
+        RideContextCard(
+          route: ride.routeLabel,
+          fare: ride.fareLabel,
+          driver: ride.selectedDriver?.name ?? 'Matching',
+          status: ride.status.name,
+        ),
         for (var i = 0; i < ride.drivers.length; i++)
           _DriverCard(
             driver: ride.drivers[i],

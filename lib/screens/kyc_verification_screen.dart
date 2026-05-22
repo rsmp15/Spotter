@@ -9,11 +9,11 @@ class KycVerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SpotterScreen(
+    return SpotterScreen(
       title: 'Complete KYC',
       subtitle: 'Required before accepting rides.',
       content: [
-        SpotterCard(
+        const SpotterCard(
           children: [
             Text(
               'Verification progress',
@@ -31,29 +31,59 @@ class KycVerificationScreen extends StatelessWidget {
             ),
           ],
         ),
-        _KycTile(title: 'Aadhaar or PAN', status: 'Pending'),
-        _KycTile(title: 'Selfie verification', status: 'Pending'),
-        _KycTile(title: 'Driving licence', status: 'Required'),
-        _KycTile(title: 'Vehicle document', status: 'Required'),
+        _KycTile(
+          title: 'Aadhaar or PAN',
+          status: 'Pending',
+          onTap: () => _showKycMessage(context, 'Aadhaar or PAN upload opened'),
+        ),
+        _KycTile(
+          title: 'Selfie verification',
+          status: 'Pending',
+          onTap: () => _showKycMessage(context, 'Selfie verification opened'),
+        ),
+        _KycTile(
+          title: 'Driving licence',
+          status: 'Required',
+          onTap: () =>
+              _showKycMessage(context, 'Driving licence upload opened'),
+        ),
+        _KycTile(
+          title: 'Vehicle document',
+          status: 'Required',
+          onTap: () =>
+              _showKycMessage(context, 'Vehicle document upload opened'),
+        ),
       ],
-      bottom: PrimaryAction(
+      bottom: const PrimaryAction(
         label: 'Continue demo',
         routeName: AppRoutes.driverHome,
       ),
     );
+  }
+
+  void _showKycMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
 class _KycTile extends StatelessWidget {
   final String title;
   final String status;
+  final VoidCallback onTap;
 
-  const _KycTile({required this.title, required this.status});
+  const _KycTile({
+    required this.title,
+    required this.status,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SpotterCard(
       height: 68,
+      onTap: onTap,
       children: [
         Row(
           children: [

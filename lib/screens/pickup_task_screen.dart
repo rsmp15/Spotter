@@ -5,16 +5,35 @@ import '../helper.dart';
 import '../spotter_widgets.dart';
 import '../white_text_field.dart';
 
-class PickupTaskScreen extends StatelessWidget {
+class PickupTaskScreen extends StatefulWidget {
   const PickupTaskScreen({super.key});
 
   @override
+  State<PickupTaskScreen> createState() => _PickupTaskScreenState();
+}
+
+class _PickupTaskScreenState extends State<PickupTaskScreen> {
+  final TextEditingController _otpController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _otpController.text = '123456';
+  }
+
+  @override
+  void dispose() {
+    _otpController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const SpotterScreen(
+    return SpotterScreen(
       title: 'Pickup task',
       subtitle: 'Verify before starting the ride.',
       content: [
-        SpotterCard(
+        const SpotterCard(
           children: [
             InfoRow(
               label: 'Reach pickup',
@@ -33,9 +52,30 @@ class PickupTaskScreen extends StatelessWidget {
             ),
           ],
         ),
-        WhiteTextField(labelText: 'Rider OTP', hintText: 'Enter six digit OTP'),
+        WhiteTextField(
+          controller: _otpController,
+          labelText: 'Rider OTP',
+          hintText: 'Enter six digit OTP',
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _startRide(context),
+        ),
       ],
-      bottom: PrimaryAction(label: 'Start ride', routeName: AppRoutes.dropTask),
+      bottom: PrimaryAction(
+        label: 'Start ride',
+        onPressed: () => _startRide(context),
+      ),
     );
+  }
+
+  void _startRide(BuildContext context) {
+    if (_otpController.text.trim().length != 6) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter the rider OTP')));
+      return;
+    }
+
+    Navigator.pushNamed(context, AppRoutes.dropTask);
   }
 }

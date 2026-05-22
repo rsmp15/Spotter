@@ -5,8 +5,21 @@ import '../custom_button.dart';
 import '../custom_card.dart';
 import '../white_text_field.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +49,24 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              const WhiteTextField(
+              WhiteTextField(
+                controller: _phoneController,
                 labelText: 'Phone Number',
                 keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _requestOtp(context),
               ),
               const SizedBox(height: 20),
-              const CustomButton(label: 'Get OTP', routeName: AppRoutes.otp),
+              CustomButton(
+                label: 'Get OTP',
+                onPressed: () => _requestOtp(context),
+              ),
               const SizedBox(height: 20),
               CustomButton(
                 label: 'Continue With Google',
                 isDark: false,
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Google sign-in coming soon')),
-                  );
+                  Navigator.pushNamed(context, AppRoutes.chooseRole);
                 },
               ),
               const Spacer(),
@@ -77,5 +94,17 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _requestOtp(BuildContext context) {
+    final phone = _phoneController.text.trim();
+    if (phone.length < 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid phone number')),
+      );
+      return;
+    }
+
+    Navigator.pushNamed(context, AppRoutes.otp);
   }
 }

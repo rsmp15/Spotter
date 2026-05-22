@@ -8,10 +8,10 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SpotterScreen(
+    return SpotterScreen(
       title: 'Wallet',
       subtitle: 'Payments, offers and ride history.',
-      content: [
+      content: const [
         SpotterCard(
           color: Color(0xFFEAFBF4),
           children: [
@@ -45,6 +45,14 @@ class WalletScreen extends StatelessWidget {
           ],
         ),
       ],
+      bottom: PrimaryAction(
+        label: 'Add money',
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Wallet top-up started')),
+          );
+        },
+      ),
     );
   }
 }

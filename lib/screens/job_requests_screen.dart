@@ -19,15 +19,17 @@ class JobRequestsScreen extends StatelessWidget {
           payout: 'Rs 390',
           onTap: () => Navigator.pushNamed(context, AppRoutes.jobDetail),
         ),
-        const _RequestCard(
+        _RequestCard(
           title: 'Aundh to Camp',
           deviation: '5.1 km',
           payout: 'Rs 620',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.jobDetail),
         ),
-        const _RequestCard(
+        _RequestCard(
           title: 'Viman Nagar to Kalyani Nagar',
           deviation: '2.4 km',
           payout: 'Rs 260',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.jobDetail),
         ),
       ],
       bottom: const PrimaryAction(

@@ -22,12 +22,35 @@ class CancelRideScreen extends StatelessWidget {
       title: 'Cancel ride',
       subtitle: 'Tell us what happened before ending this ride.',
       content: [
+        RecoveryBanner(
+          state: ride.actionState,
+          onRetry: () {
+            if (ride.cancellationReason.isNotEmpty) {
+              ride.cancelRide(ride.cancellationReason);
+            }
+          },
+        ),
+        RideContextCard(
+          route: ride.routeLabel,
+          fare: ride.fareLabel,
+          driver: ride.selectedDriver?.name ?? 'Matching',
+          status: ride.status.name,
+        ),
         for (final reason in reasons)
           SpotterCard(
             height: 68,
-            onTap: () {
+            onTap: () async {
               final messenger = ScaffoldMessenger.of(context);
-              ride.cancelRide(reason);
+              final success = await ride.cancelRide(reason);
+              if (!context.mounted) return;
+              if (!success) {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Cancellation failed. Please try again.'),
+                  ),
+                );
+                return;
+              }
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 AppRoutes.home,

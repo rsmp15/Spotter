@@ -5,8 +5,21 @@ import '../custom_button.dart';
 import '../custom_card.dart';
 import '../white_text_field.dart';
 
-class OtpVerificationScreen extends StatelessWidget {
+class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
+
+  @override
+  State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
+}
+
+class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+  final TextEditingController _otpController = TextEditingController();
+
+  @override
+  void dispose() {
+    _otpController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +49,17 @@ class OtpVerificationScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              const WhiteTextField(
+              WhiteTextField(
+                controller: _otpController,
                 labelText: '6 Digit OTP',
                 keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _verifyOtp(context),
               ),
               const SizedBox(height: 20),
-              const CustomButton(
+              CustomButton(
                 label: 'Verify And Continue',
-                routeName: AppRoutes.home,
+                onPressed: () => _verifyOtp(context),
               ),
               const SizedBox(height: 80),
               CustomCard(
@@ -94,5 +110,16 @@ class OtpVerificationScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _verifyOtp(BuildContext context) {
+    if (_otpController.text.trim().length != 6) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter the 6 digit OTP')));
+      return;
+    }
+
+    Navigator.pushNamed(context, AppRoutes.chooseRole);
   }
 }

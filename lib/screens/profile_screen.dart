@@ -57,6 +57,7 @@ class ProfileScreen extends StatelessWidget {
           children: const [InfoRow(label: 'Wallet', value: 'Open')],
         ),
         SpotterCard(
+          onTap: () => _showProfileMessage(context, 'Saved places opened'),
           children: const [
             InfoRow(label: 'Saved places', value: '3'),
             InfoRow(label: 'Payment methods', value: '2'),
@@ -69,5 +70,11 @@ class ProfileScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _showProfileMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

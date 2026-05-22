@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../helper.dart';
+import 'app_routes.dart';
 
 class AppErrorScreen extends StatelessWidget {
   final String title;
   final String message;
   final VoidCallback? onRetry;
+  final bool showHomeAction;
 
   const AppErrorScreen({
     super.key,
     this.title = 'Something went wrong',
     this.message = 'We hit a temporary issue. Please try again.',
     this.onRetry,
+    this.showHomeAction = true,
   });
 
   @override
@@ -59,6 +62,18 @@ class AppErrorScreen extends StatelessWidget {
                     FilledButton(
                       onPressed: onRetry,
                       child: const Text('Try again'),
+                    ),
+                  ],
+                  if (showHomeAction) ...[
+                    const SizedBox(height: 12),
+                    TextButton.icon(
+                      onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRoutes.home,
+                        (route) => false,
+                      ),
+                      icon: const Icon(Icons.home_outlined),
+                      label: const Text('Back to home'),
                     ),
                   ],
                 ],

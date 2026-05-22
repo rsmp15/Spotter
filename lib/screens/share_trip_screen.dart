@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../controllers/ride_controller.dart';
 import '../helper.dart';
@@ -43,7 +44,9 @@ class ShareTripScreen extends StatelessWidget {
       ],
       bottom: PrimaryAction(
         label: 'Copy share link',
-        onPressed: () {
+        onPressed: () async {
+          await Clipboard.setData(ClipboardData(text: ride.shareLink));
+          if (!context.mounted) return;
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Trip link copied')));

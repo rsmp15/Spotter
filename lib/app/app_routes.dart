@@ -5,36 +5,26 @@ import '../screens/cancel_ride_screen.dart';
 import '../screens/chat_screen.dart';
 import '../screens/choose_role_screen.dart';
 import '../screens/create_trip_screen.dart';
-import '../screens/destination_search_screen.dart';
 import '../screens/dispute_case_screen.dart';
 import '../screens/driver_home_screen.dart';
-import '../screens/driver_matches_screen.dart';
-import '../screens/driver_profile_screen.dart';
 import '../screens/drop_task_screen.dart';
 import '../screens/empty_state_screen.dart';
-import '../screens/fare_estimate_screen.dart';
-import '../screens/home_screen.dart';
 import '../screens/job_detail_screen.dart';
 import '../screens/job_requests_screen.dart';
 import '../screens/kyc_verification_screen.dart';
-import '../screens/live_tracking_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../screens/otp_verification_screen.dart';
-import '../screens/payment_screen.dart';
-import '../screens/pickup_location_screen.dart';
 import '../screens/pickup_task_screen.dart';
 import '../screens/profile_screen.dart';
-import '../screens/rating_screen.dart';
-import '../screens/ride_complete_screen.dart';
-import '../screens/ride_confirmation_screen.dart';
-import '../screens/ride_otp_screen.dart';
 import '../screens/share_trip_screen.dart';
 import '../screens/splash_screen.dart';
+import '../screens/services_screen.dart';
 import '../screens/support_screen.dart';
 import '../screens/wallet_screen.dart';
 import 'app_error_screen.dart';
+import 'uber_overlay_shell.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -61,7 +51,8 @@ class AppRoutes {
   static const String rating = '/rating';
   static const String notifications = '/notifications';
   static const String support = '/support';
-  static const String issue = '/issue';
+  static const String services = '/services';
+  static const String dispute = '/dispute';
   static const String empty = '/empty';
   static const String kyc = '/kyc';
   static const String driverHome = '/driver-home';
@@ -71,6 +62,44 @@ class AppRoutes {
   static const String pickupTask = '/pickup-task';
   static const String dropTask = '/drop-task';
   static const String adminReview = '/admin-review';
+
+  static const List<String> allRoutes = [
+    splash,
+    onboarding,
+    login,
+    otp,
+    chooseRole,
+    home,
+    pickup,
+    destination,
+    fare,
+    drivers,
+    driverProfile,
+    confirmRide,
+    payment,
+    tracking,
+    rideOtp,
+    rideComplete,
+    wallet,
+    profile,
+    chat,
+    shareTrip,
+    cancelRide,
+    rating,
+    notifications,
+    support,
+    services,
+    dispute,
+    empty,
+    kyc,
+    driverHome,
+    createTrip,
+    jobRequests,
+    jobDetail,
+    pickupTask,
+    dropTask,
+    adminReview,
+  ];
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     return MaterialPageRoute<void>(
@@ -92,27 +121,27 @@ class AppRoutes {
       case chooseRole:
         return const ChooseRoleScreen();
       case home:
-        return const HomeScreen();
+        return const UberOverlayShell();
       case pickup:
-        return const PickupLocationScreen();
+        return const UberOverlayShell();
       case destination:
-        return const DestinationSearchScreen();
+        return const UberOverlayShell();
       case fare:
-        return const FareEstimateScreen();
+        return const UberOverlayShell();
       case drivers:
-        return const DriverMatchesScreen();
+        return const UberOverlayShell();
       case driverProfile:
-        return const DriverProfileScreen();
+        return const UberOverlayShell();
       case confirmRide:
-        return const RideConfirmationScreen();
+        return const UberOverlayShell();
       case payment:
-        return const PaymentScreen();
+        return const UberOverlayShell();
       case tracking:
-        return const LiveTrackingScreen();
+        return const UberOverlayShell();
       case rideOtp:
-        return const RideOtpScreen();
+        return const UberOverlayShell();
       case rideComplete:
-        return const RideCompleteScreen();
+        return const UberOverlayShell();
       case wallet:
         return const WalletScreen();
       case profile:
@@ -124,12 +153,14 @@ class AppRoutes {
       case cancelRide:
         return const CancelRideScreen();
       case rating:
-        return const RatingScreen();
+        return const UberOverlayShell();
       case notifications:
         return const NotificationsScreen();
       case support:
         return const SupportScreen();
-      case issue:
+      case services:
+        return const ServicesScreen();
+      case dispute:
         return const DisputeCaseScreen();
       case empty:
         return const EmptyStateScreen();
@@ -152,7 +183,8 @@ class AppRoutes {
       default:
         return const AppErrorScreen(
           title: 'Page not found',
-          message: 'The screen you requested is not available.',
+          message:
+              'The screen you requested is not available. Return home to continue safely.',
         );
     }
   }
