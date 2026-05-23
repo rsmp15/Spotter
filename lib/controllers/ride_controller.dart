@@ -28,6 +28,12 @@ class RideController extends ChangeNotifier {
   String? loadErrorMessage;
   String shareLink = MockRideRepository.seedData.shareLink;
   RecoverableActionState actionState = RecoverableActionState.idle;
+  bool isDarkMode = false;
+
+  void toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    notifyListeners();
+  }
 
   bool _disposed = false;
 

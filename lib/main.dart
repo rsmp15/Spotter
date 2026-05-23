@@ -69,12 +69,17 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return RideScope(
       controller: _rideController,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: AppConfig.appName,
-        theme: Helper.theme,
-        initialRoute: AppRoutes.splash,
-        onGenerateRoute: AppRoutes.onGenerateRoute,
+      child: ListenableBuilder(
+        listenable: _rideController,
+        builder: (context, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: AppConfig.appName,
+            theme: Helper.buildTheme(isDarkMode: _rideController.isDarkMode),
+            initialRoute: AppRoutes.splash,
+            onGenerateRoute: AppRoutes.onGenerateRoute,
+          );
+        },
       ),
     );
   }

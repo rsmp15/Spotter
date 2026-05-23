@@ -1,14 +1,15 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../controllers/ride_controller.dart';
 import '../helper.dart';
 import '../models/ride_models.dart';
 
 // Import our panel views
-import '../screens/panels/uber_home_panel.dart';
-import '../screens/panels/uber_fare_panel.dart';
-import '../screens/panels/uber_matching_panel.dart';
-import '../screens/panels/uber_tracking_panel.dart';
+import '../screens/panels/spotter_home_panel.dart';
+import '../screens/panels/spotter_fare_panel.dart';
+import '../screens/panels/spotter_matching_panel.dart';
+import '../screens/panels/spotter_tracking_panel.dart';
 
 // Import fallback/standard screens to wrap in our sheet for perfect continuity
 import '../screens/destination_search_screen.dart';
@@ -21,14 +22,14 @@ import '../screens/ride_complete_screen.dart';
 import '../screens/rating_screen.dart';
 import '../screens/rider_bottom_nav.dart';
 
-class UberOverlayShell extends StatefulWidget {
-  const UberOverlayShell({super.key});
+class SpotterOverlayShell extends StatefulWidget {
+  const SpotterOverlayShell({super.key});
 
   @override
-  State<UberOverlayShell> createState() => _UberOverlayShellState();
+  State<SpotterOverlayShell> createState() => _SpotterOverlayShellState();
 }
 
-class _UberOverlayShellState extends State<UberOverlayShell>
+class _SpotterOverlayShellState extends State<SpotterOverlayShell>
     with SingleTickerProviderStateMixin {
   late AnimationController _mapAnimationController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -65,7 +66,7 @@ class _UberOverlayShellState extends State<UberOverlayShell>
     switch (routeName) {
       case '/home':
       case '/':
-        activePanel = const UberHomePanel();
+        activePanel = const SpotterHomePanel();
         break;
       case '/pickup':
         activePanel = const PickupLocationScreen();
@@ -77,10 +78,10 @@ class _UberOverlayShellState extends State<UberOverlayShell>
         isFullScreenPanel = true;
         break;
       case '/fare':
-        activePanel = const UberFarePanel();
+        activePanel = const SpotterFarePanel();
         break;
       case '/drivers':
-        activePanel = const UberMatchingPanel();
+        activePanel = const SpotterMatchingPanel();
         break;
       case '/driver-profile':
         activePanel = const DriverProfileScreen();
@@ -93,7 +94,7 @@ class _UberOverlayShellState extends State<UberOverlayShell>
         activePanel = const PaymentScreen();
         break;
       case '/tracking':
-        activePanel = const UberTrackingPanel();
+        activePanel = const SpotterTrackingPanel();
         break;
       case '/ride-otp':
         activePanel = const RideOtpScreen();
@@ -107,7 +108,7 @@ class _UberOverlayShellState extends State<UberOverlayShell>
         isFullScreenPanel = true;
         break;
       default:
-        activePanel = const UberHomePanel();
+        activePanel = const SpotterHomePanel();
     }
 
     final showBottomNavBar = routeName == '/home' || routeName == '/';
@@ -130,6 +131,7 @@ class _UberOverlayShellState extends State<UberOverlayShell>
                   painter: MockMapPainter(
                     status: ride.status,
                     animationValue: _mapAnimationController.value,
+                    isDarkMode: ride.isDarkMode,
                   ),
                 );
               },
@@ -162,6 +164,32 @@ class _UberOverlayShellState extends State<UberOverlayShell>
             ),
           ),
 
+          // Floating Theme Toggle button
+          Positioned(
+            top: MediaQuery.paddingOf(context).top + 16,
+            right: 16,
+            child: CircleAvatar(
+              radius: 22,
+              backgroundColor: ride.isDarkMode
+                  ? const Color(0xFF1E293B)
+                  : Colors.white,
+              child: IconButton(
+                icon: Icon(
+                  ride.isDarkMode
+                      ? Icons.wb_sunny_rounded
+                      : Icons.nightlight_round,
+                  color: ride.isDarkMode
+                      ? const Color(0xFFFACC15)
+                      : Colors.black,
+                  size: 20,
+                ),
+                onPressed: () {
+                  ride.toggleDarkMode();
+                },
+              ),
+            ),
+          ),
+
           // 3. Floating Locate Me button
           if (!isFullScreenPanel)
             Positioned(
@@ -188,26 +216,31 @@ class _UberOverlayShellState extends State<UberOverlayShell>
             ),
 
           // 4. Slidable/Draggable Premium Bottom-Sheet Panel
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: isFullScreenPanel
-                ? Container(
-                    height: MediaQuery.of(context).size.height * 0.88,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(24),
-                        topRight: Radius.circular(24),
+          if (routeName == '/home' || routeName == '/')
+            activePanel
+          else
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: isFullScreenPanel
+                  ? Container(
+                      height: MediaQuery.of(context).size.height * 0.88,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
+                        ),
                       ),
+                      child: activePanel,
+                    )
+                  : Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                      child: activePanel,
                     ),
-                    child: activePanel,
-                  )
-                : Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(color: Colors.transparent),
-                    child: activePanel,
-                  ),
-          ),
+            ),
         ],
       ),
     );
@@ -301,25 +334,36 @@ class _DrawerLink extends StatelessWidget {
 class MockMapPainter extends CustomPainter {
   final TripStatus status;
   final double animationValue;
+  final bool isDarkMode;
 
-  MockMapPainter({required this.status, required this.animationValue});
+  MockMapPainter({
+    required this.status,
+    required this.animationValue,
+    required this.isDarkMode,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (isDarkMode) {
+      canvas.drawColor(const Color(0xFF0C0F14), BlendMode.srcOver);
+    }
+
     final paintRoad = Paint()
-      ..color = const Color(0xFFE2E8F0)
+      ..color = isDarkMode ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)
       ..strokeWidth = 14
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
     final paintRoadInner = Paint()
-      ..color = Colors.white
+      ..color = isDarkMode ? const Color(0xFF131722) : Colors.white
       ..strokeWidth = 10
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
     final paintLine = Paint()
-      ..color = const Color(0xFF94A3B8).withValues(alpha: 0.3)
+      ..color = isDarkMode
+          ? const Color(0xFF334155).withValues(alpha: 0.15)
+          : const Color(0xFF94A3B8).withValues(alpha: 0.3)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
@@ -365,10 +409,22 @@ class MockMapPainter extends CustomPainter {
         ..lineTo(dropOffset.dx, dropOffset.dy);
 
       final routePaint = Paint()
-        ..color = Colors.black
+        ..color = isDarkMode ? const Color(0xFF38BDF8) : Colors.black
         ..strokeWidth = 5
         ..strokeCap = StrokeCap.round
         ..style = PaintingStyle.stroke;
+
+      if (isDarkMode) {
+        // Neon glow under route
+        canvas.drawPath(
+          routePath,
+          Paint()
+            ..color = const Color(0xFF38BDF8).withValues(alpha: 0.4)
+            ..strokeWidth = 10
+            ..strokeCap = StrokeCap.round
+            ..style = PaintingStyle.stroke,
+        );
+      }
 
       canvas.drawPath(routePath, routePaint);
 
@@ -393,7 +449,7 @@ class MockMapPainter extends CustomPainter {
 
     // Draw Pulsing/Moving Drivers
     final driverPaint = Paint()
-      ..color = Colors.black
+      ..color = isDarkMode ? const Color(0xFFFACC15) : Colors.black
       ..style = PaintingStyle.fill;
 
     if (status == TripStatus.draft || status == TripStatus.searching) {
@@ -457,7 +513,9 @@ class MockMapPainter extends CustomPainter {
         carPos,
         14 + 4 * math.sin(animationValue * 4 * math.pi),
         Paint()
-          ..color = Colors.black.withValues(alpha: 0.15)
+          ..color = isDarkMode
+              ? const Color(0xFFFACC15).withValues(alpha: 0.2)
+              : Colors.black.withValues(alpha: 0.15)
           ..strokeWidth = 2
           ..style = PaintingStyle.stroke,
       );
@@ -471,14 +529,14 @@ class MockMapPainter extends CustomPainter {
       position,
       10,
       Paint()
-        ..color = Colors.white
+        ..color = isDarkMode ? const Color(0xFF0C0F14) : Colors.white
         ..strokeWidth = 2.5
         ..style = PaintingStyle.stroke,
     );
 
     // Tiny headlamp glow dots
     final glowPaint = Paint()
-      ..color = const Color(0xFFFACC15)
+      ..color = isDarkMode ? Colors.white : const Color(0xFFFACC15)
       ..style = PaintingStyle.fill;
     canvas.drawCircle(Offset(position.dx + 4, position.dy - 4), 2.5, glowPaint);
     canvas.drawCircle(Offset(position.dx + 4, position.dy + 4), 2.5, glowPaint);

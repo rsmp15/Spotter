@@ -19,16 +19,8 @@ class Helper {
   );
 
   static const List<BoxShadow> premiumShadows = [
-    BoxShadow(
-      color: Color(0x0A000000),
-      blurRadius: 15,
-      offset: Offset(0, 10),
-    ),
-    BoxShadow(
-      color: Color(0x05000000),
-      blurRadius: 5,
-      offset: Offset(0, 2),
-    ),
+    BoxShadow(color: Color(0x0A000000), blurRadius: 15, offset: Offset(0, 10)),
+    BoxShadow(color: Color(0x05000000), blurRadius: 5, offset: Offset(0, 2)),
   ];
 
   static const TextStyle titleStyle = TextStyle(
@@ -37,27 +29,36 @@ class Helper {
     color: Colors.white,
   );
 
-  static ThemeData get theme {
+  static ThemeData get theme => buildTheme(isDarkMode: false);
+
+  static ThemeData buildTheme({required bool isDarkMode}) {
+    final primaryColor = isDarkMode ? Colors.white : primary;
+    final bg = isDarkMode ? const Color(0xFF0C0F14) : backgroundColor;
+    final cardBg = isDarkMode ? const Color(0xFF131722) : cardColor;
+    final line = isDarkMode ? const Color(0xFF1E293B) : lineColor;
+    final textColor = isDarkMode ? Colors.white : ink;
+
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primary,
-      primary: primary,
-      surface: cardColor,
+      primary: primaryColor,
+      surface: cardBg,
       error: danger,
+      brightness: isDarkMode ? Brightness.dark : Brightness.light,
     );
 
     return ThemeData(
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: backgroundColor,
+      scaffoldBackgroundColor: bg,
       useMaterial3: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: backgroundColor,
-        foregroundColor: ink,
+      appBarTheme: AppBarTheme(
+        backgroundColor: bg,
+        foregroundColor: textColor,
         elevation: 0,
         centerTitle: false,
       ),
       cardTheme: CardThemeData(
-        color: cardColor,
+        color: cardBg,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: cardRadius),
@@ -68,45 +69,52 @@ class Helper {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
+          backgroundColor: isDarkMode ? Colors.white : primary,
+          foregroundColor: isDarkMode ? Colors.black : Colors.white,
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: primary),
+        style: TextButton.styleFrom(
+          foregroundColor: isDarkMode ? const Color(0xFF38BDF8) : primary,
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: cardColor,
+        fillColor: cardBg,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: lineColor),
+          borderSide: BorderSide(color: line),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: lineColor),
+          borderSide: BorderSide(color: line),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: primary, width: 1.5),
+          borderSide: BorderSide(
+            color: isDarkMode ? const Color(0xFF38BDF8) : primary,
+            width: 1.5,
+          ),
         ),
       ),
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         headlineSmall: TextStyle(
-          color: ink,
+          color: textColor,
           fontSize: 24,
           fontWeight: FontWeight.w800,
           letterSpacing: -0.4,
         ),
         titleLarge: TextStyle(
-          color: ink,
+          color: textColor,
           fontSize: 20,
           fontWeight: FontWeight.w800,
         ),
-        bodyMedium: TextStyle(color: ink, fontSize: 15, height: 1.35),
+        bodyMedium: TextStyle(color: textColor, fontSize: 15, height: 1.35),
       ),
     );
   }

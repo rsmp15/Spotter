@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
@@ -5,14 +6,14 @@ import '../../helper.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
 
-class UberMatchingPanel extends StatefulWidget {
-  const UberMatchingPanel({super.key});
+class SpotterMatchingPanel extends StatefulWidget {
+  const SpotterMatchingPanel({super.key});
 
   @override
-  State<UberMatchingPanel> createState() => _UberMatchingPanelState();
+  State<SpotterMatchingPanel> createState() => _SpotterMatchingPanelState();
 }
 
-class _UberMatchingPanelState extends State<UberMatchingPanel>
+class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
 
@@ -39,14 +40,23 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
 
-    return Container(
+    Widget content = Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark
+            ? const Color(0xFF0C0F14).withValues(alpha: 0.82)
+            : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
+        border: isDark
+            ? Border.all(
+                color: Colors.white.withValues(alpha: 0.08),
+                width: 1.5,
+              )
+            : null,
         boxShadow: Helper.premiumShadows,
       ),
       child: Column(
@@ -59,7 +69,7 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
               width: 40,
               height: 4.5,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: isDark ? Colors.grey[700] : Colors.grey[300],
                 borderRadius: BorderRadius.circular(999),
               ),
             ),
@@ -73,16 +83,19 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
                   children: [
                     IconButton(
                       onPressed: () => Navigator.maybePop(context),
-                      icon: const Icon(Icons.arrow_back, color: Helper.ink),
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: isDark ? Colors.white : Helper.ink,
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Driver matches',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Helper.ink,
+                          color: isDark ? Colors.white : Helper.ink,
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
                         ),
@@ -113,9 +126,10 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.black.withValues(
-                                  alpha: 1.0 - _animationController.value,
-                                ),
+                                color: (isDark ? Colors.white : Colors.black)
+                                    .withValues(
+                                      alpha: 1.0 - _animationController.value,
+                                    ),
                                 width: 2 + 10 * _animationController.value,
                               ),
                             ),
@@ -131,10 +145,11 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.black.withValues(
-                                  alpha: (1.0 - _animationController.value)
-                                      .clamp(0.0, 1.0),
-                                ),
+                                color: (isDark ? Colors.white : Colors.black)
+                                    .withValues(
+                                      alpha: (1.0 - _animationController.value)
+                                          .clamp(0.0, 1.0),
+                                    ),
                                 width: 1 + 5 * _animationController.value,
                               ),
                             ),
@@ -144,13 +159,13 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
                       Container(
                         width: 50,
                         height: 50,
-                        decoration: const BoxDecoration(
-                          color: Colors.black,
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white : Colors.black,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.radar_rounded,
-                          color: Colors.white,
+                          color: isDark ? Colors.black : Colors.white,
                           size: 24,
                         ),
                       ),
@@ -158,13 +173,15 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Center(
+                Center(
                   child: Text(
                     'Finding the best ride for you...',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF5E5E5E),
+                      color: isDark
+                          ? Colors.grey[300]
+                          : const Color(0xFF5E5E5E),
                     ),
                   ),
                 ),
@@ -174,11 +191,18 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
                   _DriverPanelCard(
                     driver: ride.drivers[i],
                     fare: ride.fareLabel,
-                    color: [
-                      const Color(0xFF000000),
-                      const Color(0xFF5E5E5E),
-                      const Color(0xFF8F8F8F)
-                    ][i % 3],
+                    isDark: isDark,
+                    color: isDark
+                        ? [
+                            const Color(0xFF38BDF8),
+                            const Color(0xFFFACC15),
+                            const Color(0xFF10B981),
+                          ][i % 3]
+                        : [
+                            const Color(0xFF000000),
+                            const Color(0xFF5E5E5E),
+                            const Color(0xFF8F8F8F),
+                          ][i % 3],
                     onTap: () {
                       ride.selectDriver(ride.drivers[i]);
                       Navigator.pushNamed(context, AppRoutes.driverProfile);
@@ -189,7 +213,8 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
                   label: 'View best driver',
                   onPressed: () {
                     // Automatically choose first driver if not selected
-                    if (ride.selectedDriver == null && ride.drivers.isNotEmpty) {
+                    if (ride.selectedDriver == null &&
+                        ride.drivers.isNotEmpty) {
                       ride.selectDriver(ride.drivers.first);
                     }
                     Navigator.pushNamed(context, AppRoutes.driverProfile);
@@ -201,6 +226,21 @@ class _UberMatchingPanelState extends State<UberMatchingPanel>
         ],
       ),
     );
+
+    if (isDark) {
+      content = ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: content,
+        ),
+      );
+    }
+
+    return content;
   }
 }
 
@@ -208,12 +248,14 @@ class _DriverPanelCard extends StatelessWidget {
   final Driver driver;
   final String fare;
   final Color color;
+  final bool isDark;
   final VoidCallback? onTap;
 
   const _DriverPanelCard({
     required this.driver,
     required this.fare,
     required this.color,
+    required this.isDark,
     this.onTap,
   });
 
@@ -221,6 +263,9 @@ class _DriverPanelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SpotterCard(
       onTap: onTap,
+      color: isDark
+          ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+          : Helper.cardColor,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       children: [
         Row(
@@ -240,21 +285,29 @@ class _DriverPanelCard extends StatelessWidget {
                 children: [
                   Text(
                     driver.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
                   Text(
                     '${driver.vehicle} • rating ${driver.rating}',
-                    style: const TextStyle(color: Helper.muted, fontSize: 13),
+                    style: TextStyle(
+                      color: isDark ? Colors.grey[400] : Helper.muted,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
             ),
             Text(
               fare,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black,
+              ),
             ),
           ],
         ),

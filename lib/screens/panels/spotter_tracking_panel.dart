@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
@@ -5,22 +6,32 @@ import '../../helper.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
 
-class UberTrackingPanel extends StatelessWidget {
-  const UberTrackingPanel({super.key});
+class SpotterTrackingPanel extends StatelessWidget {
+  const SpotterTrackingPanel({super.key});
 
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final driver = ride.selectedDriver ??
+    final driver =
+        ride.selectedDriver ??
         (ride.drivers.isNotEmpty ? ride.drivers.first : null);
+    final isDark = ride.isDarkMode;
 
-    return Container(
+    Widget content = Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark
+            ? const Color(0xFF0C0F14).withValues(alpha: 0.82)
+            : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
+        border: isDark
+            ? Border.all(
+                color: Colors.white.withValues(alpha: 0.08),
+                width: 1.5,
+              )
+            : null,
         boxShadow: Helper.premiumShadows,
       ),
       child: Column(
@@ -33,7 +44,7 @@ class UberTrackingPanel extends StatelessWidget {
               width: 40,
               height: 4.5,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: isDark ? Colors.grey[700] : Colors.grey[300],
                 borderRadius: BorderRadius.circular(999),
               ),
             ),
@@ -46,10 +57,10 @@ class UberTrackingPanel extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Live tracking',
                       style: TextStyle(
-                        color: Helper.ink,
+                        color: isDark ? Colors.white : Helper.ink,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                       ),
@@ -58,7 +69,7 @@ class UberTrackingPanel extends StatelessWidget {
                       label: ride.status == TripStatus.arriving
                           ? 'Arriving soon'
                           : 'In progress',
-                      color: Colors.black,
+                      color: isDark ? const Color(0xFF38BDF8) : Colors.black,
                     ),
                   ],
                 ),
@@ -73,17 +84,22 @@ class UberTrackingPanel extends StatelessWidget {
                 // Active Driver particulars card
                 if (driver != null)
                   SpotterCard(
+                    color: isDark
+                        ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+                        : Helper.cardColor,
                     padding: const EdgeInsets.all(14),
                     children: [
                       Row(
                         children: [
                           CircleAvatar(
                             radius: 24,
-                            backgroundColor: Colors.grey[200],
+                            backgroundColor: isDark
+                                ? const Color(0xFF1E293B)
+                                : Colors.grey[200],
                             child: Text(
                               driver.name[0],
-                              style: const TextStyle(
-                                color: Colors.black,
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -95,15 +111,18 @@ class UberTrackingPanel extends StatelessWidget {
                               children: [
                                 Text(
                                   driver.name,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    color: isDark ? Colors.white : Colors.black,
                                   ),
                                 ),
                                 Text(
                                   '${driver.vehicle} • ★ ${driver.rating}',
-                                  style: const TextStyle(
-                                    color: Helper.muted,
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey[400]
+                                        : Helper.muted,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -116,14 +135,17 @@ class UberTrackingPanel extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF3F4F6),
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFF3F4F6),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               driver.eta,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
+                                color: isDark ? Colors.white : Colors.black,
                               ),
                             ),
                           ),
@@ -132,11 +154,12 @@ class UberTrackingPanel extends StatelessWidget {
                     ],
                   ),
                 // Trip Context Row
-                RideContextCard(
+                _ResponsiveRideContextCard(
                   route: ride.routeLabel,
                   fare: ride.fareLabel,
                   driver: driver?.name ?? 'Matching',
                   status: ride.status.name,
+                  isDark: isDark,
                 ),
                 const SizedBox(height: 12),
                 // Quick actions grid
@@ -146,17 +169,29 @@ class UberTrackingPanel extends StatelessWidget {
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(48),
-                          side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          side: BorderSide(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.1)
+                                : const Color(0xFFE2E8F0),
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         onPressed: () =>
                             Navigator.pushNamed(context, AppRoutes.chat),
-                        icon: const Icon(Icons.chat_bubble_rounded, size: 16, color: Colors.black),
-                        label: const Text(
+                        icon: Icon(
+                          Icons.chat_bubble_rounded,
+                          size: 16,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        label: Text(
                           'Chat',
-                          style: TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -165,17 +200,29 @@ class UberTrackingPanel extends StatelessWidget {
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(48),
-                          side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          side: BorderSide(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.1)
+                                : const Color(0xFFE2E8F0),
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         onPressed: () =>
                             Navigator.pushNamed(context, AppRoutes.support),
-                        icon: const Icon(Icons.help_outline_rounded, size: 16, color: Colors.black),
-                        label: const Text(
+                        icon: Icon(
+                          Icons.help_outline_rounded,
+                          size: 16,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        label: Text(
                           'Support',
-                          style: TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -188,17 +235,29 @@ class UberTrackingPanel extends StatelessWidget {
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(48),
-                          side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          side: BorderSide(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.1)
+                                : const Color(0xFFE2E8F0),
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         onPressed: () =>
                             Navigator.pushNamed(context, AppRoutes.shareTrip),
-                        icon: const Icon(Icons.share_rounded, size: 16, color: Colors.black),
-                        label: const Text(
+                        icon: Icon(
+                          Icons.share_rounded,
+                          size: 16,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        label: Text(
                           'Share',
-                          style: TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -207,17 +266,29 @@ class UberTrackingPanel extends StatelessWidget {
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(48),
-                          side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          side: BorderSide(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.1)
+                                : const Color(0xFFE2E8F0),
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         onPressed: () =>
                             Navigator.pushNamed(context, AppRoutes.cancelRide),
-                        icon: const Icon(Icons.cancel_outlined, size: 16, color: Colors.red),
+                        icon: const Icon(
+                          Icons.cancel_outlined,
+                          size: 16,
+                          color: Colors.red,
+                        ),
                         label: const Text(
                           'Cancel',
-                          style: TextStyle(color: Colors.red, fontSize: 13, fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -233,6 +304,73 @@ class UberTrackingPanel extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    if (isDark) {
+      content = ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: content,
+        ),
+      );
+    }
+
+    return content;
+  }
+}
+
+class _ResponsiveRideContextCard extends StatelessWidget {
+  final String route;
+  final String fare;
+  final String driver;
+  final String status;
+  final bool isDark;
+
+  const _ResponsiveRideContextCard({
+    required this.route,
+    required this.fare,
+    required this.driver,
+    required this.status,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SpotterCard(
+      color: isDark
+          ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+          : const Color(0xFFF8FAFC),
+      children: [
+        StatusChip(
+          label: 'Trip context',
+          color: isDark ? const Color(0xFF38BDF8) : Helper.primary,
+        ),
+        const SizedBox(height: 12),
+        InfoRow(
+          label: 'Route',
+          value: route,
+          valueColor: isDark ? Colors.white : Helper.ink,
+        ),
+        InfoRow(
+          label: 'Fare',
+          value: fare,
+          valueColor: isDark ? const Color(0xFF38BDF8) : Helper.primary,
+        ),
+        InfoRow(
+          label: 'Driver',
+          value: driver,
+          valueColor: isDark ? Colors.white : Helper.ink,
+        ),
+        InfoRow(
+          label: 'Status',
+          value: status,
+          valueColor: isDark ? Colors.white : Helper.ink,
+        ),
+      ],
     );
   }
 }

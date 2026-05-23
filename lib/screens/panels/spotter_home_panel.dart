@@ -1,14 +1,15 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import '../../app/app_assets.dart';
+import '../../app/app_config.dart';
+import '../../app/app_routes.dart';
+import '../../controllers/ride_controller.dart';
+import '../../helper.dart';
+import '../../models/ride_models.dart';
+import '../../spotter_widgets.dart';
 
-import '../app/app_assets.dart';
-import '../app/app_routes.dart';
-import '../controllers/ride_controller.dart';
-import '../models/ride_models.dart';
-import '../spotter_widgets.dart';
-import 'rider_bottom_nav.dart';
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class SpotterHomePanel extends StatelessWidget {
+  const SpotterHomePanel({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,174 +27,217 @@ class HomeScreen extends StatelessWidget {
       ),
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      bottomNavigationBar: const RiderBottomNav(activeTab: RiderBottomTab.home),
-      body: SafeArea(
-        child: ListView(
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _SearchHeader(
-                        onSearchTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.destination),
-                        onScheduleTap: () =>
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Pickup time set to now'),
-                              ),
-                            ),
+    final appName = AppConfig.appName;
+    final isDark = ride.isDarkMode;
+
+    final decoration = BoxDecoration(
+      color: isDark
+          ? const Color(0xFF0C0F14).withValues(alpha: 0.82)
+          : Colors.white,
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(24),
+        topRight: Radius.circular(24),
+      ),
+      border: isDark
+          ? Border.all(color: Colors.white.withValues(alpha: 0.08), width: 1.5)
+          : null,
+      boxShadow: Helper.premiumShadows,
+    );
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.38,
+      minChildSize: 0.35,
+      maxChildSize: 0.88,
+      snap: true,
+      snapSizes: const [0.38, 0.88],
+      builder: (BuildContext context, ScrollController scrollController) {
+        Widget content = Container(
+          decoration: decoration,
+          child: Column(
+            children: [
+              // Premium drag handle
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  width: 40,
+                  height: 4.5,
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.grey[700] : Colors.grey[300],
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                  children: [
+                    const _SearchHeader(),
+                    if (ride.actionState.isFailure) ...[
+                      const SizedBox(height: 12),
+                      RecoveryBanner(
+                        state: ride.actionState,
+                        onRetry: ride.retryInitialize,
                       ),
-                      if (ride.actionState.isFailure) ...[
-                        const SizedBox(height: 12),
-                        RecoveryBanner(
-                          state: ride.actionState,
-                          onRetry: ride.retryInitialize,
-                        ),
-                      ],
-                      const SizedBox(height: 14),
-                      for (final location in recentLocations)
-                        _RecentLocationTile(
-                          location: location,
-                          onTap: () {
-                            ride.updateDestination(location);
-                            Navigator.pushNamed(context, AppRoutes.destination);
-                          },
-                        ),
-                      const SizedBox(height: 18),
-                      _PaymentBanner(
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.wallet),
+                    ],
+                    const SizedBox(height: 16),
+                    for (final location in recentLocations)
+                      _RecentLocationTile(
+                        location: location,
+                        onTap: () {
+                          ride.updateDestination(location);
+                          Navigator.pushNamed(context, AppRoutes.destination);
+                        },
                       ),
-                      const SizedBox(height: 26),
-                      _SectionHeader(
-                        title: 'Suggestions',
-                        trailing: TextButton(
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Suggestions',
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        TextButton(
                           onPressed: () =>
                               Navigator.pushNamed(context, AppRoutes.services),
-                          child: const Text(
+                          child: Text(
                             'See all',
                             style: TextStyle(
-                              color: Color(0xFF344054),
+                              color: isDark
+                                  ? const Color(0xFF98A2B3)
+                                  : const Color(0xFF5E5E5E),
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      _SuggestionGrid(
-                        onRideTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.destination),
-                        onServicesTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.services),
-                      ),
-                      const SizedBox(height: 28),
-                      const _CardRailSection(
-                        title: 'Ways to save with Spotter',
-                        cards: [
-                          _RailCardData(
-                            title: 'Spotter Moto rides',
-                            subtitle: 'Affordable motorcycle pick-ups',
-                            imageUrl:
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuBWttFyfZrbumHNXp359omeSHMK0SDImZZmUIFA4Bbu5U6XFsx4UDfGWopS7YpgC-rnt0JSsKqCJ1-QZu16kmvHRFTaLseVn3-PmjyOa4BtnxDLIRmunS0BOUeW-UuOfJwiKRbZIqmTefTY5H8rq6FVrjrtv7EcOJbdiV6c8yiK3WuDzVLjtUOvhxTGpIjONq7EXvCNynNLvDj1yPdx0lrM02AJGkNXlSswq6Ry1jDB2nb1dTZ79Or5q35izp3pJXsGYt84riWW_QY',
-                          ),
-                          _RailCardData(
-                            title: 'Shuttle rides',
-                            subtitle: 'Low fares, premium travel',
-                            imageUrl:
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuBzuymrqQ34y0jXfMVhFwS0y5Af_J32zpmH7OLcBz_9SFrA2zkFkoAq_VFmJugatWqjAVL1WSOWpqLtSa8rxUabrgEIxjZxHyEgJw1ojXJiCaULw-llLvB84zcX74VApU8kcuEuLZz197LUs9Tt2D9rKWg_Skw8B0VdTGFVqnA0uRzS1wf1AGsUbWn6lP3_DbUt5v2XWmzKZ07hY6hnDjIpRu6SQkSsEu_QTguI26UmYi3nCuY9WRyMVzbUXtyev3yMj3OWB0naE7o',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 28),
-                      const _PremierBanner(),
-                      const SizedBox(height: 28),
-                      const _CardRailSection(
-                        title: 'Ways to plan with Spotter',
-                        cards: [
-                          _RailCardData(
-                            title: 'Travel intercity',
-                            subtitle: 'Get to remote locations with ease',
-                            imageUrl:
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuBhtk3uVqyEvxM_l0VUh_DIiUE-YWCeJrSCyyiR-0uDD8J2e9rvP-ItjaTxzkKHoJAOSuwrwoNcb4Bc9SD8HQpgJiK-5humeJ88nS-ojfeqCmo4Zk7MoobK3p-UKtv-ew8A0NWdet_VBNoQTvwrQKlyuihEMnFc-hsoSlW_MRmTj1CfrXdvIvkrHZBiNfZ0UjjlEOdPIO0C-4aTb1kY2WDolusDPx5aSz07FfMMdcmq7Mdlq3Rcampj5WfOp0A9xtAsXNzUIHDohTI',
-                          ),
-                          _RailCardData(
-                            title: 'Hourly rentals',
-                            subtitle: 'Ride from 1 to 12 hours',
-                            imageUrl:
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuAyyHj_HfRgGL5HslGwmNH8hgNjM3AKL-8emPDmVZ-4wnHee0qvy9WHot5OvXfIQWstuGREPC6nTq0Q9TXw8yg3eCkHE_zpRYBaM59fjgY-jlNJ_ZRrvmBHxne_wdb8Am2YZUqhWYOcFyRsr4BRrPIudfCJ-UMTCO0KFcV2YskVHCXY-YuOEABLgwyROf4KmLc_FZ3hK9fIolKZRrVI-LH0JRDw6GdEmy5eLGtpZhGBqAEF5gSbfLp8X2QBUfpmzGcCJPEwrPf4nCc',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 28),
-                      const _CardRailSection(
-                        title: 'More ways to use Spotter',
-                        cards: [
-                          _RailCardData(
-                            title: 'Safety Toolkit',
-                            subtitle: 'On-trip help with safety issues',
-                            imageUrl:
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuDHxUWrl5o9jweYAjamWet3k0CmJPNJ9MzizTdqmdqXqdmVPIhx77BiHUvrKEgFQikSSYWacCkVkG7iYTtYL_BOc6_5TPKSdEUuIXV9TnxbMwU0-8027TLeM0Y91YLhLcHiNFtmU__j8b9QHJezdCgVxPXy-B-2FbFXHG2sWRiEMKcu3H-ZB61EN6ws2YusLUY6mjN-Fv3gTGEqRiPEuQlHGF90WXLXTlrfM-XiPCa7LwVXBIvB4Bzqwgvsbb-DoZVrXbvd5pMit7w',
-                          ),
-                          _RailCardData(
-                            title: 'Send a package',
-                            subtitle: 'On-demand delivery around town',
-                            imageUrl:
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuCHiN1qyKPxSv6H0k_EaJmyp8uE-Cd8D3XX_7FParOFrUggYcZIX9oDmbA-lvrevz5Ud0l0IQ8cwFWd42WAvLCEfYhVXR04OqawxAnzYC_PwS4OExIocxNLbWSjwRPpAyAi9UJUF4Swyvh5nBVoWwRe64jAbCSgCUS-4cnNoAlqKtBXcTwU6TLNjHCXy62wlTU2kLB2Z-NvqnUoQdqQSvVFhan6ayKzc-Ha7H-MNQ3DMzMPgk6tf-cI6rCFrdr7oQ0OwVJhMgnJWxs',
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 28),
-                      const _AroundYouSection(),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const _SuggestionGrid(),
+                    const SizedBox(height: 24),
+                    const _PaymentBanner(),
+                    const SizedBox(height: 28),
+                    _CardRailSection(
+                      title: 'Ways to save with $appName',
+                      cards: const [
+                        _RailCardData(
+                          title: 'Spotter Moto rides',
+                          subtitle: 'Affordable motorcycle pick-ups',
+                          imageUrl:
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuBWttFyfZrbumHNXp359omeSHMK0SDImZZmUIFA4Bbu5U6XFsx4UDfGWopS7YpgC-rnt0JSsKqCJ1-QZu16kmvHRFTaLseVn3-PmjyOa4BtnxDLIRmunS0BOUeW-UuOfJwiKRbZIqmTefTY5H8rq6FVrjrtv7EcOJbdiV6c8yiK3WuDzVLjtUOvhxTGpIjONq7EXvCNynNLvDj1yPdx0lrM02AJGkNXlSswq6Ry1jDB2nb1dTZ79Or5q35izp3pJXsGYt84riWW_QY',
+                        ),
+                        _RailCardData(
+                          title: 'Shuttle rides',
+                          subtitle: 'Low fares, premium travel',
+                          imageUrl:
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuBzuymrqQ34y0jXfMVhFwS0y5Af_J32zpmH7OLcBz_9SFrA2zkFkoAq_VFmJugatWqjAVL1WSOWpqLtSa8rxUabrgEIxjZxHyEgJw1ojXJiCaULw-llLvB84zcX74VApU8kcuEuLZz197LUs9Tt2D9rKWg_Skw8B0VdTGFVqnA0uRzS1wf1AGsUbWn6lP3_DbUt5v2XWmzKZ07hY6hnDjIpRu6SQkSsEu_QTguI26UmYi3nCuY9WRyMVzbUXtyev3yMj3OWB0naE7o',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 28),
+                    const _PremierBanner(),
+                    const SizedBox(height: 28),
+                    _CardRailSection(
+                      title: 'Ways to plan with $appName',
+                      cards: const [
+                        _RailCardData(
+                          title: 'Travel intercity',
+                          subtitle: 'Get to remote locations with ease',
+                          imageUrl:
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuBhtk3uVqyEvxM_l0VUh_DIiUE-YWCeJrSCyyiR-0uDD8J2e9rvP-ItjaTxzkKHoJAOSuwrwoNcb4Bc9SD8HQpgJiK-5humeJ88nS-ojfeqCmo4Zk7MoobK3p-UKtv-ew8A0NWdet_VBNoQTvwrQKlyuihEMnFc-hsoSlW_MRmTj1CfrXdvIvkrHZBiNfZ0UjjlEOdPIO0C-4aTb1kY2WDolusDPx5aSz07FfMMdcmq7Mdlq3Rcampj5WfOp0A9xtAsXNzUIHDohTI',
+                        ),
+                        _RailCardData(
+                          title: 'Hourly rentals',
+                          subtitle: 'Ride from 1 to 12 hours',
+                          imageUrl:
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuAyyHj_HfRgGL5HslGwmNH8hgNjM3AKL-8emPDmVZ-4wnHee0qvy9WHot5OvXfIQWstuGREPC6nTq0Q9TXw8yg3eCkHE_zpRYBaM59fjgY-jlNJ_ZRrvmBHxne_wdb8Am2YZUqhWYOcFyRsr4BRrPIudfCJ-UMTCO0KFcV2YskVHCXY-YuOEABLgwyROf4KmLc_FZ3hK9fIolKZRrVI-LH0JRDw6GdEmy5eLGtpZhGBqAEF5gSbfLp8X2QBUfpmzGcCJPEwrPf4nCc',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 28),
+                    _CardRailSection(
+                      title: 'More ways to use $appName',
+                      cards: const [
+                        _RailCardData(
+                          title: 'Safety Toolkit',
+                          subtitle: 'On-trip help with safety issues',
+                          imageUrl:
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuDHxUWrl5o9jweYAjamWet3k0CmJPNJ9MzizTdqmdqXqdmVPIhx77BiHUvrKEgFQikSSYWacCkVkG7iYTtYL_BOc6_5TPKSdEUuIXV9TnxbMwU0-8027TLeM0Y91YLhLcHiNFtmU__j8b9QHJezdCgVxPXy-B-2FbFXHG2sWRiEMKcu3H-ZB61EN6ws2YusLUY6mjN-Fv3gTGEqRiPEuQlHGF90WXLXTlrfM-XiPCa7LwVXBIvB4Bzqwgvsbb-DoZVrXbvd5pMit7w',
+                        ),
+                        _RailCardData(
+                          title: 'Send a package',
+                          subtitle: 'On-demand delivery around town',
+                          imageUrl:
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuCHiN1qyKPxSv6H0k_EaJmyp8uE-Cd8D3XX_7FParOFrUggYcZIX9oDmbA-lvrevz5Ud0l0IQ8cwFWd42WAvLCEfYhVXR04OqawxAnzYC_PwS4OExIocxNLbWSjwRPpAyAi9UJUF4Swyvh5nBVoWwRe64jAbCSgCUS-4cnNoAlqKtBXcTwU6TLNjHCXy62wlTU2kLB2Z-NvqnUoQdqQSvVFhan6ayKzc-Ha7H-MNQ3DMzMPgk6tf-cI6rCFrdr7oQ0OwVJhMgnJWxs',
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
+            ],
+          ),
+        );
+
+        if (isDark) {
+          content = ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
-          ],
-        ),
-      ),
+            child: BackdropFilter(
+              filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: content,
+            ),
+          );
+        }
+
+        return content;
+      },
     );
   }
 }
 
 class _SearchHeader extends StatelessWidget {
-  final VoidCallback onSearchTap;
-  final VoidCallback onScheduleTap;
-
-  const _SearchHeader({required this.onSearchTap, required this.onScheduleTap});
+  const _SearchHeader();
 
   @override
   Widget build(BuildContext context) {
+    final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+
     return Row(
       children: [
         Expanded(
           child: InkWell(
             borderRadius: BorderRadius.circular(999),
-            onTap: onSearchTap,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.destination),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFF3F4F6),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Row(
-                children: const [
-                  Icon(Icons.search_rounded, color: Color(0xFF111827)),
-                  SizedBox(width: 12),
+                children: [
+                  Icon(
+                    Icons.search_rounded,
+                    color: isDark ? Colors.white : const Color(0xFF111827),
+                  ),
+                  const SizedBox(width: 12),
                   Text(
                     'Where to?',
                     style: TextStyle(
-                      color: Color(0xFF374151),
+                      color: isDark
+                          ? Colors.grey[300]
+                          : const Color(0xFF374151),
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                     ),
@@ -206,13 +250,19 @@ class _SearchHeader extends StatelessWidget {
         const SizedBox(width: 10),
         InkWell(
           borderRadius: BorderRadius.circular(999),
-          onTap: onScheduleTap,
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Pickup time set to now')),
+          ),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
               borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : const Color(0xFFE5E7EB),
+              ),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x12000000),
@@ -222,15 +272,27 @@ class _SearchHeader extends StatelessWidget {
               ],
             ),
             child: Row(
-              children: const [
-                Icon(Icons.access_time_filled_rounded, size: 15),
-                SizedBox(width: 6),
+              children: [
+                Icon(
+                  Icons.access_time_filled_rounded,
+                  size: 15,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+                const SizedBox(width: 6),
                 Text(
                   'Now',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
                 ),
-                SizedBox(width: 2),
-                Icon(Icons.keyboard_arrow_down_rounded, size: 18),
+                const SizedBox(width: 2),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 18,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
               ],
             ),
           ),
@@ -248,6 +310,9 @@ class _RecentLocationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -258,14 +323,16 @@ class _RecentLocationTile extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(top: 2),
               padding: const EdgeInsets.all(9),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF3F4F6),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFF3F4F6),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.history_rounded,
                 size: 20,
-                color: Color(0xFF4B5563),
+                color: isDark ? Colors.white : const Color(0xFF4B5563),
               ),
             ),
             const SizedBox(width: 14),
@@ -275,8 +342,8 @@ class _RecentLocationTile extends StatelessWidget {
                 children: [
                   Text(
                     location.title,
-                    style: const TextStyle(
-                      color: Color(0xFF111827),
+                    style: TextStyle(
+                      color: isDark ? Colors.white : const Color(0xFF111827),
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -284,8 +351,10 @@ class _RecentLocationTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     location.detail,
-                    style: const TextStyle(
-                      color: Color(0xFF6B7280),
+                    style: TextStyle(
+                      color: isDark
+                          ? Colors.grey[400]
+                          : const Color(0xFF6B7280),
                       fontSize: 13,
                       height: 1.25,
                     ),
@@ -301,20 +370,21 @@ class _RecentLocationTile extends StatelessWidget {
 }
 
 class _PaymentBanner extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _PaymentBanner({required this.onTap});
+  const _PaymentBanner();
 
   @override
   Widget build(BuildContext context) {
+    final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+
     return InkWell(
-      onTap: onTap,
+      onTap: () => Navigator.pushNamed(context, AppRoutes.wallet),
       borderRadius: BorderRadius.circular(24),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 126),
-        padding: const EdgeInsets.all(22),
+        constraints: const BoxConstraints(minHeight: 120),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFFFACC15),
+          color: isDark ? const Color(0xFFF59E0B) : const Color(0xFFFACC15),
           borderRadius: BorderRadius.circular(24),
         ),
         child: Stack(
@@ -327,7 +397,11 @@ class _PaymentBanner extends StatelessWidget {
                 width: 170,
                 height: 170,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFDE047).withValues(alpha: 0.55),
+                  color:
+                      (isDark
+                              ? const Color(0xFFD97706)
+                              : const Color(0xFFFDE047))
+                          .withValues(alpha: 0.55),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -342,7 +416,7 @@ class _PaymentBanner extends StatelessWidget {
                         'Finalize payment:',
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 22,
+                          fontSize: 20,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -351,7 +425,7 @@ class _PaymentBanner extends StatelessWidget {
                         'Rs 170.71',
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 28,
+                          fontSize: 26,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -377,16 +451,18 @@ class _PaymentBanner extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  width: 58,
-                  height: 58,
+                  width: 50,
+                  height: 50,
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.notifications_active_rounded,
-                    color: Color(0xFFEAB308),
-                    size: 30,
+                    color: isDark
+                        ? const Color(0xFFD97706)
+                        : const Color(0xFFEAB308),
+                    size: 26,
                   ),
                 ),
               ],
@@ -398,37 +474,8 @@ class _PaymentBanner extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  final Widget? trailing;
-
-  const _SectionHeader({required this.title, this.trailing});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        trailing ?? const SizedBox.shrink(),
-      ],
-    );
-  }
-}
-
 class _SuggestionGrid extends StatelessWidget {
-  final VoidCallback onRideTap;
-  final VoidCallback onServicesTap;
-
-  const _SuggestionGrid({required this.onRideTap, required this.onServicesTap});
+  const _SuggestionGrid();
 
   @override
   Widget build(BuildContext context) {
@@ -437,10 +484,10 @@ class _SuggestionGrid extends StatelessWidget {
         Expanded(
           child: _SuggestionTile(
             label: 'Ride',
-            assetPath: AppAssets.car,
             badge: 'Promo',
+            assetPath: AppAssets.car,
             fallbackIcon: Icons.local_taxi_rounded,
-            onTap: onRideTap,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.destination),
           ),
         ),
         const SizedBox(width: 10),
@@ -449,17 +496,17 @@ class _SuggestionGrid extends StatelessWidget {
             label: 'Package',
             assetPath: AppAssets.parcel,
             fallbackIcon: Icons.inventory_2_rounded,
-            onTap: onServicesTap,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.services),
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: _SuggestionTile(
             label: 'Rentals',
-            assetPath: AppAssets.carClock,
             badge: 'Promo',
+            assetPath: AppAssets.carClock,
             fallbackIcon: Icons.schedule_rounded,
-            onTap: onServicesTap,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.services),
           ),
         ),
         const SizedBox(width: 10),
@@ -468,7 +515,7 @@ class _SuggestionGrid extends StatelessWidget {
             label: 'Reserve',
             assetPath: AppAssets.calendar,
             fallbackIcon: Icons.event_available_rounded,
-            onTap: onServicesTap,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.services),
           ),
         ),
       ],
@@ -478,8 +525,8 @@ class _SuggestionGrid extends StatelessWidget {
 
 class _SuggestionTile extends StatelessWidget {
   final String label;
-  final String assetPath;
   final String? badge;
+  final String assetPath;
   final IconData fallbackIcon;
   final VoidCallback onTap;
 
@@ -493,15 +540,18 @@ class _SuggestionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
       child: Column(
         children: [
           Container(
-            height: 78,
+            height: 70,
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F4F6),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Stack(
@@ -516,13 +566,13 @@ class _SuggestionTile extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF166534),
+                        color: isDark ? Colors.white : Colors.black,
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
                         badge!,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: isDark ? Colors.black : Colors.white,
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
                         ),
@@ -532,14 +582,14 @@ class _SuggestionTile extends StatelessWidget {
                 Center(
                   child: Image.asset(
                     assetPath,
-                    width: 48,
-                    height: 48,
+                    width: 40,
+                    height: 40,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
                       return Icon(
                         fallbackIcon,
-                        size: 44,
-                        color: const Color(0xFF6B7280),
+                        size: 32,
+                        color: isDark ? Colors.white : Helper.ink,
                       );
                     },
                   ),
@@ -550,7 +600,11 @@ class _SuggestionTile extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.grey[300] : Colors.black,
+            ),
           ),
         ],
       ),
@@ -566,12 +620,19 @@ class _CardRailSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: isDark ? Colors.white : Colors.black,
+          ),
         ),
         const SizedBox(height: 14),
         SingleChildScrollView(
@@ -609,6 +670,9 @@ class _RailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+
     return SizedBox(
       width: 280,
       child: Column(
@@ -632,19 +696,27 @@ class _RailCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   data.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, size: 18),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: isDark ? Colors.white : Colors.black,
+              ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
             data.subtitle,
-            style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+            style: TextStyle(
+              color: isDark ? Colors.grey[400] : const Color(0xFF6B7280),
+              fontSize: 12,
+            ),
           ),
         ],
       ),
@@ -706,7 +778,7 @@ class _PremierBanner extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
+              const Expanded(
                 child: _NetworkIllustration(
                   imageUrl:
                       'https://lh3.googleusercontent.com/aida-public/AB6AXuCTPHiR5ZhowEJcYeP-lqVGQlZ9fCsqEvt38bY4h7gvk3R42bB5lpk6OXaRMK4fhKCrmt0X6uyyV8NVEMh7OZrcdGlnxM3T7jP8qirl36G8itEEaMTP3Wg3HScSgEOi-wDx-IfFbxKw6LaNya6JLZppREHdssk8B7mENTJdLjfGoCIJAS0qxlnEnMDgjUi5Lcr9cWM9HESY9o0VyL4WAmhDncxu7_T7NbUE6kUJ_DnBKSXBzrg46E9OaO_B6kBQ4h3NPoSK3BVphOY',
@@ -732,77 +804,6 @@ class _PremierBanner extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
             ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AroundYouSection extends StatelessWidget {
-  const _AroundYouSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Around you',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 14),
-        Container(
-          height: 208,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE5E7EB),
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: _NetworkIllustration(
-                    imageUrl:
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuC4sJsG0NX8AjTT9YOxDBWT1UMCHXS4LQMr0irhu_u9GNM_Fg4uQCWx4HLdozGiz2bXJfZ3wUEBNjJkWAC5cxsGAfZXXlmHVlB_8QH7k0byosC9KPJBlY39-_pm4rJeUISG_W2bX8oMXjvh-IGX-hkSM4qMPDiCnGyIddslSgXvk4dCLybROpNahKczV7ZG6SLOPEDgGxT3HhHBWX3epupv3aLpHX3NnU_xZo1xyNbbATzo-fKaIsqwyg4_QjKH0YYA_rVClskZBBc',
-                    fit: BoxFit.cover,
-                    fallbackIcon: Icons.map_rounded,
-                  ),
-                ),
-              ),
-              Center(
-                child: Container(
-                  width: 122,
-                  height: 122,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF60A5FA).withValues(alpha: 0.22),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              Center(
-                child: Container(
-                  width: 18,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF3B82F6),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 3),
-                  ),
-                ),
-              ),
-              const Positioned(
-                top: 46,
-                left: 74,
-                child: Icon(Icons.directions_car_filled_rounded, size: 26),
-              ),
-              const Positioned(
-                bottom: 40,
-                right: 54,
-                child: Icon(Icons.local_taxi_rounded, size: 26),
-              ),
-            ],
           ),
         ),
       ],

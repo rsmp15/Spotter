@@ -24,7 +24,7 @@ import '../screens/services_screen.dart';
 import '../screens/support_screen.dart';
 import '../screens/wallet_screen.dart';
 import 'app_error_screen.dart';
-import 'uber_overlay_shell.dart';
+import 'spotter_overlay_shell.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -121,27 +121,27 @@ class AppRoutes {
       case chooseRole:
         return const ChooseRoleScreen();
       case home:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case pickup:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case destination:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case fare:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case drivers:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case driverProfile:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case confirmRide:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case payment:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case tracking:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case rideOtp:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case rideComplete:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case wallet:
         return const WalletScreen();
       case profile:
@@ -153,7 +153,7 @@ class AppRoutes {
       case cancelRide:
         return const CancelRideScreen();
       case rating:
-        return const UberOverlayShell();
+        return const SpotterOverlayShell();
       case notifications:
         return const NotificationsScreen();
       case support:
