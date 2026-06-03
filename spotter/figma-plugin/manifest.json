@@ -1,0 +1,7 @@
+{
+  "name": "Spotter Figma UI Plugin",
+  "id": "spotter-figma-ui-plugin",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"]
+}
