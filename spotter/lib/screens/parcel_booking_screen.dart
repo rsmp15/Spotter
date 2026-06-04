@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
-import '../helper.dart';
 import '../models/ride_models.dart';
-import '../spotter_widgets.dart';
+import '../core/components/glass_card.dart';
+import '../core/components/glass_scaffold.dart';
+import '../core/components/spott_buttons.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/spacing.dart';
+import '../core/theme/typography.dart';
+import '../core/theme/radius.dart';
 
 class ParcelBookingScreen extends StatefulWidget {
   const ParcelBookingScreen({super.key});
@@ -46,462 +51,381 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
 
-    final contentColor = isDark ? Colors.white : Helper.ink;
-    final hintColor = isDark ? Colors.grey[400] : Helper.muted;
+    return GlassScaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const BackButton(color: SpottColors.textPrimary),
+        title: const Text('Send a Package', style: SpottTextStyles.sectionTitle),
+        centerTitle: true,
+      ),
+      body: Stack(
+        children: [
+          Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(SpottSpacing.lg),
+              children: [
+                Text('Same-day delivery via verified travelers on their route.', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
+                const SizedBox(height: SpottSpacing.xl),
 
-    return SpotterScreen(
-      title: 'Send a Package',
-      subtitle: 'Same-day delivery via verified travelers on their route.',
-      content: [
-        Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Sender Details Card
-              SpotterCard(
-                color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Text(
-                    'Sender Details (You)',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: contentColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildTextField(
-                    controller: _senderNameController,
-                    label: 'Sender Name',
-                    isDark: isDark,
-                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildTextField(
-                    controller: _senderPhoneController,
-                    label: 'Sender Phone',
-                    isDark: isDark,
-                    keyboardType: TextInputType.phone,
-                    validator: (v) => v == null || v.length != 10 ? 'Enter valid 10 digit phone' : null,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-
-              // Receiver Details Card
-              SpotterCard(
-                color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Text(
-                    'Receiver Details',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: contentColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildTextField(
-                    controller: _receiverNameController,
-                    label: 'Receiver Name',
-                    hint: 'e.g. Rahul Sharma',
-                    isDark: isDark,
-                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildTextField(
-                    controller: _receiverPhoneController,
-                    label: 'Receiver Phone',
-                    hint: '10-digit mobile number',
-                    isDark: isDark,
-                    keyboardType: TextInputType.phone,
-                    validator: (v) => v == null || v.length != 10 ? 'Enter valid 10 digit phone' : null,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-
-              // Category Picker Card
-              SpotterCard(
-                color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Text(
-                    'Package Category',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: contentColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                // Sender Details Card
+                GlassCard(
+                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildChip(
-                        label: 'Documents / Keys',
-                        selected: _selectedCategory == ParcelCategory.documents,
-                        onTap: () => setState(() => _selectedCategory = ParcelCategory.documents),
-                        isDark: isDark,
+                      Text('Sender Details (You)', style: SpottTextStyles.sectionTitle),
+                      const SizedBox(height: SpottSpacing.md),
+                      _buildTextField(
+                        controller: _senderNameController,
+                        label: 'Sender Name',
+                        validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       ),
-                      _buildChip(
-                        label: 'College Items',
-                        selected: _selectedCategory == ParcelCategory.collegeItems,
-                        onTap: () => setState(() => _selectedCategory = ParcelCategory.collegeItems),
-                        isDark: isDark,
-                      ),
-                      _buildChip(
-                        label: 'Laundry / Clothes',
-                        selected: _selectedCategory == ParcelCategory.laundry,
-                        onTap: () => setState(() => _selectedCategory = ParcelCategory.laundry),
-                        isDark: isDark,
-                      ),
-                      _buildChip(
-                        label: 'Box Package',
-                        selected: _selectedCategory == ParcelCategory.boxPackage,
-                        onTap: () => setState(() => _selectedCategory = ParcelCategory.boxPackage),
-                        isDark: isDark,
+                      const SizedBox(height: SpottSpacing.md),
+                      _buildTextField(
+                        controller: _senderPhoneController,
+                        label: 'Sender Phone',
+                        keyboardType: TextInputType.phone,
+                        validator: (v) => v == null || v.length != 10 ? 'Enter valid 10 digit phone' : null,
                       ),
                     ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 14),
+                ),
+                const SizedBox(height: SpottSpacing.md),
 
-              // Size Picker Card
-              SpotterCard(
-                color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Text(
-                    'Package Size & Weight',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: contentColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
+                // Receiver Details Card
+                GlassCard(
+                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: _buildSelectorTile(
-                          title: 'Light',
-                          subtitle: 'Up to 2 kg',
-                          selected: _selectedSize == ParcelSizeClass.light,
-                          onTap: () => setState(() => _selectedSize = ParcelSizeClass.light),
-                          isDark: isDark,
-                        ),
+                      Text('Receiver Details', style: SpottTextStyles.sectionTitle),
+                      const SizedBox(height: SpottSpacing.md),
+                      _buildTextField(
+                        controller: _receiverNameController,
+                        label: 'Receiver Name',
+                        hint: 'e.g. Rahul Sharma',
+                        validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _buildSelectorTile(
-                          title: 'Medium',
-                          subtitle: 'Up to 8 kg',
-                          selected: _selectedSize == ParcelSizeClass.medium,
-                          onTap: () => setState(() => _selectedSize = ParcelSizeClass.medium),
-                          isDark: isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _buildSelectorTile(
-                          title: 'Heavy',
-                          subtitle: 'Up to 20 kg',
-                          selected: _selectedSize == ParcelSizeClass.heavy,
-                          onTap: () => setState(() => _selectedSize = ParcelSizeClass.heavy),
-                          isDark: isDark,
-                        ),
+                      const SizedBox(height: SpottSpacing.md),
+                      _buildTextField(
+                        controller: _receiverPhoneController,
+                        label: 'Receiver Phone',
+                        hint: '10-digit mobile number',
+                        keyboardType: TextInputType.phone,
+                        validator: (v) => v == null || v.length != 10 ? 'Enter valid 10 digit phone' : null,
                       ),
                     ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 14),
+                ),
+                const SizedBox(height: SpottSpacing.md),
 
-              // Safety Declaration and Photo Card
-              SpotterCard(
-                color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Text(
-                    'Package Verification & Safety',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: contentColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => _uploadedPhoto = true);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Package photo uploaded successfully')),
-                      );
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Helper.line(context)),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                // Category Picker Card
+                GlassCard(
+                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Package Category', style: SpottTextStyles.sectionTitle),
+                      const SizedBox(height: SpottSpacing.md),
+                      Wrap(
+                        spacing: SpottSpacing.sm,
+                        runSpacing: SpottSpacing.sm,
                         children: [
-                          Icon(
-                            _uploadedPhoto ? Icons.check_circle_rounded : Icons.camera_alt_rounded, 
-                            color: _uploadedPhoto ? Helper.success : hintColor, 
-                            size: 28,
+                          _buildChip(
+                            label: 'Documents / Keys',
+                            selected: _selectedCategory == ParcelCategory.documents,
+                            onTap: () => setState(() => _selectedCategory = ParcelCategory.documents),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            _uploadedPhoto ? 'Package Photo Verified' : 'Upload Package Photo',
-                            style: TextStyle(
-                              fontSize: 12, 
-                              fontWeight: FontWeight.bold, 
-                              color: _uploadedPhoto ? Helper.success : hintColor,
+                          _buildChip(
+                            label: 'College Items',
+                            selected: _selectedCategory == ParcelCategory.collegeItems,
+                            onTap: () => setState(() => _selectedCategory = ParcelCategory.collegeItems),
+                          ),
+                          _buildChip(
+                            label: 'Laundry / Clothes',
+                            selected: _selectedCategory == ParcelCategory.laundry,
+                            onTap: () => setState(() => _selectedCategory = ParcelCategory.laundry),
+                          ),
+                          _buildChip(
+                            label: 'Box Package',
+                            selected: _selectedCategory == ParcelCategory.boxPackage,
+                            onTap: () => setState(() => _selectedCategory = ParcelCategory.boxPackage),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: SpottSpacing.md),
+
+                // Size Picker Card
+                GlassCard(
+                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Package Size & Weight', style: SpottTextStyles.sectionTitle),
+                      const SizedBox(height: SpottSpacing.md),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildSelectorTile(
+                              title: 'Light',
+                              subtitle: 'Up to 2 kg',
+                              selected: _selectedSize == ParcelSizeClass.light,
+                              onTap: () => setState(() => _selectedSize = ParcelSizeClass.light),
+                            ),
+                          ),
+                          const SizedBox(width: SpottSpacing.sm),
+                          Expanded(
+                            child: _buildSelectorTile(
+                              title: 'Medium',
+                              subtitle: 'Up to 8 kg',
+                              selected: _selectedSize == ParcelSizeClass.medium,
+                              onTap: () => setState(() => _selectedSize = ParcelSizeClass.medium),
+                            ),
+                          ),
+                          const SizedBox(width: SpottSpacing.sm),
+                          Expanded(
+                            child: _buildSelectorTile(
+                              title: 'Heavy',
+                              subtitle: 'Up to 20 kg',
+                              selected: _selectedSize == ParcelSizeClass.heavy,
+                              onTap: () => setState(() => _selectedSize = ParcelSizeClass.heavy),
                             ),
                           ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Row(
+                ),
+                const SizedBox(height: SpottSpacing.md),
+
+                // Safety Declaration and Photo Card
+                GlassCard(
+                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: Checkbox(
-                          value: _declaredSafety,
-                          onChanged: (val) {
-                            if (val != null) {
-                              setState(() => _declaredSafety = val);
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'I declare that this package does not contain any illegal, dangerous, or restricted items as per local laws.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: hintColor,
-                            fontWeight: FontWeight.w500,
+                      Text('Package Verification & Safety', style: SpottTextStyles.sectionTitle),
+                      const SizedBox(height: SpottSpacing.md),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() => _uploadedPhoto = true);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Package photo uploaded successfully'), backgroundColor: SpottColors.success),
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: SpottColors.surface1,
+                            borderRadius: BorderRadius.circular(SpottRadius.md),
+                            border: Border.all(color: SpottColors.border),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _uploadedPhoto ? Icons.check_circle_rounded : Icons.camera_alt_rounded,
+                                color: _uploadedPhoto ? SpottColors.success : SpottColors.textSecondary,
+                                size: 28,
+                              ),
+                              const SizedBox(height: SpottSpacing.xs),
+                              Text(
+                                _uploadedPhoto ? 'Package Photo Verified' : 'Upload Package Photo',
+                                style: SpottTextStyles.caption.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: _uploadedPhoto ? SpottColors.success : SpottColors.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
+                      const SizedBox(height: SpottSpacing.md),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: Checkbox(
+                              value: _declaredSafety,
+                              activeColor: SpottColors.primary,
+                              checkColor: Colors.white,
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() => _declaredSafety = val);
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: SpottSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              'I declare that this package does not contain any illegal, dangerous, or restricted items as per local laws.',
+                              style: SpottTextStyles.caption,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 14),
+                ),
+                const SizedBox(height: SpottSpacing.md),
 
-              // Delivery Mode / Vehicle selection Card
-              SpotterCard(
-                color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Text(
-                    'Private Vehicle Partner Mode',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: contentColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
+                // Delivery Mode / Vehicle selection Card
+                GlassCard(
+                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => setState(() => _selectedVehicleClass = 'Bike'),
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: _selectedVehicleClass == 'Bike'
-                                  ? (isDark ? Colors.white : Colors.black)
-                                  : (isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF3F4F6)),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.two_wheeler_rounded,
-                                  color: _selectedVehicleClass == 'Bike'
-                                      ? (isDark ? Colors.black : Colors.white)
-                                      : contentColor,
-                                  size: 28,
+                      Text('Private Vehicle Partner Mode', style: SpottTextStyles.sectionTitle),
+                      const SizedBox(height: SpottSpacing.md),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () => setState(() => _selectedVehicleClass = 'Bike'),
+                              borderRadius: BorderRadius.circular(SpottRadius.md),
+                              child: Container(
+                                padding: const EdgeInsets.all(SpottSpacing.md),
+                                decoration: BoxDecoration(
+                                  color: _selectedVehicleClass == 'Bike' ? SpottColors.primary.withValues(alpha: 0.15) : SpottColors.surface1,
+                                  borderRadius: BorderRadius.circular(SpottRadius.md),
+                                  border: Border.all(color: _selectedVehicleClass == 'Bike' ? SpottColors.primary : SpottColors.border),
                                 ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  'Private Bike',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: _selectedVehicleClass == 'Bike'
-                                        ? (isDark ? Colors.black : Colors.white)
-                                        : contentColor,
-                                  ),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.two_wheeler_rounded,
+                                      color: _selectedVehicleClass == 'Bike' ? SpottColors.primary : SpottColors.textSecondary,
+                                      size: 28,
+                                    ),
+                                    const SizedBox(height: SpottSpacing.xs),
+                                    Text(
+                                      'Private Bike',
+                                      style: SpottTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: _selectedVehicleClass == 'Bike' ? SpottColors.primary : SpottColors.textPrimary,
+                                      ),
+                                    ),
+                                    Text('Fastest • Small items', style: SpottTextStyles.caption),
+                                  ],
                                 ),
-                                Text(
-                                  'Fastest • Small items',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: _selectedVehicleClass == 'Bike'
-                                        ? (isDark ? Colors.grey[800] : Colors.grey[300])
-                                        : hintColor,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => setState(() => _selectedVehicleClass = 'Car'),
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: _selectedVehicleClass == 'Car'
-                                  ? (isDark ? Colors.white : Colors.black)
-                                  : (isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF3F4F6)),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.directions_car_filled_rounded,
-                                  color: _selectedVehicleClass == 'Car'
-                                      ? (isDark ? Colors.black : Colors.white)
-                                      : contentColor,
-                                  size: 28,
+                          const SizedBox(width: SpottSpacing.md),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () => setState(() => _selectedVehicleClass = 'Car'),
+                              borderRadius: BorderRadius.circular(SpottRadius.md),
+                              child: Container(
+                                padding: const EdgeInsets.all(SpottSpacing.md),
+                                decoration: BoxDecoration(
+                                  color: _selectedVehicleClass == 'Car' ? SpottColors.primary.withValues(alpha: 0.15) : SpottColors.surface1,
+                                  borderRadius: BorderRadius.circular(SpottRadius.md),
+                                  border: Border.all(color: _selectedVehicleClass == 'Car' ? SpottColors.primary : SpottColors.border),
                                 ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  'Private Car',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: _selectedVehicleClass == 'Car'
-                                        ? (isDark ? Colors.black : Colors.white)
-                                        : contentColor,
-                                  ),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.directions_car_filled_rounded,
+                                      color: _selectedVehicleClass == 'Car' ? SpottColors.primary : SpottColors.textSecondary,
+                                      size: 28,
+                                    ),
+                                    const SizedBox(height: SpottSpacing.xs),
+                                    Text(
+                                      'Private Car',
+                                      style: SpottTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: _selectedVehicleClass == 'Car' ? SpottColors.primary : SpottColors.textPrimary,
+                                      ),
+                                    ),
+                                    Text('Best for large box', style: SpottTextStyles.caption),
+                                  ],
                                 ),
-                                Text(
-                                  'Best for large box',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: _selectedVehicleClass == 'Car'
-                                        ? (isDark ? Colors.grey[800] : Colors.grey[300])
-                                        : hintColor,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-      ],
-      bottom: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF121212) : const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Estimated Cost',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: contentColor),
                 ),
-                Text(
-                  'Rs $_calculateFare',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18,
-                    color: contentColor,
-                  ),
-                ),
+                const SizedBox(height: 150), // Padding for bottom container
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          PrimaryAction(
-            label: 'Assign Delivery Partner',
-            onPressed: () {
-              if (!_uploadedPhoto) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please upload a package photo to proceed.')),
-                );
-                return;
-              }
-              if (!_declaredSafety) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please accept the safety declaration to proceed.')),
-                );
-                return;
-              }
-              if (_formKey.currentState?.validate() ?? false) {
-                // Find best matching private driver partner
-                final driver = _selectedVehicleClass == 'Bike'
-                    ? ride.drivers.firstWhere(
-                        (d) => d.id == 'tvl_bike_03' || d.id == 'drv_pvt_karan',
-                        orElse: () => ride.drivers.firstWhere(
-                          (d) => d.vehicle.toLowerCase().contains('bike'),
-                          orElse: () => ride.drivers.first,
-                        ),
-                      )
-                    : ride.drivers.firstWhere(
-                        (d) => d.id == 'tvl_sedan_01' || d.id == 'drv_pvt_neha',
-                        orElse: () => ride.drivers.firstWhere(
-                          (d) => !d.vehicle.toLowerCase().contains('bike'),
-                          orElse: () => ride.drivers.first,
-                        ),
-                      );
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(SpottSpacing.lg),
+              decoration: BoxDecoration(
+                color: SpottColors.glassSurface,
+                border: const Border(top: BorderSide(color: SpottColors.border)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Estimated Cost', style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold)),
+                      Text('₹$_calculateFare', style: SpottTextStyles.display.copyWith(fontSize: 22)),
+                    ],
+                  ),
+                  const SizedBox(height: SpottSpacing.md),
+                  SpottButton.primary(
+                    label: 'Assign Delivery Partner',
+                    onPressed: () {
+                      if (!_uploadedPhoto) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please upload a package photo to proceed.')));
+                        return;
+                      }
+                      if (!_declaredSafety) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please accept the safety declaration to proceed.')));
+                        return;
+                      }
+                      if (_formKey.currentState?.validate() ?? false) {
+                        final driver = _selectedVehicleClass == 'Bike'
+                            ? ride.drivers.firstWhere(
+                                (d) => d.id == 'tvl_bike_03' || d.id == 'drv_pvt_karan',
+                                orElse: () => ride.drivers.firstWhere((d) => d.vehicle.toLowerCase().contains('bike'), orElse: () => ride.drivers.first),
+                              )
+                            : ride.drivers.firstWhere(
+                                (d) => d.id == 'tvl_sedan_01' || d.id == 'drv_pvt_neha',
+                                orElse: () => ride.drivers.firstWhere((d) => !d.vehicle.toLowerCase().contains('bike'), orElse: () => ride.drivers.first),
+                              );
 
+                        ride.createParcelBooking(
+                          senderName: _senderNameController.text,
+                          senderPhone: _senderPhoneController.text,
+                          receiverName: _receiverNameController.text,
+                          receiverPhone: _receiverPhoneController.text,
+                          category: _selectedCategory,
+                          size: _selectedSize,
+                          pickup: ride.pickup,
+                          destination: ride.destination,
+                          fare: _calculateFare,
+                          driver: driver,
+                        );
 
-                ride.createParcelBooking(
-                  senderName: _senderNameController.text,
-                  senderPhone: _senderPhoneController.text,
-                  receiverName: _receiverNameController.text,
-                  receiverPhone: _receiverPhoneController.text,
-                  category: _selectedCategory,
-                  size: _selectedSize,
-                  pickup: ride.pickup,
-                  destination: ride.destination,
-                  fare: _calculateFare,
-                  driver: driver,
-                );
-
-                Navigator.pushNamed(context, AppRoutes.parcelTracking);
-              }
-            },
+                        Navigator.pushNamed(context, AppRoutes.parcelTracking);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -511,7 +435,6 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
-    required bool isDark,
     String? hint,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
@@ -520,23 +443,16 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      style: TextStyle(
-        color: isDark ? Colors.white : Colors.black,
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
+      style: SpottTextStyles.body.copyWith(color: SpottColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle: TextStyle(color: isDark ? Colors.grey[400] : Helper.muted, fontSize: 13),
-        hintStyle: TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400], fontSize: 13),
+        labelStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+        hintStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
         filled: true,
-        fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F4F6),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
+        fillColor: SpottColors.surface1,
+        contentPadding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.md),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(SpottRadius.md), borderSide: BorderSide.none),
       ),
     );
   }
@@ -545,27 +461,22 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
     required String label,
     required bool selected,
     required VoidCallback onTap,
-    required bool isDark,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(99),
+      borderRadius: BorderRadius.circular(SpottRadius.pill),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.sm),
         decoration: BoxDecoration(
-          color: selected
-              ? (isDark ? Colors.white : Colors.black)
-              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F4F6)),
-          borderRadius: BorderRadius.circular(99),
+          color: selected ? SpottColors.primary.withValues(alpha: 0.15) : SpottColors.surface1,
+          borderRadius: BorderRadius.circular(SpottRadius.pill),
+          border: Border.all(color: selected ? SpottColors.primary : SpottColors.border),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
+          style: SpottTextStyles.caption.copyWith(
             fontWeight: FontWeight.bold,
-            color: selected
-                ? (isDark ? Colors.black : Colors.white)
-                : (isDark ? Colors.white : Colors.black),
+            color: selected ? SpottColors.primary : SpottColors.textSecondary,
           ),
         ),
       ),
@@ -577,39 +488,30 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
     required String subtitle,
     required bool selected,
     required VoidCallback onTap,
-    required bool isDark,
   }) {
-    final titleColor = isDark ? Colors.white : Colors.black;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(SpottRadius.md),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: SpottSpacing.md, horizontal: SpottSpacing.xs),
         decoration: BoxDecoration(
-          color: selected
-              ? (isDark ? Colors.white : Colors.black)
-              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F4F6)),
-          borderRadius: BorderRadius.circular(12),
+          color: selected ? SpottColors.primary.withValues(alpha: 0.15) : SpottColors.surface1,
+          borderRadius: BorderRadius.circular(SpottRadius.md),
+          border: Border.all(color: selected ? SpottColors.primary : SpottColors.border),
         ),
         child: Column(
           children: [
             Text(
               title,
-              style: TextStyle(
+              style: SpottTextStyles.body.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: selected ? (isDark ? Colors.black : Colors.white) : titleColor,
+                color: selected ? SpottColors.primary : SpottColors.textPrimary,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 10,
-                color: selected
-                    ? (isDark ? Colors.grey[800] : Colors.grey[300])
-                    : (isDark ? Colors.grey[400] : Helper.muted),
-              ),
+              style: SpottTextStyles.caption,
             ),
           ],
         ),

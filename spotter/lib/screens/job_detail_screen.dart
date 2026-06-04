@@ -18,23 +18,14 @@ class JobDetailScreen extends StatelessWidget {
           children: [
             InfoRow(label: 'Pickup', value: 'Baner Pune'),
             InfoRow(label: 'Drop', value: 'Koregaon Park'),
-            InfoRow(
-              label: 'Rider rating',
-              value: '4.8',
-            ),
-            InfoRow(
-              label: 'Payout',
-              value: 'Rs 390',
-            ),
+            InfoRow(label: 'Rider rating', value: '4.8'),
+            InfoRow(label: 'Payout', value: 'Rs 390'),
           ],
         ),
         SpotterCard(
           children: [
             InfoRow(label: 'Ride OTP', value: 'Required'),
-            InfoRow(
-              label: 'Payment',
-              value: 'Protected',
-            ),
+            InfoRow(label: 'Payment', value: 'Protected'),
           ],
         ),
       ],

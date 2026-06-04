@@ -61,18 +61,9 @@ class PaymentMethod {
   });
 }
 
-enum ParcelCategory {
-  documents,
-  collegeItems,
-  laundry,
-  boxPackage,
-}
+enum ParcelCategory { documents, collegeItems, laundry, boxPackage }
 
-enum ParcelSizeClass {
-  light,
-  medium,
-  heavy,
-}
+enum ParcelSizeClass { light, medium, heavy }
 
 class ParcelPackage {
   final String senderName;
@@ -99,4 +90,3 @@ class ParcelPackage {
 
   String get fareLabel => 'Rs $fare';
 }
-

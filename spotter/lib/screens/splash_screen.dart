@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:spotter/app/app_routes.dart';
-import 'package:spotter/helper.dart';
+import '../app/app_routes.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/typography.dart';
+import '../core/theme/spacing.dart';
+import '../core/components/spott_buttons.dart';
+import '../core/components/status_chip.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -8,93 +12,103 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Helper.backgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Spacer(),
-            Center(
-              child: Container(
-                alignment: Alignment.center,
-                height: 190,
-                width: 190,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Helper.lineColor),
-                ),
-                child: const Text(
-                  'SPOTT',
-                  style: TextStyle(
-                    color: Helper.ink,
-                    fontSize: 36,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -1,
-                  ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              SpottColors.background,
+              Color(0xFF150A26), // Deep violet gradient
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg, vertical: SpottSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Spacer(),
+
+              // Animated Radial Glow Behind Logo
+              Center(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 260,
+                      height: 260,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            SpottColors.primary.withValues(alpha: 0.25),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'SPOTT',
+                      style: SpottTextStyles.display.copyWith(
+                        fontSize: 56,
+                        letterSpacing: -3.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const Spacer(),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Go anywhere\nwith Spott',
-                textAlign: TextAlign.left,
+
+              const Spacer(),
+
+              // Tagline
+              const Text(
+                'Travel Together.\nSend Smarter.',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 32,
-                  height: 1.05,
-                  fontWeight: FontWeight.w700,
-                  color: Helper.ink,
+                  fontSize: 26,
+                  height: 1.2,
+                  fontWeight: FontWeight.bold,
+                  color: SpottColors.textPrimary,
                   fontFamily: 'Inter',
                   letterSpacing: -0.5,
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Rides, rentals, parking and city mobility in one place.',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 15,
-                  height: 1.35,
-                  color: Helper.muted,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Inter',
-                ),
-              ),
-            ),
-            const Spacer(),
+              const SizedBox(height: SpottSpacing.md),
 
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.onboarding);
-              },
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
-                alignment: Alignment.center,
-                height: 56,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Helper.ink,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: const Text(
-                  'Get Started',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Inter',
-                  ),
-                ),
+              // Feature chips row
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  StatusChip(label: '⚡ Cost Sharing'),
+                  SizedBox(width: SpottSpacing.sm),
+                  StatusChip(label: '📦 Parcel Delivery'),
+                  SizedBox(width: SpottSpacing.sm),
+                  StatusChip(label: '🛡 Verified'),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
+
+              const Spacer(),
+
+              // Primary Get Started CTA Button
+              SpottButton.primary(
+                label: 'Get Started',
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.chooseRole);
+                },
+              ),
+              const SizedBox(height: SpottSpacing.md),
+
+              // Ghost Secondary Button
+              SpottButton.ghost(
+                label: 'I already have an account',
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.login);
+                },
+              ),
+              const SizedBox(height: SpottSpacing.md),
+            ],
+          ),
         ),
       ),
     );

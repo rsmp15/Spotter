@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/ride_controller.dart';
-import 'activity_screen.dart';
+import '../models/spott_models.dart';
+import '../core/components/floating_bottom_nav.dart';
+
+// Passenger Screens
 import 'home_screen.dart';
-import 'profile_screen.dart';
-import 'rider_bottom_nav.dart';
 import 'services_screen.dart';
+import 'activity_screen.dart';
+import 'safety_toolkit_screen.dart';
+import 'profile_screen.dart';
+
+// Traveler Screens
+import 'driver_home_screen.dart';
+import 'passenger_requests_screen.dart';
+import 'traveler_trips_screen.dart';
+import 'vehicle_management_screen.dart';
 
 class MainNavigationShell extends StatefulWidget {
-  final RiderBottomTab? initialTab;
+  final int? initialTab;
 
   const MainNavigationShell({super.key, this.initialTab});
 
@@ -44,22 +54,66 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
+    final role = ride.currentUserRole;
 
-    const screens = [
+    final List<Widget> passengerScreens = const [
       HomeScreen(),
       ServicesScreen(),
-      ActivityScreen(),
+      ActivityScreen(), // Passenger Trips
+      SafetyToolkitScreen(),
       ProfileScreen(),
     ];
 
+    final List<Widget> travelerScreens = const [
+      DriverHomeScreen(),
+      PassengerRequestsScreen(),
+      TravelerTripsScreen(),
+      VehicleManagementScreen(),
+      ProfileScreen(),
+    ];
+
+    final screens = role == UserRole.passenger ? passengerScreens : travelerScreens;
+
+    // Ensure index doesn't crash if it exceeds length
+    final safeIndex = ride.activeTabIndex < screens.length ? ride.activeTabIndex : 0;
+
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0B0B0B) : const Color(0xFFF9F9F9),
-      body: IndexedStack(
-        index: ride.activeTab.index,
-        children: screens,
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
+            transitionBuilder: (child, animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.0, 0.05),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              );
+            },
+            child: KeyedSubtree(
+              key: ValueKey<int>(safeIndex),
+              child: screens[safeIndex],
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: FloatingBottomNav(
+              role: role,
+              currentIndex: safeIndex,
+              onTap: (index) => ride.switchTab(index),
+            ),
+          ),
+        ],
       ),
-      bottomNavigationBar: RiderBottomNav(activeTab: ride.activeTab),
     );
   }
 }

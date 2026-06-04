@@ -313,12 +313,19 @@ class _UrbanScreen extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () => Navigator.maybePop(context),
-                      icon: Icon(Icons.arrow_back_rounded, color: isDark ? Colors.white : Colors.black),
+                      icon: Icon(
+                        Icons.arrow_back_rounded,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
                     ),
                     const Spacer(),
                     Row(
                       children: [
-                        Icon(Icons.near_me_rounded, size: 20, color: isDark ? Colors.white : Colors.black),
+                        Icon(
+                          Icons.near_me_rounded,
+                          size: 20,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'SPOTT',
@@ -345,7 +352,9 @@ class _UrbanScreen extends StatelessWidget {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: isDark ? const Color(0xFFAFAFAF) : const Color(0xFF5E5E5E),
+                    color: isDark
+                        ? const Color(0xFFAFAFAF)
+                        : const Color(0xFF5E5E5E),
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
@@ -377,13 +386,19 @@ class _SearchPill extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.search_rounded, size: 22, color: isDark ? Colors.white : Colors.black),
+          Icon(
+            Icons.search_rounded,
+            size: 22,
+            color: isDark ? Colors.white : Colors.black,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               label,
               style: TextStyle(
-                color: isDark ? const Color(0xFFAFAFAF) : const Color(0xFF5E5E5E),
+                color: isDark
+                    ? const Color(0xFFAFAFAF)
+                    : const Color(0xFF5E5E5E),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -412,7 +427,9 @@ class _VehicleFilterRow extends StatelessWidget {
               decoration: BoxDecoration(
                 color: index == 0
                     ? (isDark ? Colors.white : Colors.black)
-                    : (isDark ? const Color(0xFF1E293B) : const Color(0xFFEFEFEF)),
+                    : (isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFEFEFEF)),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
@@ -447,10 +464,27 @@ class _ParkingMap extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          const Positioned(top: 34, left: 42, child: _MapPrice(label: '\$4/hr')),
-          const Positioned(top: 90, right: 46, child: _MapPrice(label: '\$2/hr')),
-          const Positioned(bottom: 38, left: 112, child: _MapPrice(label: '\$5/hr')),
-          Center(child: Icon(Icons.my_location_rounded, color: isDark ? Colors.white : Colors.black)),
+          const Positioned(
+            top: 34,
+            left: 42,
+            child: _MapPrice(label: '\$4/hr'),
+          ),
+          const Positioned(
+            top: 90,
+            right: 46,
+            child: _MapPrice(label: '\$2/hr'),
+          ),
+          const Positioned(
+            bottom: 38,
+            left: 112,
+            child: _MapPrice(label: '\$5/hr'),
+          ),
+          Center(
+            child: Icon(
+              Icons.my_location_rounded,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
         ],
       ),
     );
@@ -518,15 +552,24 @@ class _ParkingSpotCard extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: Helper.canvasSoftColor(context),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
               ),
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
                 child: Image.asset(
                   imagePath,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      Center(child: Icon(Icons.local_parking_rounded, size: 48, color: isDark ? Colors.white70 : Colors.black38)),
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Icon(
+                      Icons.local_parking_rounded,
+                      size: 48,
+                      color: isDark ? Colors.white70 : Colors.black38,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -656,7 +699,9 @@ class _OfferCard extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    color: isDark ? const Color(0xFFAFAFAF) : const Color(0xFF5E5E5E),
+                    color: isDark
+                        ? const Color(0xFFAFAFAF)
+                        : const Color(0xFF5E5E5E),
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                   ),
@@ -674,7 +719,9 @@ class _OfferCard extends StatelessWidget {
                 Text(
                   detail,
                   style: TextStyle(
-                    color: isDark ? const Color(0xFFAFAFAF) : const Color(0xFF5E5E5E),
+                    color: isDark
+                        ? const Color(0xFFAFAFAF)
+                        : const Color(0xFF5E5E5E),
                     fontSize: 12,
                     height: 1.3,
                   ),
@@ -683,7 +730,7 @@ class _OfferCard extends StatelessWidget {
             ),
           ),
           Text(
-            action, 
+            action,
             style: TextStyle(
               fontWeight: FontWeight.w900,
               color: isDark ? Colors.white : Colors.black,
@@ -729,7 +776,7 @@ class _FormRow extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 16, 
+              fontSize: 16,
               fontWeight: FontWeight.w800,
               color: isDark ? Colors.white : Colors.black,
             ),
@@ -751,7 +798,7 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       label,
       style: TextStyle(
-        fontSize: 18, 
+        fontSize: 18,
         fontWeight: FontWeight.w900,
         color: isDark ? Colors.white : Colors.black,
       ),
@@ -804,7 +851,9 @@ class _ChipWrap extends StatelessWidget {
             decoration: BoxDecoration(
               color: index == 0
                   ? (isDark ? Colors.white : Colors.black)
-                  : (isDark ? const Color(0xFF1E293B) : const Color(0xFFEFEFEF)),
+                  : (isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFEFEFEF)),
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
@@ -921,7 +970,9 @@ class _VehicleOption extends StatelessWidget {
                   Text(
                     badge!,
                     style: TextStyle(
-                      color: isDark ? const Color(0xFFAFAFAF) : const Color(0xFF5E5E5E),
+                      color: isDark
+                          ? const Color(0xFFAFAFAF)
+                          : const Color(0xFF5E5E5E),
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                     ),
@@ -940,7 +991,9 @@ class _VehicleOption extends StatelessWidget {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: isDark ? const Color(0xFFAFAFAF) : const Color(0xFF5E5E5E),
+                    color: isDark
+                        ? const Color(0xFFAFAFAF)
+                        : const Color(0xFF5E5E5E),
                     fontSize: 12,
                   ),
                 ),
@@ -948,7 +1001,7 @@ class _VehicleOption extends StatelessWidget {
             ),
           ),
           Text(
-            price, 
+            price,
             style: TextStyle(
               fontWeight: FontWeight.w900,
               color: isDark ? Colors.white : Colors.black,
@@ -1041,14 +1094,19 @@ class _SettingsRow extends StatelessWidget {
                 Text(
                   detail,
                   style: TextStyle(
-                    color: isDark ? const Color(0xFFAFAFAF) : const Color(0xFF5E5E5E),
+                    color: isDark
+                        ? const Color(0xFFAFAFAF)
+                        : const Color(0xFF5E5E5E),
                     fontSize: 12,
                   ),
                 ),
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: isDark ? Colors.white54 : Colors.black54),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: isDark ? Colors.white54 : Colors.black54,
+          ),
         ],
       ),
     );
@@ -1087,20 +1145,24 @@ class _WhiteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Resolve background and border colors
     Color resolvedBg;
     Color resolvedBorder;
-    
+
     if (color == Colors.black) {
       resolvedBg = Colors.black;
       resolvedBorder = Colors.black;
     } else if (color == Colors.white) {
       resolvedBg = isDark ? const Color(0xFF1E1E24) : Colors.white;
-      resolvedBorder = isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E2E2);
+      resolvedBorder = isDark
+          ? Colors.white.withValues(alpha: 0.08)
+          : const Color(0xFFE2E2E2);
     } else {
       resolvedBg = color;
-      resolvedBorder = isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E2E2);
+      resolvedBorder = isDark
+          ? Colors.white.withValues(alpha: 0.08)
+          : const Color(0xFFE2E2E2);
     }
 
     return Container(
@@ -1110,9 +1172,7 @@ class _WhiteCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: resolvedBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: resolvedBorder,
-        ),
+        border: Border.all(color: resolvedBorder),
       ),
       child: child,
     );

@@ -142,7 +142,8 @@ class SpotterFarePanel extends StatelessWidget {
                       value: 'Rs $demand',
                       valueColor: isDark ? Colors.grey[300]! : Helper.ink,
                     ),
-                    if (selectedOption?.id == 'pool' || selectedOption?.id == 'bike_pool') ...[
+                    if (selectedOption?.id == 'pool' ||
+                        selectedOption?.id == 'bike_pool') ...[
                       const InfoRow(
                         label: 'Multi-rider Split Savings',
                         value: '-Rs 34',
@@ -160,7 +161,8 @@ class SpotterFarePanel extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (selectedOption?.id == 'pool' || selectedOption?.id == 'bike_pool') ...[
+                if (selectedOption?.id == 'pool' ||
+                    selectedOption?.id == 'bike_pool') ...[
                   const SizedBox(height: 12),
                   SpotterCard(
                     color: isDark
@@ -182,12 +184,31 @@ class SpotterFarePanel extends StatelessWidget {
                           CircleAvatar(
                             radius: 16,
                             backgroundColor: Helper.canvasSoft,
-                            child: const Text('A', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Helper.ink)),
+                            child: const Text(
+                              'A',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Helper.ink,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 8),
-                          Text('Aarav S. • ★ 4.8', style: TextStyle(color: isDark ? Colors.grey[300] : Colors.black, fontSize: 13)),
+                          Text(
+                            'Aarav S. • ★ 4.8',
+                            style: TextStyle(
+                              color: isDark ? Colors.grey[300] : Colors.black,
+                              fontSize: 13,
+                            ),
+                          ),
                           const Spacer(),
-                          Text('Drop off: Koregaon Park', style: TextStyle(color: isDark ? Colors.grey[400] : Helper.muted, fontSize: 11)),
+                          Text(
+                            'Drop off: Koregaon Park',
+                            style: TextStyle(
+                              color: isDark ? Colors.grey[400] : Helper.muted,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -196,15 +217,39 @@ class SpotterFarePanel extends StatelessWidget {
                           CircleAvatar(
                             radius: 16,
                             backgroundColor: Helper.canvasSoft,
-                            child: const Text('R', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Helper.ink)),
+                            child: const Text(
+                              'R',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Helper.ink,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 8),
-                          Text('Rohit M. • ★ 4.7', style: TextStyle(color: isDark ? Colors.grey[300] : Colors.black, fontSize: 13)),
+                          Text(
+                            'Rohit M. • ★ 4.7',
+                            style: TextStyle(
+                              color: isDark ? Colors.grey[300] : Colors.black,
+                              fontSize: 13,
+                            ),
+                          ),
                           const Spacer(),
-                          Text('Drop off: Kalyani Nagar', style: TextStyle(color: isDark ? Colors.grey[400] : Helper.muted, fontSize: 11)),
+                          Text(
+                            'Drop off: Kalyani Nagar',
+                            style: TextStyle(
+                              color: isDark ? Colors.grey[400] : Helper.muted,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
-                      Divider(color: isDark ? Colors.white10 : const Color(0xFFE2E8F0), height: 16),
+                      Divider(
+                        color: isDark
+                            ? Colors.white10
+                            : const Color(0xFFE2E8F0),
+                        height: 16,
+                      ),
                       Text(
                         'Shared Stop Sequence',
                         style: TextStyle(
@@ -216,25 +261,55 @@ class SpotterFarePanel extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          const Icon(Icons.check_circle_outline, color: Helper.success, size: 16),
+                          const Icon(
+                            Icons.check_circle_outline,
+                            color: Helper.success,
+                            size: 16,
+                          ),
                           const SizedBox(width: 6),
-                          Text('1. Pickup You (Baner)', style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[300] : Colors.black)),
+                          Text(
+                            '1. Pickup You (Baner)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? Colors.grey[300] : Colors.black,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.arrow_circle_right_outlined, color: Colors.orange, size: 16),
+                          const Icon(
+                            Icons.arrow_circle_right_outlined,
+                            color: Colors.orange,
+                            size: 16,
+                          ),
                           const SizedBox(width: 6),
-                          Text('2. Drop Aarav (Koregaon Park)', style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[300] : Colors.black)),
+                          Text(
+                            '2. Drop Aarav (Koregaon Park)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? Colors.grey[300] : Colors.black,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.location_on_outlined, color: Colors.red, size: 16),
+                          const Icon(
+                            Icons.location_on_outlined,
+                            color: Colors.red,
+                            size: 16,
+                          ),
                           const SizedBox(width: 6),
-                          Text('3. Drop You (Kalyani Nagar)', style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[300] : Colors.black)),
+                          Text(
+                            '3. Drop You (Kalyani Nagar)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? Colors.grey[300] : Colors.black,
+                            ),
+                          ),
                         ],
                       ),
                     ],

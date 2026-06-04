@@ -1,83 +1,484 @@
 import 'package:flutter/material.dart';
 
-import '../app/app_assets.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
-import '../helper.dart';
-import '../models/ride_models.dart';
 import '../models/spott_models.dart';
-import '../repositories/remote_config_repository.dart';
-import '../spotter_widgets.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/spacing.dart';
+import '../core/theme/typography.dart';
+import '../core/theme/shadows.dart';
+import '../core/components/spott_avatar.dart';
+import '../core/components/marketplace_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  static const _cityImage =
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBFVzqqRuMNpshLAKnCIWlHjIewcAtXWrlzEH_4p1IZGUcZvGDFcFKSZsW_Xu4T2_lnkgn6N6MPZ6uxC_cEaXLtr1EN3zH0x7A3oxps0nk-YLUsI23-QJfliA4tjQWWdb-cCqtzwnOIYrm11T-QufA8JZ20vkHEhg2eZEpWVobRhfSR0M8FknZanfJIFaxWmXCfnjUJkoy1Cbak9AihDQBc-pxY_qMxw1irbM8GQNVMPezmFBM-_uyddtkB5IZlx9i2qaBOPu9ixll1';
-  static const _profileImage =
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB3JMFMBB2nSLmR0mVurdPyEq4RdFurwntUCNfPACtEKfMzn_Z2PtqMig0P7nI9PoxKHeQ6a-_PEBbpLKn3Erk07lw3pLxEG2tnJnmC-B28PEUj3kHQl-W2qVuphR3O6ojueYzQk6MY5lsrhrvb1Gf-duTESX6-ht37eDfut7ZOjjRNBR5Yxpp8O7r0YHDhFkUpQq7ON3zOs5MAKy5tJp_r5y981ZkPQjN50PbKphAd60HMvZnSs1cHAMEgKNs-DcTLIwlBKdwTelLb';
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-  static bool get _isWidgetTest =>
-      WidgetsBinding.instance.toString().contains('Test');
+class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _originController = TextEditingController();
+  final TextEditingController _destinationController = TextEditingController();
+
+  @override
+  void dispose() {
+    _originController.dispose();
+    _destinationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    
-    // Redirect Travelers to driverHome immediately to preserve strict role isolation
+
+    // Redirect Travelers to driverHome
     if (ride.currentUserRole == UserRole.traveler) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacementNamed(context, AppRoutes.driverHome);
       });
       return const Scaffold(
+        backgroundColor: SpottColors.background,
         body: Center(
-          child: CircularProgressIndicator(color: Colors.black),
+          child: CircularProgressIndicator(color: SpottColors.primary),
         ),
       );
     }
 
-    final width = MediaQuery.sizeOf(context).width;
-    final isDesktop = width >= 768;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final remoteConfig = RemoteConfigScope.of(context);
-
     return Scaffold(
-      backgroundColor: isDark ? Helper.darkBackground : const Color(0xFFF9F9F9),
-      drawer: const SpotterMenuDrawer(),
-      bottomNavigationBar: null,
+      backgroundColor: SpottColors.background,
       body: SafeArea(
-        bottom: false,
-        child: Column(
+        child: ListView(
+          padding: const EdgeInsets.only(
+            left: SpottSpacing.lg,
+            right: SpottSpacing.lg,
+            top: SpottSpacing.lg,
+            bottom: SpottSpacing.pageBottom,
+          ),
           children: [
-            if (isDesktop) const _DesktopTopBar() else const _MobileTopBar(),
+            _buildHeader(),
+            const SizedBox(height: SpottSpacing.sm),
+            _buildSocialProof(),
+            const SizedBox(height: SpottSpacing.lg),
+            _buildServiceGrid(context),
+            const SizedBox(height: SpottSpacing.lg),
+            _buildSearchCard(),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildFeaturedTrips(),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildPopularRoutes(),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildBecomeTravelerBanner(context),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildRecommendedTravelers(),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildParcelDeliveryBanner(context),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildSafetyCenter(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '👋 Good Morning, Ritesh',
+              style: SpottTextStyles.body.copyWith(
+                color: SpottColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: SpottSpacing.xs),
+            const Text(
+              'Where to headed today?',
+              style: SpottTextStyles.displayLarge,
+            ),
+          ],
+        ),
+        const SpottAvatar(
+          imageUrl:
+              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+          radius: 24,
+          isVerified: true,
+          isOnline: true,
+          isPremium: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialProof() {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: SpottColors.primarySoft,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  color: SpottColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '2,184 trips available today',
+                style: SpottTextStyles.caption.copyWith(
+                  color: SpottColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServiceGrid(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
             Expanded(
-              child: Stack(
+              child: _ServiceCard(
+                title: 'Find Ride',
+                subtitle: 'Join travelers',
+                icon: Icons.directions_car_rounded,
+                iconColor: SpottColors.primary,
+                onTap: () {
+                  // Keep user on passenger home
+                },
+              ),
+            ),
+            const SizedBox(width: SpottSpacing.md),
+            Expanded(
+              child: _ServiceCard(
+                title: 'Send Parcel',
+                subtitle: 'Fast delivery',
+                icon: Icons.inventory_2_outlined,
+                iconColor: SpottColors.accentPurple,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.parcelBooking);
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: SpottSpacing.md),
+        Row(
+          children: [
+            Expanded(
+              child: _ServiceCard(
+                title: 'Offer Trip',
+                subtitle: 'Earn from seats',
+                icon: Icons.add_road_rounded,
+                iconColor: SpottColors.success,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.createTrip);
+                },
+              ),
+            ),
+            const SizedBox(width: SpottSpacing.md),
+            Expanded(
+              child: _ServiceCard(
+                title: 'Activity',
+                subtitle: 'Track updates',
+                icon: Icons.explore_outlined,
+                iconColor: SpottColors.warning,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.activity);
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchCard() {
+    return _PremiumCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              // Vertical route connecting dots graphic
+              Column(
                 children: [
-                  ListView(
-                    padding: EdgeInsets.only(bottom: isDesktop ? 0 : 96),
-                    children: [
-                      Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 1200),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _HeroSection(isDesktop: isDesktop),
-                              _SuggestionsGrid(isDesktop: isDesktop),
-                              _RecentDestinations(isDesktop: isDesktop),
-                              if (remoteConfig.showPromoBanner)
-                                _RemotePromoBand(
-                                  isDesktop: isDesktop,
-                                  text: remoteConfig.promoBannerText,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (_isWidgetTest) const _HomeRouteTestAnchor(),
-                    ],
+                  const Icon(
+                    Icons.radio_button_unchecked,
+                    color: SpottColors.textSecondary,
+                    size: 18,
+                  ),
+                  Container(width: 2, height: 36, color: SpottColors.border),
+                  const Icon(
+                    Icons.location_on,
+                    color: SpottColors.primary,
+                    size: 20,
                   ),
                 ],
+              ),
+              const SizedBox(width: SpottSpacing.md),
+              Expanded(
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _originController,
+                      decoration: const InputDecoration(
+                        hintText: 'Current Location',
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 4),
+                      ),
+                      style: SpottTextStyles.bodyLarge,
+                    ),
+                    const Divider(height: 12, color: SpottColors.divider),
+                    TextField(
+                      controller: _destinationController,
+                      decoration: const InputDecoration(
+                        hintText: 'Destination',
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 4),
+                      ),
+                      style: SpottTextStyles.bodyLarge,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: SpottSpacing.sm),
+              // Swap Button
+              Container(
+                decoration: BoxDecoration(
+                  color: SpottColors.surface2,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: SpottColors.border),
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.swap_vert_rounded,
+                    color: SpottColors.primary,
+                  ),
+                  onPressed: _swapLocations,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: SpottSpacing.xl, color: SpottColors.divider),
+          Row(
+            children: [
+              const Icon(
+                Icons.calendar_today,
+                color: SpottColors.textSecondary,
+                size: 18,
+              ),
+              const SizedBox(width: SpottSpacing.md),
+              Expanded(child: Text('Today', style: SpottTextStyles.bodyLarge)),
+              const Icon(
+                Icons.person_outline,
+                color: SpottColors.textSecondary,
+                size: 20,
+              ),
+              const SizedBox(width: SpottSpacing.sm),
+              Text('1 Passenger', style: SpottTextStyles.bodyLarge),
+            ],
+          ),
+          const SizedBox(height: SpottSpacing.lg),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: SpottColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: SpottSpacing.md),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+            child: const Text(
+              'Search Trips',
+              style: SpottTextStyles.titleSmall,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _swapLocations() {
+    setState(() {
+      final temp = _originController.text;
+      _originController.text = _destinationController.text;
+      _destinationController.text = temp;
+    });
+  }
+
+  Widget _buildFeaturedTrips() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Featured Trips', style: SpottTextStyles.headline),
+            Text(
+              'See All',
+              style: SpottTextStyles.caption.copyWith(
+                color: SpottColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: SpottSpacing.md),
+        SizedBox(
+          height: 190,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            children: [
+              _buildFeaturedTripCard(
+                route: 'Pune → Mumbai',
+                time: 'Leaving in 18 mins',
+                seats: '9/12 Seats Filled',
+                seatsValue: 9 / 12,
+                views: '23 users viewing',
+                price: '₹450',
+                isHighDemand: true,
+              ),
+              const SizedBox(width: SpottSpacing.md),
+              _buildFeaturedTripCard(
+                route: 'Mumbai → Nashik',
+                time: 'Leaving in 45 mins',
+                seats: '3/4 Seats Filled',
+                seatsValue: 3 / 4,
+                views: '12 users viewing',
+                price: '₹350',
+                isHighDemand: false,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeaturedTripCard({
+    required String route,
+    required String time,
+    required String seats,
+    required double seatsValue,
+    required String views,
+    required String price,
+    required bool isHighDemand,
+  }) {
+    return SizedBox(
+      width: 280,
+      child: _PremiumCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  route,
+                  style: SpottTextStyles.title.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  price,
+                  style: SpottTextStyles.title.copyWith(
+                    color: SpottColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: SpottSpacing.xs),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: SpottColors.warningSoft,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    time,
+                    style: SpottTextStyles.caption.copyWith(
+                      color: SpottColors.warning,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                if (isHighDemand) ...[
+                  const SizedBox(width: SpottSpacing.xs),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: SpottColors.primarySoft,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '🔥 High Demand',
+                      style: SpottTextStyles.caption.copyWith(
+                        color: SpottColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  seats,
+                  style: SpottTextStyles.label.copyWith(fontSize: 11),
+                ),
+                Text(
+                  views,
+                  style: SpottTextStyles.caption.copyWith(fontSize: 10),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: seatsValue,
+                backgroundColor: SpottColors.border,
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  SpottColors.accentPurple,
+                ),
+                minHeight: 6,
               ),
             ),
           ],
@@ -85,978 +486,532 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-class _DesktopTopBar extends StatelessWidget {
-  const _DesktopTopBar();
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      height: 73,
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: Border(bottom: BorderSide(color: Helper.line(context))),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x12000000),
-            blurRadius: 4,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          InkWell(
-            borderRadius: BorderRadius.circular(4),
-            onTap: () => Navigator.pushNamed(context, AppRoutes.home),
-            child: const _BrandLockup(),
-          ),
-          const Row(
-            children: [
-              _DesktopNavLink(label: 'Ride', active: true),
-              SizedBox(width: 16),
-              _DesktopNavLink(label: 'Drive'),
-              SizedBox(width: 16),
-              _DesktopNavLink(label: 'Business'),
-            ],
-          ),
-          Row(
-            children: [
-              TextButton(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.login),
-                style: TextButton.styleFrom(
-                  foregroundColor: Helper.inkColor(context),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  shape: const StadiumBorder(),
-                  textStyle: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    height: 1.25,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                child: const Text('Log in'),
-              ),
-              const SizedBox(width: 12),
-              FilledButton(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.login),
-                style: FilledButton.styleFrom(
-                  minimumSize: Size.zero,
-                  backgroundColor: isDark ? Colors.white : Colors.black,
-                  foregroundColor: isDark ? Colors.black : Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  shape: const StadiumBorder(),
-                  textStyle: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    height: 1.25,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                child: const Text('Sign up'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MobileTopBar extends StatelessWidget {
-  const _MobileTopBar();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          IconButton(
-            icon: Icon(Icons.menu_rounded, color: Helper.inkColor(context)),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-          const SizedBox(width: 8),
-          const _BrandLockup(),
-          const Spacer(),
-          InkWell(
-            onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
-            borderRadius: BorderRadius.circular(999),
-            child: const ClipOval(
-              child: SizedBox(
-                width: 32,
-                height: 32,
-                child: _RemoteImage(
-                  imageUrl: HomeScreen._profileImage,
-                  fallbackIcon: Icons.person_rounded,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BrandLockup extends StatelessWidget {
-  const _BrandLockup();
-
-  @override
-  Widget build(BuildContext context) {
-    final textColor = Helper.inkColor(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+  Widget _buildPopularRoutes() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.near_me, color: textColor, size: 24),
-        const SizedBox(width: 8),
-        Text(
-          'SPOTT',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            color: textColor,
-            fontSize: 20,
-            height: 1.4,
-            fontWeight: FontWeight.w700,
+        const Text('Popular Routes', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
+        SizedBox(
+          height: 160,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            children: [
+              _buildRouteCard(
+                route: 'Pune → Bangalore',
+                departures: '42 travelers this week',
+                savings: 'Save ₹800 vs Bus',
+                price: '₹1200',
+              ),
+              const SizedBox(width: SpottSpacing.md),
+              _buildRouteCard(
+                route: 'Mumbai → Nashik',
+                departures: '18 travelers this week',
+                savings: 'Save ₹300 vs Bus',
+                price: '₹600',
+              ),
+            ],
           ),
         ),
       ],
     );
   }
-}
 
-class _DesktopNavLink extends StatelessWidget {
-  final String label;
-  final bool active;
-
-  const _DesktopNavLink({required this.label, this.active = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: TextStyle(
-        fontFamily: 'Inter',
-        color: active ? Helper.inkColor(context) : Helper.mutedColor(context),
-        fontSize: 16,
-        height: 1.25,
-        fontWeight: FontWeight.w500,
-      ),
-    );
-  }
-}
-
-class _HeroSection extends StatelessWidget {
-  final bool isDesktop;
-
-  const _HeroSection({required this.isDesktop});
-
-  @override
-  Widget build(BuildContext context) {
-    final horizontal = isDesktop ? 32.0 : 16.0;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(horizontal, 20, horizontal, 32),
-      child: Stack(
-        children: [
-          if (!isDesktop)
-            const Positioned(
-              top: 0,
-              left: -16,
-              right: -16,
-              child: _MobileHeroBackdrop(),
-            ),
-          if (isDesktop)
+  Widget _buildRouteCard({
+    required String route,
+    required String departures,
+    required String savings,
+    required String price,
+  }) {
+    return SizedBox(
+      width: 240,
+      child: _PremiumCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Expanded(child: _HeroBookingColumn(isDesktop: true)),
-                SizedBox(width: 32),
-                Expanded(child: _DesktopHeroImage()),
+              children: [
+                Expanded(
+                  child: Text(
+                    route,
+                    style: SpottTextStyles.titleSmall.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: SpottColors.successSoft,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    savings,
+                    style: SpottTextStyles.caption.copyWith(
+                      color: SpottColors.success,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
               ],
-            )
-          else
-            const _HeroBookingColumn(isDesktop: false),
-        ],
+            ),
+            const SizedBox(height: SpottSpacing.xs),
+            Text(departures, style: SpottTextStyles.caption),
+            const Spacer(),
+            // Minimal visual route line graphic
+            Row(
+              children: [
+                const Icon(
+                  Icons.circle_outlined,
+                  size: 8,
+                  color: SpottColors.textTertiary,
+                ),
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: SpottColors.border,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 10,
+                  color: SpottColors.textTertiary,
+                ),
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: SpottColors.border,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                  ),
+                ),
+                const Icon(
+                  Icons.location_on,
+                  size: 10,
+                  color: SpottColors.primary,
+                ),
+              ],
+            ),
+            const Spacer(),
+            Row(
+              children: [
+                const Icon(Icons.star, color: SpottColors.warning, size: 14),
+                const SizedBox(width: 4),
+                const Text('4.9', style: SpottTextStyles.label),
+                const Spacer(),
+                Text(
+                  'From $price',
+                  style: SpottTextStyles.label.copyWith(
+                    color: SpottColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
-}
 
-class _MobileHeroBackdrop extends StatelessWidget {
-  const _MobileHeroBackdrop();
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+  Widget _buildBecomeTravelerBanner(BuildContext context) {
+    return MarketplaceCard(
+      onTap: () {
+        Navigator.pushNamed(context, AppRoutes.createTrip);
+      },
+      borderRadius: 24,
+      padding: EdgeInsets.zero,
       child: Container(
-        height: 300,
-        color: Helper.canvasSoftColor(context),
-        child: const Opacity(
-          opacity: 0.6,
-          child: _RemoteImage(
-            imageUrl: HomeScreen._cityImage,
-            fallbackIcon: Icons.location_city_rounded,
-            fit: BoxFit.cover,
+        padding: const EdgeInsets.all(SpottSpacing.lg),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            colors: [SpottColors.primary, SpottColors.primaryDark],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _HeroBookingColumn extends StatelessWidget {
-  final bool isDesktop;
-
-  const _HeroBookingColumn({required this.isDesktop});
-
-  @override
-  Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isParcel = ride.currentUserRole == UserRole.parcelSender;
-
-    return Padding(
-      padding: EdgeInsets.only(top: isDesktop ? 32 : 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: isDesktop ? 470 : 260,
-            child: Text(
-              isParcel ? 'Send packages with Spott' : 'Travel and share with Spott',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                color: Helper.inkColor(context),
-                fontSize: isDesktop ? 52 : 28,
-                height: isDesktop ? 64 / 52 : 36 / 28,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          _RideRequestCard(isDesktop: isDesktop),
-        ],
-      ),
-    );
-  }
-}
-
-class _DesktopHeroImage extends StatelessWidget {
-  const _DesktopHeroImage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: SizedBox(
-          height: 500,
-          width: double.infinity,
-          child: ColoredBox(
-            color: Helper.canvasSoftColor(context),
-            child: const Padding(
-              padding: EdgeInsets.all(28),
-              child: _AssetIllustration(
-                assetPath: AppAssets.car,
-                fallbackIcon: Icons.directions_car_filled_rounded,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AssetIllustration extends StatelessWidget {
-  final String assetPath;
-  final IconData fallbackIcon;
-
-  const _AssetIllustration({
-    required this.assetPath,
-    required this.fallbackIcon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      assetPath,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-        return Center(
-          child: Icon(
-            fallbackIcon,
-            color: Helper.mutedColor(context).withValues(alpha: 0.38),
-            size: 42,
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _RideRequestCard extends StatelessWidget {
-  final bool isDesktop;
-
-  const _RideRequestCard({required this.isDesktop});
-
-  @override
-  Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isParcel = ride.currentUserRole == UserRole.parcelSender;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      padding: EdgeInsets.all(isDesktop ? 24 : 16),
-      decoration: BoxDecoration(
-        color: isDesktop ? Colors.transparent : Helper.cardBg(context),
-        borderRadius: BorderRadius.circular(12),
-        border: isDesktop
-            ? null
-            : Border.all(color: Helper.line(context), width: 1),
-        boxShadow: isDesktop
-            ? null
-            : const [
-                BoxShadow(
-                  color: Color(0x14000000),
-                  blurRadius: 24,
-                  offset: Offset(0, 8),
-                ),
-              ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              const Positioned(
-                left: 14,
-                top: 20,
-                bottom: 20,
-                child: _TimelineRail(),
-              ),
-              Column(
-                children: [
-                  _LocationField(
-                    label: isParcel ? 'Pickup location' : 'Current location',
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      isParcel ? AppRoutes.parcelBooking : AppRoutes.tripSearch,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _LocationField(
-                    label: isParcel ? 'Delivery destination' : 'Where to?',
-                    isStrong: true,
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      isParcel ? AppRoutes.parcelBooking : AppRoutes.tripSearch,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Container(
-            margin: EdgeInsets.only(top: isDesktop ? 16 : 16),
-            padding: EdgeInsets.only(top: isDesktop ? 0 : 16),
-            decoration: BoxDecoration(
-              border: isDesktop
-                  ? null
-                  : Border(top: BorderSide(color: Helper.line(context))),
-            ),
-            child: FilledButton(
-              onPressed: () => Navigator.pushNamed(
-                context,
-                isParcel ? AppRoutes.parcelBooking : AppRoutes.tripSearch,
-              ),
-              style: FilledButton.styleFrom(
-                minimumSize: isDesktop
-                    ? const Size(117, 48)
-                    : const Size.fromHeight(48),
-                backgroundColor: isDark ? Colors.white : Colors.black,
-                foregroundColor: isDark ? Colors.black : Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                shape: const StadiumBorder(),
-                textStyle: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 16,
-                  height: 1.25,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              child: Text(isParcel ? 'Send Package' : 'Search Trips'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TimelineRail extends StatelessWidget {
-  const _TimelineRail();
-
-  @override
-  Widget build(BuildContext context) {
-    final lineColor = Helper.line(context);
-    final dotColor = Helper.inkColor(context);
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(width: 2, color: lineColor),
-        Positioned(
-          top: -4,
-          left: -4,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: dotColor,
-              shape: BoxShape.circle,
-            ),
-            child: const SizedBox(width: 10, height: 10),
-          ),
-        ),
-        Positioned(
-          bottom: -4,
-          left: -4,
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: dotColor),
-            child: const SizedBox(width: 10, height: 10),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LocationField extends StatelessWidget {
-  final String label;
-  final bool isStrong;
-  final VoidCallback onTap;
-
-  const _LocationField({
-    required this.label,
-    required this.onTap,
-    this.isStrong = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 40),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(6),
-        child: Container(
-          height: 50,
-          width: double.infinity,
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Helper.canvasSofterColor(context),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontFamily: 'Inter',
-              color: isStrong ? Helper.mutedColor(context) : Helper.inkColor(context),
-              fontSize: 16,
-              height: 1.5,
-              fontWeight: isStrong ? FontWeight.w500 : FontWeight.w400,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RemoteImage extends StatelessWidget {
-  final String imageUrl;
-  final IconData fallbackIcon;
-  final BoxFit fit;
-
-  const _RemoteImage({
-    required this.imageUrl,
-    required this.fallbackIcon,
-    this.fit = BoxFit.cover,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (HomeScreen._isWidgetTest) {
-      return ColoredBox(
-        color: Helper.canvasSoft,
-        child: Center(
-          child: Icon(fallbackIcon, color: Colors.black38, size: 42),
-        ),
-      );
-    }
-
-    return Image.network(
-      imageUrl,
-      fit: fit,
-      errorBuilder: (context, error, stackTrace) {
-        return ColoredBox(
-          color: Helper.canvasSoft,
-          child: Center(
-            child: Icon(fallbackIcon, color: Colors.black38, size: 42),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _HomeRouteTestAnchor extends StatelessWidget {
-  const _HomeRouteTestAnchor();
-
-  @override
-  Widget build(BuildContext context) {
-    return Opacity(
-      opacity: 0,
-      child: Column(
-        children: [
-          const Text('Suggestions'),
-          TextButton(
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.services),
-            child: const Text('Services'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ==========================================
-// Spott Home Screen Revamp Components
-// ==========================================
-
-class _SuggestionsGrid extends StatelessWidget {
-  final bool isDesktop;
-
-  const _SuggestionsGrid({required this.isDesktop});
-
-  @override
-  Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final horizontal = isDesktop ? 32.0 : 16.0;
-
-    final cardFindTrip = _SuggestionCard(
-      title: 'Find Trip',
-      subtitle: 'Intercity cost-sharing',
-      assetPath: AppAssets.car,
-      onTap: () => Navigator.pushNamed(context, AppRoutes.tripSearch),
-    );
-
-    final cardSendParcel = _SuggestionCard(
-      title: 'Send Parcel',
-      subtitle: 'Same-day parcel delivery',
-      assetPath: AppAssets.parcel,
-      onTap: () {
-        ride.updateUserRole(UserRole.parcelSender);
-        Navigator.pushNamed(context, AppRoutes.parcelBooking);
-      },
-    );
-
-    final cardMyTrips = _SuggestionCard(
-      title: 'My Trips',
-      subtitle: 'View trip history',
-      assetPath: AppAssets.calendar,
-      onTap: () => Navigator.pushNamed(context, AppRoutes.activity),
-    );
-
-    final cardTrackParcel = _SuggestionCard(
-      title: 'Track Parcel',
-      subtitle: 'Live delivery progress',
-      assetPath: AppAssets.carClock,
-      onTap: () {
-        if (ride.activeParcel != null) {
-          Navigator.pushNamed(context, AppRoutes.parcelTracking);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No active parcel delivery to track')),
-          );
-        }
-      },
-    );
-
-    final cardSafety = _SuggestionCard(
-      title: 'Safety Center',
-      subtitle: 'SOS & Share Status',
-      assetPath: AppAssets.car,
-      onTap: () => Navigator.pushNamed(context, AppRoutes.safetyToolkit),
-    );
-
-    List<Widget> gridItems;
-    if (ride.currentUserRole == UserRole.parcelSender) {
-      gridItems = [
-        cardSendParcel,
-        cardTrackParcel,
-        cardMyTrips,
-        cardSafety,
-      ];
-    } else {
-      // Passenger
-      gridItems = [
-        cardFindTrip,
-        cardSendParcel,
-        cardMyTrips,
-        cardSafety,
-      ];
-    }
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Suggestions',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              color: isDark ? Colors.white : Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 12),
-          if (isDesktop)
-            Row(
-              children: [
-                Expanded(child: gridItems[0]),
-                const SizedBox(width: 12),
-                Expanded(child: gridItems[1]),
-                const SizedBox(width: 12),
-                Expanded(child: gridItems[2]),
-                const SizedBox(width: 12),
-                Expanded(child: gridItems[3]),
-              ],
-            )
-          else
-            Column(
-              children: [
-                Row(
-                  children: [Expanded(child: gridItems[0]), const SizedBox(width: 8), Expanded(child: gridItems[1])],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [Expanded(child: gridItems[2]), const SizedBox(width: 8), Expanded(child: gridItems[3])],
-                ),
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SuggestionCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String assetPath;
-  final VoidCallback onTap;
-
-  const _SuggestionCard({
-    required this.title,
-    required this.subtitle,
-    required this.assetPath,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      height: 96,
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E24) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? Colors.white10 : const Color(0xFFEFEFEF),
-          width: 1,
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x05000000),
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF5E5E5E),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Image.asset(
-                assetPath,
-                height: 44,
-                width: 44,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.directions_car, size: 32),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RecentDestinations extends StatelessWidget {
-  final bool isDesktop;
-
-  const _RecentDestinations({required this.isDesktop});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final horizontal = isDesktop ? 32.0 : 16.0;
-
-    final items = [
-      _RecentItem(
-        icon: Icons.work_outline_rounded,
-        title: 'Work',
-        subtitle: 'Saket Spott Station, New Delhi',
-        onTap: () {
-          final ride = RideScope.of(context);
-          ride.updateDestination(
-            const LocationPoint(
-              title: 'Saket Spott Station',
-              detail: 'New Delhi',
-            ),
-          );
-          Navigator.pushNamed(context, AppRoutes.destination);
-        },
-      ),
-      _RecentItem(
-        icon: Icons.home_outlined,
-        title: 'Home',
-        subtitle: 'Spott Junction, Sector 12, Dwarka',
-        onTap: () {
-          final ride = RideScope.of(context);
-          ride.updateDestination(
-            const LocationPoint(
-              title: 'Spott Junction',
-              detail: 'Sector 12, Dwarka',
-            ),
-          );
-          Navigator.pushNamed(context, AppRoutes.destination);
-        },
-      ),
-    ];
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Go again',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              color: isDark ? Colors.white : Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 12),
-          if (isDesktop)
-            Row(
-              children: [
-                Expanded(child: items[0]),
-                const SizedBox(width: 16),
-                Expanded(child: items[1]),
-              ],
-            )
-          else
-            Column(
-              children: [
-                items[0],
-                Divider(height: 1, color: Helper.line(context)),
-                items[1],
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RecentItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _RecentItem({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF282828)
-                    : const Color(0xFFEFEFEF),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: isDark ? Colors.white : Colors.black,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? Colors.white : Colors.black,
+                    'Earn from Empty Seats',
+                    style: SpottTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: SpottSpacing.xs),
                   Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 14,
-                      color: Helper.mutedColor(context),
+                    'Offer your trip, recover fuel costs & meet co-travelers.',
+                    style: SpottTextStyles.caption.copyWith(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: isDark ? Colors.white54 : Helper.mutedColor(context),
+            const SizedBox(width: SpottSpacing.md),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Offer Trip',
+                style: SpottTextStyles.label.copyWith(
+                  color: SpottColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class _RemotePromoBand extends StatelessWidget {
-  final bool isDesktop;
-  final String text;
-
-  const _RemotePromoBand({
-    required this.isDesktop,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        isDesktop ? 32 : 16,
-        0,
-        isDesktop ? 32 : 16,
-        16,
-      ),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(
-          horizontal: isDesktop ? 20 : 16,
-          vertical: 16,
+  Widget _buildRecommendedTravelers() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Recommended Travelers', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
+        _PremiumCard(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SpottAvatar(
+                imageUrl:
+                    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
+                radius: 32,
+                isVerified: true,
+                isOnline: true,
+              ),
+              const SizedBox(width: SpottSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Arjun Sharma',
+                          style: SpottTextStyles.title.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          '₹450',
+                          style: SpottTextStyles.title.copyWith(
+                            color: SpottColors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: SpottSpacing.xs),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.star,
+                          color: SpottColors.warning,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 4),
+                        const Text('4.9', style: SpottTextStyles.label),
+                        const SizedBox(width: SpottSpacing.sm),
+                        const Text('•', style: SpottTextStyles.caption),
+                        const SizedBox(width: SpottSpacing.sm),
+                        const Text('542 Trips', style: SpottTextStyles.caption),
+                      ],
+                    ),
+                    const SizedBox(height: SpottSpacing.sm),
+                    Row(
+                      children: [
+                        Text(
+                          'Hyundai i20',
+                          style: SpottTextStyles.body.copyWith(
+                            color: SpottColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: SpottSpacing.sm),
+                        const Text('•', style: SpottTextStyles.caption),
+                        const SizedBox(width: SpottSpacing.sm),
+                        Text(
+                          '98% response rate',
+                          style: SpottTextStyles.caption.copyWith(
+                            color: SpottColors.success,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: SpottSpacing.sm),
+                    Row(
+                      children: [
+                        _buildTrustBadge(
+                          'Govt ID',
+                          Icons.verified_user_rounded,
+                        ),
+                        const SizedBox(width: SpottSpacing.sm),
+                        _buildTrustBadge(
+                          'Vehicle',
+                          Icons.directions_car_rounded,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: SpottSpacing.md),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () {},
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: SpottColors.primary,
+                          side: const BorderSide(color: SpottColors.primary),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: SpottSpacing.sm,
+                          ),
+                        ),
+                        child: const Text(
+                          'Book Seat',
+                          style: SpottTextStyles.label,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTrustBadge(String label, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, color: SpottColors.trustVerified, size: 14),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: SpottTextStyles.caption.copyWith(
+            color: SpottColors.trustVerified,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildParcelDeliveryBanner(BuildContext context) {
+    return MarketplaceCard(
+      onTap: () {
+        Navigator.pushNamed(context, AppRoutes.parcelBooking);
+      },
+      borderRadius: 24,
+      padding: EdgeInsets.zero,
+      child: Container(
+        padding: const EdgeInsets.all(SpottSpacing.lg),
         decoration: BoxDecoration(
-          color: const Color(0xFF0066FF),
-          borderRadius: BorderRadius.circular(isDesktop ? 12 : 8),
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         child: Row(
           children: [
-            const Icon(Icons.star, color: Colors.white),
-            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.all(SpottSpacing.md),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.inventory_2_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: SpottSpacing.md),
             Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Send Parcels with Travelers',
+                    style: SpottTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: SpottSpacing.xs),
+                  Text(
+                    'Reliable, peer-to-peer delivery starting at just ₹99.',
+                    style: SpottTextStyles.caption.copyWith(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: SpottSpacing.md),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Text(
-                text,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                'Book',
+                style: SpottTextStyles.label.copyWith(
+                  color: const Color(0xFF2563EB),
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSafetyCenter() {
+    return _PremiumCard(
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              color: SpottColors.successSoft,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.shield_rounded,
+              color: SpottColors.success,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: SpottSpacing.md),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Safety Center',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: SpottColors.textPrimary,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Live tracking, SOS, and verified travelers.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: SpottColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumCard extends StatelessWidget {
+  final Widget child;
+
+  const _PremiumCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(SpottSpacing.cardInner),
+      decoration: BoxDecoration(
+        color: SpottColors.surface1,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: SpottColors.border),
+        boxShadow: SpottShadows.elevation1,
+      ),
+      child: child,
+    );
+  }
+}
+
+class _ServiceCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color iconColor;
+  final VoidCallback onTap;
+
+  const _ServiceCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.iconColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MarketplaceCard(
+      onTap: onTap,
+      borderRadius: 24,
+      padding: const EdgeInsets.all(SpottSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: iconColor, size: 24),
+          ),
+          const SizedBox(height: SpottSpacing.md),
+          Text(
+            title,
+            style: SpottTextStyles.titleSmall.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: SpottTextStyles.caption.copyWith(
+              color: SpottColors.textSecondary,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -26,7 +26,9 @@ class RemoteConfigState {
       maintenanceMode: json['maintenance_mode'] as bool? ?? false,
       showOffers: json['show_offers'] as bool? ?? true,
       offerTitle: json['offer_title'] as String? ?? '20% off your next trip',
-      offerSubtitle: json['offer_subtitle'] as String? ?? 'Use code SPOTT20. Max discount ₹100.',
+      offerSubtitle:
+          json['offer_subtitle'] as String? ??
+          'Use code SPOTT20. Max discount ₹100.',
     );
   }
 

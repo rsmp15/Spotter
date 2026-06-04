@@ -5,6 +5,7 @@ import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
+import '../../core/theme/colors.dart';
 
 class SpotterTrackingPanel extends StatelessWidget {
   const SpotterTrackingPanel({super.key});
@@ -20,7 +21,7 @@ class SpotterTrackingPanel extends StatelessWidget {
     Widget content = Container(
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF0C0F14).withValues(alpha: 0.82)
+            ? SpottColors.surface2.withValues(alpha: 0.95)
             : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
@@ -28,7 +29,7 @@ class SpotterTrackingPanel extends StatelessWidget {
         ),
         border: isDark
             ? Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: SpottColors.border,
                 width: 1.5,
               )
             : null,

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import '../spotter_widgets.dart';
-import '../helper.dart';
 
-import 'package:flutter/material.dart';
-import '../spotter_widgets.dart';
-import '../helper.dart';
 import '../controllers/ride_controller.dart';
 import '../models/spott_models.dart';
+import '../core/components/glass_card.dart';
+import '../core/components/glass_scaffold.dart';
+import '../core/components/spott_buttons.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/spacing.dart';
+import '../core/theme/typography.dart';
+import '../core/theme/radius.dart';
 
 class PassengerRequestsScreen extends StatelessWidget {
   const PassengerRequestsScreen({super.key});
@@ -14,45 +16,46 @@ class PassengerRequestsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final requests = ride.tripRequests.where((req) => req.status == TripRequestStatus.pending).toList();
+    final requests = ride.tripRequests
+        .where((req) => req.status == TripRequestStatus.pending)
+        .toList();
 
-    return SpotterScreen(
-      title: 'Seat Requests',
-      subtitle: 'Manage incoming requests from passengers.',
-      content: requests.isEmpty
-          ? [
-              const SizedBox(height: 60),
-              Center(
+    return GlassScaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const BackButton(color: SpottColors.textPrimary),
+        title: const Text('Seat Requests', style: SpottTextStyles.sectionTitle),
+        centerTitle: true,
+      ),
+      body: requests.isEmpty
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(SpottSpacing.xl),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.inbox_rounded,
-                      size: 64,
-                      color: Helper.mutedColor(context),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No requests yet',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Helper.inkColor(context),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
+                    const Icon(Icons.inbox_rounded, size: 64, color: SpottColors.textSecondary),
+                    const SizedBox(height: SpottSpacing.md),
+                    Text('No requests yet', style: SpottTextStyles.sectionTitle),
+                    const SizedBox(height: SpottSpacing.sm),
                     Text(
                       'When passengers request seats on your trip,\nthey will appear here.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Helper.mutedColor(context),
-                      ),
+                      style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
                     ),
                   ],
                 ),
               ),
-            ]
-          : requests.map((req) => _RequestCard(request: req, ride: ride)).toList(),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(SpottSpacing.lg),
+              itemCount: requests.length,
+              separatorBuilder: (context, index) => const SizedBox(height: SpottSpacing.md),
+              itemBuilder: (context, index) {
+                return _RequestCard(request: requests[index], ride: ride);
+              },
+            ),
     );
   }
 }
@@ -65,126 +68,83 @@ class _RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final passengerInfo = RideController.mockPassengerDb[request.passengerId] ?? const {
-      'name': 'Unknown Passenger',
-      'rating': 5.0,
-      'seats': 1,
-    };
+    final passengerInfo = RideController.mockPassengerDb[request.passengerId] ??
+        const {'name': 'Unknown Passenger', 'rating': 5.0, 'seats': 1};
 
     final String name = passengerInfo['name'] as String;
     final double rating = passengerInfo['rating'] as double;
     final int seats = passengerInfo['seats'] as int;
 
-    return SpotterCard(
-      children: [
-        Row(
-          children: [
-            Container(
-              height: 46,
-              width: 46,
-              decoration: BoxDecoration(
-                color: Helper.canvasSoftColor(context),
-                shape: BoxShape.circle,
-                border: Border.all(color: Helper.line(context)),
-              ),
-              child: Center(
-                child: Text(
-                  name[0],
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    color: Helper.inkColor(context),
+    return GlassCard(
+      padding: const EdgeInsets.all(SpottSpacing.md),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                height: 46,
+                width: 46,
+                decoration: BoxDecoration(
+                  color: SpottColors.surface1,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: SpottColors.border),
+                ),
+                child: Center(
+                  child: Text(
+                    name[0],
+                    style: SpottTextStyles.sectionTitle.copyWith(color: SpottColors.textPrimary),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: Helper.inkColor(context),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(Icons.star_rounded, size: 16, color: Helper.warning),
-                      const SizedBox(width: 2),
-                      Text(
-                        rating.toString(),
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: Helper.mutedColor(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$seats seat${seats > 1 ? 's' : ''} requested',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Helper.mutedColor(context),
-                      fontWeight: FontWeight.w500,
+              const SizedBox(width: SpottSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(name, style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold, color: SpottColors.textPrimary)),
+                        const SizedBox(width: SpottSpacing.xs),
+                        const Icon(Icons.star_rounded, size: 16, color: SpottColors.warning),
+                        const SizedBox(width: 2),
+                        Text(rating.toString(), style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold)),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  ride.rejectRequest(request.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('$name rejected')),
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Helper.danger,
-                  side: BorderSide(color: Helper.danger),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  minimumSize: const Size.fromHeight(44),
+                    const SizedBox(height: 2),
+                    Text('$seats seat${seats > 1 ? 's' : ''} requested', style: SpottTextStyles.caption),
+                  ],
                 ),
-                child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.w700)),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(
-                onPressed: () {
-                  ride.acceptRequest(request.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('$name accepted')),
-                  );
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: Helper.success,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(44),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(999),
-                  ),
+            ],
+          ),
+          const SizedBox(height: SpottSpacing.lg),
+          Row(
+            children: [
+              Expanded(
+                child: SpottButton.ghost(
+                  label: 'Reject',
+                  onPressed: () {
+                    ride.rejectRequest(request.id);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$name rejected')));
+                  },
                 ),
-                child: const Text('Accept', style: TextStyle(fontWeight: FontWeight.w700)),
               ),
-            ),
-          ],
-        ),
-      ],
+              const SizedBox(width: SpottSpacing.md),
+              Expanded(
+                child: SpottButton.primary(
+                  label: 'Accept',
+                  onPressed: () {
+                    ride.acceptRequest(request.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('$name accepted'), backgroundColor: SpottColors.success),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

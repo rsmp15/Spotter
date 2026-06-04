@@ -28,7 +28,9 @@ class CustomTextCard extends StatelessWidget {
         color: isDark ? const Color(0xFF1E1E24) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE5E5E5),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : const Color(0xFFE5E5E5),
           width: 1,
         ),
       ),

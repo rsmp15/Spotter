@@ -45,16 +45,16 @@ class WhiteTextField extends StatelessWidget {
                     keyboardType == TextInputType.number
                 ? [FilteringTextInputFormatter.digitsOnly]
                 : null),
-        style: TextStyle(
-          color: Helper.inkColor(context),
-          fontSize: 16,
-        ),
+        style: TextStyle(color: Helper.inkColor(context), fontSize: 16),
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
           floatingLabelBehavior: FloatingLabelBehavior.auto,
 
-          labelStyle: TextStyle(color: Helper.mutedColor(context), fontSize: 16),
+          labelStyle: TextStyle(
+            color: Helper.mutedColor(context),
+            fontSize: 16,
+          ),
 
           floatingLabelStyle: TextStyle(
             color: Helper.mutedColor(context),
@@ -82,7 +82,10 @@ class WhiteTextField extends StatelessWidget {
 
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: isDark ? Colors.white : Helper.ink, width: 2.0),
+            borderSide: BorderSide(
+              color: isDark ? Colors.white : Helper.ink,
+              width: 2.0,
+            ),
           ),
         ),
       ),

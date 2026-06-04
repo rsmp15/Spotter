@@ -35,18 +35,9 @@ class _PickupTaskScreenState extends State<PickupTaskScreen> {
       content: [
         const SpotterCard(
           children: [
-            InfoRow(
-              label: 'Reach pickup',
-              value: 'Done',
-            ),
-            InfoRow(
-              label: 'Match rider name',
-              value: 'Done',
-            ),
-            InfoRow(
-              label: 'Enter ride OTP',
-              value: 'Pending',
-            ),
+            InfoRow(label: 'Reach pickup', value: 'Done'),
+            InfoRow(label: 'Match rider name', value: 'Done'),
+            InfoRow(label: 'Enter ride OTP', value: 'Pending'),
           ],
         ),
         WhiteTextField(

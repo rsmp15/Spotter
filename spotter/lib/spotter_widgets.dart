@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -15,7 +16,11 @@ void _handleBack(BuildContext context) {
   }
 
   if (currentRoute == '/home' || currentRoute == '/driver-home') {
-    Navigator.pushNamedAndRemoveUntil(context, '/choose-role', (route) => false);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/choose-role',
+      (route) => false,
+    );
     return;
   }
 
@@ -29,7 +34,11 @@ void _handleBack(BuildContext context) {
   };
 
   if (driverRoutes.contains(currentRoute)) {
-    Navigator.pushNamedAndRemoveUntil(context, '/driver-home', (route) => false);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/driver-home',
+      (route) => false,
+    );
   } else {
     Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
   }
@@ -79,7 +88,8 @@ class SpotterScreen extends StatelessWidget {
                           if (showMenu)
                             _SpottIconButton(
                               icon: Icons.menu_rounded,
-                              onPressed: () => Scaffold.of(context).openDrawer(),
+                              onPressed: () =>
+                                  Scaffold.of(context).openDrawer(),
                             )
                           else if (showBack)
                             _SpottIconButton(
@@ -100,15 +110,15 @@ class SpotterScreen extends StatelessWidget {
                           ),
                         ],
                       );
-                    }
+                    },
                   ),
                   const SizedBox(height: 22),
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 31,
-                      height: 1.05,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 32,
+                      height: 1.1,
+                      fontWeight: FontWeight.w700,
                       color: Helper.inkColor(context),
                       letterSpacing: 0,
                     ),
@@ -118,9 +128,9 @@ class SpotterScreen extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       color: Helper.mutedColor(context),
-                      fontSize: 15,
+                      fontSize: 16,
                       height: 1.35,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 22),
@@ -154,18 +164,17 @@ class _SpottIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
       height: 44,
       width: 44,
       child: Material(
-        color: isDark ? const Color(0xFF1E1F25) : Colors.white,
+        color: Helper.cardBg(context),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(12),
           side: BorderSide(color: Helper.line(context)),
         ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(12),
           onTap: onPressed,
           child: Icon(icon, color: Helper.inkColor(context), size: 21),
         ),
@@ -195,7 +204,7 @@ class SpotterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Resolve dynamic background color
     Color resolvedColor;
     if (color == Helper.cardColor) {
@@ -203,19 +212,29 @@ class SpotterCard extends StatelessWidget {
     } else if (color == Helper.canvasSoft) {
       resolvedColor = Helper.canvasSoftColor(context);
     } else if (color == const Color(0xFFF4F4F4)) {
-      resolvedColor = isDark ? const Color(0xFF1E1E24) : color;
+      resolvedColor = isDark ? Helper.bgSurf : color;
     } else {
       resolvedColor = color;
     }
 
-    final cardContent = Ink(
+    final borderRadius = BorderRadius.circular(16);
+
+    Widget cardContent;
+
+    cardContent = Container(
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
         color: resolvedColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Helper.line(context)),
-        boxShadow: hasShadow ? Helper.premiumShadows : null,
+        border: Border.all(color: Helper.line(context), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Align(
         alignment: Alignment.centerLeft,
@@ -226,6 +245,7 @@ class SpotterCard extends StatelessWidget {
         ),
       ),
     );
+
     final card = height == null
         ? cardContent
         : ConstrainedBox(
@@ -237,11 +257,7 @@ class SpotterCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 14),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: card,
-        ),
+        child: InkWell(borderRadius: borderRadius, onTap: onTap, child: card),
       ),
     );
   }
@@ -281,7 +297,7 @@ class InfoRow extends StatelessWidget {
               style: TextStyle(
                 color: resolvedValueColor,
                 fontSize: 14,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -316,7 +332,9 @@ class RideContextCard extends StatelessWidget {
         InfoRow(
           label: 'Fare',
           value: fare,
-          valueColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Helper.primary,
+          valueColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Helper.primary,
         ),
         InfoRow(label: 'Driver', value: driver),
         InfoRow(label: 'Status', value: status),
@@ -342,14 +360,17 @@ class RecoveryBanner extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.warning_amber_rounded, color: isDark ? const Color(0xFFFFB020) : Helper.warning),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: isDark ? const Color(0xFFFFB020) : Helper.warning,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 state.message ?? 'This action could not be completed.',
                 style: TextStyle(
                   color: isDark ? const Color(0xFFFFB020) : Helper.warning,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -361,8 +382,16 @@ class RecoveryBanner extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
               onPressed: onRetry,
-              icon: Icon(Icons.refresh, color: isDark ? const Color(0xFFFFB020) : Helper.primary),
-              label: Text('Try again', style: TextStyle(color: isDark ? const Color(0xFFFFB020) : Helper.primary)),
+              icon: Icon(
+                Icons.refresh,
+                color: isDark ? const Color(0xFFFFB020) : Helper.primary,
+              ),
+              label: Text(
+                'Try again',
+                style: TextStyle(
+                  color: isDark ? const Color(0xFFFFB020) : Helper.primary,
+                ),
+              ),
             ),
           ),
         ],
@@ -384,19 +413,23 @@ class StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Resolve chip background and border colors
     Color bgColor;
     Color borderColor;
     Color textColor;
-    
+
     if (color == Helper.primary) {
-      bgColor = isDark ? Colors.white : Helper.ink;
-      borderColor = isDark ? Colors.white : Helper.ink;
-      textColor = isDark ? Colors.black : Colors.white;
+      bgColor = isDark
+          ? Helper.primary.withOpacity(0.12)
+          : Helper.primary.withOpacity(0.08);
+      borderColor = isDark
+          ? Helper.primary.withOpacity(0.3)
+          : Helper.primary.withOpacity(0.15);
+      textColor = Helper.primary;
     } else {
-      bgColor = color.withOpacity(0.08);
-      borderColor = color.withOpacity(0.15);
+      bgColor = color.withOpacity(isDark ? 0.12 : 0.08);
+      borderColor = color.withOpacity(isDark ? 0.3 : 0.15);
       textColor = color;
     }
 
@@ -404,15 +437,16 @@ class StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: borderColor, width: 1.0),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: textColor,
           fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
         ),
       ),
     );
@@ -426,13 +460,12 @@ class MapPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       height: height,
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF161922) : Helper.mapFill,
+        color: const Color(0xFFF5F7FA),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Helper.line(context)),
       ),
@@ -443,9 +476,9 @@ class MapPlaceholder extends StatelessWidget {
             right: 45,
             top: height / 2,
             child: Container(
-              height: 8,
+              height: 6,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0D0E12) : Colors.white,
+                color: const Color(0xFF2563EB),
                 borderRadius: BorderRadius.circular(99),
                 border: Border.all(color: Helper.line(context)),
               ),
@@ -512,7 +545,7 @@ class RideTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SpotterCard(
-      height: 92,
+      height: 104,
       onTap: onTap,
       children: [
         Row(
@@ -521,8 +554,10 @@ class RideTile extends StatelessWidget {
               height: 54,
               width: 54,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF2F2F2),
-                borderRadius: BorderRadius.circular(16),
+                color: isDark
+                    ? const Color(0xFF2C2C2C)
+                    : const Color(0xFFF2F2F2),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Helper.line(context)),
               ),
               child: Icon(icon, size: 28, color: Helper.inkColor(context)),
@@ -537,7 +572,7 @@ class RideTile extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: Helper.inkColor(context),
                     ),
                   ),
@@ -556,8 +591,8 @@ class RideTile extends StatelessWidget {
             Text(
               price,
               style: TextStyle(
-                fontSize: 20, 
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
                 color: Helper.inkColor(context),
               ),
             ),
@@ -676,11 +711,16 @@ class SpotterMenuDrawer extends StatelessWidget {
             const Divider(color: Helper.lineColor, height: 1),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
                 children: [
                   // Role Switcher Card
                   SpotterCard(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF9F9F9),
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF9F9F9),
                     onTap: () {
                       Navigator.pop(context); // Close Drawer
                       if (isDriver) {
@@ -701,16 +741,20 @@ class SpotterMenuDrawer extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            isDriver ? Icons.person_rounded : Icons.drive_eta_rounded,
+                            isDriver
+                                ? Icons.person_rounded
+                                : Icons.drive_eta_rounded,
                             color: isDark ? Colors.white : Colors.black,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              isDriver ? 'Switch to Passenger' : 'Switch to Traveler',
+                              isDriver
+                                  ? 'Switch to Passenger'
+                                  : 'Switch to Traveler',
                               style: TextStyle(
                                 color: isDark ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 fontSize: 15,
                               ),
                             ),
@@ -724,7 +768,7 @@ class SpotterMenuDrawer extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // Menu Links
                   _DrawerLink(
                     icon: Icons.person_outline_rounded,
@@ -780,6 +824,16 @@ class SpotterMenuDrawer extends StatelessWidget {
                       Navigator.pushNamed(context, '/safety-toolkit');
                     },
                   ),
+                  if (kDebugMode)
+                    _DrawerLink(
+                      icon: Icons.developer_mode_rounded,
+                      label: 'UI Sandbox',
+                      isActive: currentRoute == '/figma-plugin-sandbox',
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/figma-plugin-sandbox');
+                      },
+                    ),
                 ],
               ),
             ),
@@ -811,23 +865,19 @@ class _DrawerLink extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: ListTile(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(999),
-        ),
-        tileColor: isActive
-            ? (isDark ? Colors.white : Colors.black)
-            : Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+        tileColor: isActive ? const Color(0xFFFEE2E2) : Colors.transparent,
         leading: Icon(
           icon,
           color: isActive
-              ? (isDark ? Colors.black : Colors.white)
+              ? Helper.primary
               : (isDark ? Colors.white70 : const Color(0xFF5E5E5E)),
         ),
         title: Text(
           label,
           style: TextStyle(
             color: isActive
-                ? (isDark ? Colors.black : Colors.white)
+                ? Helper.primary
                 : (isDark ? Colors.white : Colors.black),
             fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
             fontSize: 14,

@@ -24,7 +24,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final inkColor = Helper.inkColor(context);
     final mutedColor = Helper.mutedColor(context);
 

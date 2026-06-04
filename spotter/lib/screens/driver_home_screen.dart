@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app/app_routes.dart';
-import '../controllers/ride_controller.dart';
-import '../custom_button.dart';
-import '../helper.dart';
-import '../spotter_widgets.dart';
-import 'driver_bottom_nav.dart';
+import '../core/components/status_chip.dart';
+import '../core/components/spott_buttons.dart';
+import '../core/components/spott_avatar.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/spacing.dart';
+import '../core/theme/typography.dart';
+import '../core/theme/radius.dart';
+import '../core/theme/shadows.dart';
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
@@ -15,12 +19,10 @@ class DriverHomeScreen extends StatefulWidget {
 }
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
-  // Destination travel flow states
   bool _isTravelActive = false;
   String? _destination;
   bool _isRideStarted = false;
 
-  // Stats to increment when a trip is completed
   int _completedTripsToday = 2;
   int _todayEarnings = 1240;
 
@@ -34,390 +36,370 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-
-    // If ride is started, show high-fidelity navigation screen
     if (_isRideStarted) {
-      return _buildNavigationScreen(context, isDark);
+      return _buildNavigationScreen(context);
     }
 
-    return SpotterScreen(
-      title: 'Earn on your trip',
-      subtitle: 'Accept seat requests on your route.',
-      showBack: false,
-      showMenu: true,
-      bottomNavigationBar: const DriverBottomNav(activeTab: DriverBottomTab.home),
-      content: [
-        RecoveryBanner(state: ride.actionState, onRetry: ride.retryInitialize),
-        
-        // Active destination filter warning/status
-        if (_isTravelActive && _destination != null)
-          _buildDestinationFilterCard(context, isDark),
+    return Scaffold(
+      backgroundColor: SpottColors.background,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.only(
+            left: SpottSpacing.lg,
+            right: SpottSpacing.lg,
+            top: SpottSpacing.lg,
+            bottom: SpottSpacing.pageBottom,
+          ),
+          children: [
+            _buildHeader(),
+            const SizedBox(height: SpottSpacing.xl),
 
-        // Earning Graph (Uber style)
-        _buildUberEarningCard(context, isDark),
+            if (_isTravelActive && _destination != null) ...[
+              _buildDestinationFilterCard(context),
+              const SizedBox(height: SpottSpacing.md),
+            ],
 
-        // Rides & Parcels breakdown
-        _buildRidesParcelsBreakdownCard(context, isDark),
+            _buildEarningsCard(),
+            const SizedBox(height: SpottSpacing.xl),
 
-        // Nearby requests card
-        const SpotterCard(
+            if (!_isTravelActive)
+              _buildStartTravelCard(context)
+            else
+              _buildAcceptingRequestsCard(),
+
+            const SizedBox(height: SpottSpacing.xl),
+
+            const Text('Trip requests nearby', style: SpottTextStyles.headline),
+            const SizedBox(height: SpottSpacing.md),
+            _buildTripRequestsCard(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Trip requests nearby',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              'TRAVELER',
+              style: SpottTextStyles.overline.copyWith(
+                color: SpottColors.accentPurple,
+              ),
             ),
-            SizedBox(height: 10),
-            InfoRow(label: 'Best cost share', value: 'Rs 650'),
-            InfoRow(label: 'Closest pickup', value: '1.2 km'),
-            InfoRow(label: 'Seats requested', value: '2'),
+            const SizedBox(height: 4),
+            Text('Arjun', style: SpottTextStyles.headline.copyWith(fontSize: 26)),
           ],
         ),
-
-        // Travel Destination Picker Action
-        if (!_isTravelActive)
-          _buildStartTravelCard(context, isDark)
-        else
-          _buildGoOnlineActionCard(context, isDark),
-
-        const SizedBox(height: 12),
-        const DriverRequestsAction(),
-      ],
-    );
-  }
-
-  // --- WIDGET BUILDERS ---
-
-  Widget _buildDestinationFilterCard(BuildContext context, bool isDark) {
-    return SpotterCard(
-      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF0F9FF),
-      children: [
-        Row(
-          children: [
-            Icon(
-              Icons.directions_outlined,
-              color: isDark ? Colors.blueAccent : const Color(0xFF0284C7),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Destination Filter Active',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: isDark ? Colors.white : const Color(0xFF0369A1),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Only accepting requests toward $_destination',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? Colors.white70 : const Color(0xFF075985),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.close_rounded, size: 20),
-              onPressed: () {
-                setState(() {
-                  _isTravelActive = false;
-                  _destination = null;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Destination filter cleared')),
-                );
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildUberEarningCard(BuildContext context, bool isDark) {
-    final textColor = Helper.inkColor(context);
-    final cardBg = isDark ? const Color(0xFF161922) : Colors.white;
-
-    // Weekly earnings heights for Mon-Sun (percentage values)
-    final weeklyEarnings = [0.4, 0.6, 0.35, 0.8, 0.5, 0.9, 0.7];
-    final weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-    return SpotterCard(
-      color: cardBg,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Trip earnings this week',
-                    style: TextStyle(color: Helper.muted, fontSize: 13, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Rs ${_todayEarnings + 7210}',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: textColor),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF2F2F2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    'Today: Rs $_todayEarnings',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: textColor),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        // Bar Chart
-        SizedBox(
-          height: 120,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: List.generate(7, (index) {
-              final isToday = index == 5; // Simulating Saturday as today
-              final barColor = isToday
-                  ? (isDark ? Colors.white : Colors.black)
-                  : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0));
-
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    width: 24,
-                    height: 80 * weeklyEarnings[index],
-                    decoration: BoxDecoration(
-                      color: barColor,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    weekDays[index],
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isToday ? FontWeight.w900 : FontWeight.w500,
-                      color: isToday ? textColor : Helper.muted,
-                    ),
-                  ),
-                ],
-              );
-            }),
+        GestureDetector(
+          onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+          child: const SpottAvatar(
+            imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+            radius: 22,
+            isVerified: true,
+            isPremium: true,
           ),
         ),
-        const SizedBox(height: 16),
-        const Divider(height: 1, color: Helper.lineColor),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildStatCol('Completed', '$_completedTripsToday trips'),
-            _buildStatCol('Online hours', '5h 12m'),
-            _buildStatCol('Rating', '4.95 ★'),
-          ],
-        ),
       ],
     );
   }
 
-  Widget _buildStatCol(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(color: Helper.muted, fontSize: 11, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 2),
-        Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
-  Widget _buildRidesParcelsBreakdownCard(BuildContext context, bool isDark) {
-    final cardBg = isDark ? const Color(0xFF161922) : Colors.white;
-
-    return SpotterCard(
-      color: cardBg,
-      children: [
-        const Text(
-          'Trips & Parcels split',
-          style: TextStyle(color: Helper.muted, fontSize: 13, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              flex: 65, // 65% Rides
-              child: Container(
-                height: 12,
-                decoration: const BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.horizontal(left: Radius.circular(6)),
-                ),
-              ),
+  Widget _buildDestinationFilterCard(BuildContext context) {
+    return _PremiumCard(
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(SpottSpacing.sm),
+            decoration: const BoxDecoration(
+              color: SpottColors.accentPurpleSoft,
+              shape: BoxShape.circle,
             ),
-            const SizedBox(width: 2),
-            Expanded(
-              flex: 35, // 35% Parcels
-              child: Container(
-                height: 12,
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white70 : const Color(0xFF6366F1),
-                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(6)),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+            child: const Icon(Icons.directions_rounded, color: SpottColors.accentPurple, size: 20),
+          ),
+          const SizedBox(width: SpottSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle)),
-                const SizedBox(width: 6),
-                const Text('Trips (65%)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                Text(
+                  'Destination Filter Active',
+                  style: SpottTextStyles.label.copyWith(
+                    color: SpottColors.accentPurple,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Accepting requests toward $_destination',
+                  style: SpottTextStyles.caption,
+                ),
               ],
             ),
-            Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white70 : const Color(0xFF6366F1),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                const Text('Parcels (35%)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStartTravelCard(BuildContext context, bool isDark) {
-    return SpotterCard(
-      color: isDark ? Colors.white : Colors.black,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Set destination travel',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: isDark ? Colors.black : Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Accept seat requests matching your way.',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? Colors.black54 : Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () => _openLocationPicker(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? Colors.black : Colors.white,
-                foregroundColor: isDark ? Colors.white : Colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              ),
-              child: const Text('Start Travel'),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGoOnlineActionCard(BuildContext context, bool isDark) {
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12),
-          child: CustomButton(
-            label: 'ACCEPTING REQUESTS',
+          ),
+          IconButton(
+            icon: const Icon(Icons.close_rounded, size: 20, color: SpottColors.textTertiary),
             onPressed: () {
               setState(() {
-                _isRideStarted = true;
+                _isTravelActive = false;
+                _destination = null;
               });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Trip started heading toward $_destination!')),
-              );
             },
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEarningsCard() {
+    return _PremiumCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Earnings this week', style: SpottTextStyles.caption),
+                  const SizedBox(height: 6),
+                  Text(
+                    '₹${_todayEarnings + 7210}',
+                    style: SpottTextStyles.displayLarge.copyWith(fontSize: 32),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: SpottSpacing.sm + 2,
+                  vertical: SpottSpacing.xs + 2,
+                ),
+                decoration: BoxDecoration(
+                  color: SpottColors.accentPurpleSoft,
+                  borderRadius: BorderRadius.circular(SpottRadius.md),
+                ),
+                child: Text(
+                  'Today: ₹$_todayEarnings',
+                  style: SpottTextStyles.caption.copyWith(
+                    color: SpottColors.accentPurple,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: SpottSpacing.lg),
+          _buildEarningsBar(),
+          const SizedBox(height: SpottSpacing.lg),
+          const Divider(height: 1, color: SpottColors.border),
+          const SizedBox(height: SpottSpacing.md),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildStatPill(
+                icon: Icons.check_circle_rounded,
+                value: '$_completedTripsToday',
+                label: 'Trips',
+                color: SpottColors.success,
+              ),
+              _buildStatPill(
+                icon: Icons.timer_rounded,
+                value: '5h 12m',
+                label: 'Online',
+                color: SpottColors.info,
+              ),
+              _buildStatPill(
+                icon: Icons.star_rounded,
+                value: '4.95',
+                label: 'Rating',
+                color: SpottColors.warning,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEarningsBar() {
+    final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final values = [0.4, 0.7, 0.5, 0.9, 0.6, 0.3, 0.8];
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: List.generate(7, (i) {
+        final isToday = i == DateTime.now().weekday - 1;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 28,
+              height: 48 * values[i],
+              decoration: BoxDecoration(
+                color: isToday ? SpottColors.accentPurple : SpottColors.border,
+                borderRadius: BorderRadius.circular(SpottRadius.xs),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              days[i],
+              style: SpottTextStyles.caption.copyWith(
+                fontSize: 10,
+                fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+                color: isToday ? SpottColors.accentPurple : SpottColors.textSecondary,
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+
+  Widget _buildStatPill({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 4),
+            Text(
+              value,
+              style: SpottTextStyles.label.copyWith(fontSize: 15),
+            ),
+          ],
         ),
+        const SizedBox(height: 4),
+        Text(label, style: SpottTextStyles.caption),
+      ],
+    );
+  }
+
+  Widget _buildStartTravelCard(BuildContext context) {
+    return _PremiumCard(
+      child: Row(
+        children: [
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Set destination travel', style: SpottTextStyles.titleSmall),
+                SizedBox(height: 4),
+                Text(
+                  'Accept seat requests matching your way.',
+                  style: SpottTextStyles.caption,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: SpottSpacing.md),
+          SpottButton.secondary(
+            label: 'Start',
+            onPressed: () => _openLocationPicker(context),
+            size: SpottButtonSize.small,
+            isFullWidth: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAcceptingRequestsCard() {
+    return Column(
+      children: [
+        SpottButton.secondary(
+          label: 'ACCEPTING REQUESTS',
+          onPressed: () {
+            setState(() => _isRideStarted = true);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Trip started heading toward $_destination!'),
+                backgroundColor: SpottColors.success,
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: SpottSpacing.sm),
         Text(
           'Ready to travel to $_destination',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 13, color: Helper.muted, fontWeight: FontWeight.w600),
+          style: SpottTextStyles.caption,
         ),
       ],
     );
   }
 
-  // Active Navigation/Travel Screen
-  Widget _buildNavigationScreen(BuildContext context, bool isDark) {
-    final textColor = Helper.inkColor(context);
-    final cardBg = isDark ? const Color(0xFF161922) : Colors.white;
+  Widget _buildTripRequestsCard() {
+    return _PremiumCard(
+      child: Column(
+        children: [
+          _buildInfoRow('Best cost share', '₹650', SpottColors.success),
+          const Divider(height: SpottSpacing.lg, color: SpottColors.border),
+          _buildInfoRow('Closest pickup', '1.2 km', SpottColors.info),
+          const Divider(height: SpottSpacing.lg, color: SpottColors.border),
+          _buildInfoRow('Seats requested', '2', SpottColors.accentPurple),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildInfoRow(String label, String value, Color valueColor) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: SpottTextStyles.body),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: valueColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(SpottRadius.xs),
+          ),
+          child: Text(
+            value,
+            style: SpottTextStyles.label.copyWith(color: valueColor),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNavigationScreen(BuildContext context) {
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF9F9F9),
+      backgroundColor: SpottColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(SpottSpacing.lg),
               child: Row(
                 children: [
-                  const Icon(Icons.navigation_rounded, color: Colors.blueAccent, size: 28),
-                  const SizedBox(width: 12),
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: const BoxDecoration(
+                      color: SpottColors.accentPurpleSoft,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.navigation_rounded, color: SpottColors.accentPurple),
+                  ),
+                  const SizedBox(width: SpottSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Active Trip',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: textColor),
-                        ),
+                        const Text('Active Trip', style: SpottTextStyles.titleSmall),
+                        const SizedBox(height: 4),
                         Text(
                           'Traveling toward $_destination',
-                          style: const TextStyle(fontSize: 13, color: Helper.muted, fontWeight: FontWeight.w500),
+                          style: SpottTextStyles.caption,
                         ),
                       ],
                     ),
@@ -425,76 +407,82 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 ],
               ),
             ),
-            // Map area
-            const Expanded(
+            Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: MapPlaceholder(height: 380),
+                padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: SpottColors.surface1,
+                    borderRadius: BorderRadius.circular(SpottRadius.card),
+                    border: Border.all(color: SpottColors.border),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.map_rounded, size: 48, color: SpottColors.textTertiary),
+                        const SizedBox(height: SpottSpacing.sm),
+                        const Text('Map View', style: SpottTextStyles.caption),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-            // Destination navigation card
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SpotterCard(
-                color: cardBg,
-                children: [
-                  const StatusChip(label: 'ROUTE ACTIVE', color: Helper.success),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Arriving in 18 mins',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: textColor),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Distance remaining: 6.4 km',
-                    style: TextStyle(fontSize: 14, color: Helper.mutedColor(context), fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomButton(
-                          label: 'COMPLETE TRIP',
-                          onPressed: () {
-                            setState(() {
-                              _isRideStarted = false;
-                              _isTravelActive = false;
-                              _destination = null;
-                              _completedTripsToday += 1;
-                              _todayEarnings += 350; // Add cost share to earnings!
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Trip completed! Earnings updated.'),
-                                backgroundColor: Helper.success,
-                              ),
-                            );
-                          },
+              padding: const EdgeInsets.all(SpottSpacing.lg),
+              child: _PremiumCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const StatusChip(label: 'ROUTE ACTIVE', status: ChipStatus.verified),
+                    const SizedBox(height: SpottSpacing.md),
+                    const Text('Arriving in 18 mins', style: SpottTextStyles.title),
+                    const SizedBox(height: 4),
+                    const Text('Distance remaining: 6.4 km', style: SpottTextStyles.caption),
+                    const SizedBox(height: SpottSpacing.lg),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SpottButton.secondary(
+                            label: 'COMPLETE TRIP',
+                            onPressed: () {
+                              setState(() {
+                                _isRideStarted = false;
+                                _isTravelActive = false;
+                                _destination = null;
+                                _completedTripsToday += 1;
+                                _todayEarnings += 350;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Trip completed! Earnings updated.'),
+                                  backgroundColor: SpottColors.success,
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      OutlinedButton(
-                        onPressed: () {
-                          setState(() {
-                            _isRideStarted = false;
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Navigation paused')),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(color: Helper.line(context)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        const SizedBox(width: SpottSpacing.md),
+                        Container(
+                          height: 48,
+                          width: 48,
+                          decoration: BoxDecoration(
+                            color: SpottColors.surface2,
+                            borderRadius: BorderRadius.circular(SpottRadius.pill),
+                            border: Border.all(color: SpottColors.border),
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() => _isRideStarted = false);
+                            },
+                            icon: const Icon(Icons.pause_rounded, color: SpottColors.primary, size: 20),
+                          ),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Icon(Icons.pause, color: Colors.redAccent),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -503,26 +491,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     );
   }
 
-  // --- ACTIONS ---
-
   void _openLocationPicker(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-    final bgColor = isDark ? const Color(0xFF121212) : Colors.white;
-    final textColor = isDark ? Colors.white : Helper.ink;
-    final subtitleColor = isDark ? const Color(0xFF8E90A2) : const Color(0xFF667085);
-    final barrierColor = isDark ? Colors.black87 : Colors.black45;
-
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      backgroundColor: bgColor,
-      barrierColor: barrierColor,
+      backgroundColor: SpottColors.surface1,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
+          topLeft: Radius.circular(SpottRadius.xxl),
+          topRight: Radius.circular(SpottRadius.xxl),
         ),
       ),
       builder: (sheetContext) {
@@ -533,44 +511,34 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  20,
+                  SpottSpacing.lg,
                   0,
-                  20,
-                  24 + MediaQuery.of(context).viewInsets.bottom,
+                  SpottSpacing.lg,
+                  SpottSpacing.lg + MediaQuery.of(context).viewInsets.bottom,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Where are you heading?',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: textColor,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    // Search bar
+                    const Text('Where are you heading?', style: SpottTextStyles.title),
+                    const SizedBox(height: SpottSpacing.md),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: 4),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E1F25) : const Color(0xFFF2F4F7),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Helper.line(context)),
+                        color: SpottColors.surface2,
+                        borderRadius: BorderRadius.circular(SpottRadius.pill),
+                        border: Border.all(color: SpottColors.border),
                       ),
                       child: TextField(
                         controller: searchController,
                         autofocus: true,
-                        cursorColor: Helper.ink,
-                        decoration: InputDecoration(
+                        cursorColor: SpottColors.primary,
+                        decoration: const InputDecoration(
                           hintText: 'Enter destination...',
-                          hintStyle: TextStyle(color: subtitleColor, fontSize: 14),
                           border: InputBorder.none,
-                          icon: Icon(Icons.search_rounded, color: subtitleColor),
+                          icon: Icon(Icons.search_rounded, color: SpottColors.textSecondary),
                         ),
-                        style: TextStyle(color: textColor, fontSize: 14),
+                        style: SpottTextStyles.bodyLarge,
                         onSubmitted: (value) {
                           if (value.trim().isNotEmpty) {
                             Navigator.pop(sheetContext);
@@ -582,36 +550,41 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: SpottSpacing.lg),
                     Text(
-                      'Popular destinations',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: subtitleColor,
+                      'POPULAR DESTINATIONS',
+                      style: SpottTextStyles.overline.copyWith(
+                        color: SpottColors.textTertiary,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: SpottSpacing.md),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: _popularDestinations.map((dest) {
-                        return ActionChip(
-                          label: Text(dest),
-                          backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF2F4F7),
-                          labelStyle: TextStyle(
-                            color: textColor,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          onPressed: () {
+                        return GestureDetector(
+                          onTap: () {
+                            HapticFeedback.selectionClick();
                             Navigator.pop(sheetContext);
                             setState(() {
                               _isTravelActive = true;
                               _destination = dest;
                             });
                           },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: SpottColors.surface2,
+                              borderRadius: BorderRadius.circular(SpottRadius.pill),
+                              border: Border.all(color: SpottColors.border),
+                            ),
+                            child: Text(
+                              dest,
+                              style: SpottTextStyles.caption.copyWith(
+                                color: SpottColors.textPrimary,
+                              ),
+                            ),
+                          ),
                         );
                       }).toList(),
                     ),
@@ -626,14 +599,22 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 }
 
-class DriverRequestsAction extends StatelessWidget {
-  const DriverRequestsAction({super.key});
+class _PremiumCard extends StatelessWidget {
+  final Widget child;
+
+  const _PremiumCard({required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return const PrimaryAction(
-      label: 'View requests',
-      routeName: AppRoutes.jobRequests,
+    return Container(
+      padding: const EdgeInsets.all(SpottSpacing.cardInner),
+      decoration: BoxDecoration(
+        color: SpottColors.surface1,
+        borderRadius: BorderRadius.circular(SpottRadius.card),
+        border: Border.all(color: SpottColors.border),
+        boxShadow: SpottShadows.elevation1,
+      ),
+      child: child,
     );
   }
 }

@@ -15,8 +15,8 @@ class SupportScreen extends StatelessWidget {
     final isDark = ride.isDarkMode;
 
     final supportCase = SupportCase.forRide(
-      rideReference: ride.shareLink.split('/').last.isNotEmpty 
-          ? ride.shareLink.split('/').last 
+      rideReference: ride.shareLink.split('/').last.isNotEmpty
+          ? ride.shareLink.split('/').last
           : 'SPT2049',
       role: UserRole.rider,
       category: SupportCaseCategory.technical,
@@ -38,7 +38,11 @@ class SupportScreen extends StatelessWidget {
         leading: Navigator.canPop(context)
             ? IconButton(
                 icon: const Icon(Icons.arrow_back_rounded),
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false),
+                onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.home,
+                  (route) => false,
+                ),
               )
             : null,
         actions: [
@@ -89,10 +93,7 @@ class SupportScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Search for help topics',
-                      style: TextStyle(
-                        color: Helper.muted,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Helper.muted, fontSize: 14),
                     ),
                   ),
                 ],
@@ -113,7 +114,10 @@ class SupportScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: Helper.canvasSoft,
                       borderRadius: BorderRadius.circular(4),
@@ -127,14 +131,20 @@ class SupportScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _CaseInfoRow(label: 'Ride reference', value: supportCase.rideReference),
+                  _CaseInfoRow(
+                    label: 'Ride reference',
+                    value: supportCase.rideReference,
+                  ),
                   const Divider(height: 20),
                   _CaseInfoRow(label: 'Role', value: supportCase.roleLabel),
                   const Divider(height: 20),
-                  _CaseInfoRow(label: 'Issue category', value: supportCase.categoryLabel),
+                  _CaseInfoRow(
+                    label: 'Issue category',
+                    value: supportCase.categoryLabel,
+                  ),
                   const Divider(height: 20),
                   _CaseInfoRow(
-                    label: 'Status', 
+                    label: 'Status',
                     value: supportCase.statusLabel,
                     valueColor: isDark ? Colors.white : Colors.black,
                   ),
@@ -147,10 +157,7 @@ class SupportScreen extends StatelessWidget {
             // Popular Topics Bento-ish Section
             const Text(
               'Popular Topics',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 12),
 
@@ -170,19 +177,23 @@ class SupportScreen extends StatelessWidget {
                 _SupportTopicBentoCard(
                   icon: Icons.credit_card_rounded,
                   title: 'Payments & Charges',
-                  subtitle: 'Review receipts, dispute charges, or update billing.',
+                  subtitle:
+                      'Review receipts, dispute charges, or update billing.',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.dispute),
                 ),
                 _SupportTopicBentoCard(
                   icon: Icons.security_rounded,
                   title: 'Safety',
-                  subtitle: 'Report an incident, share feedback, or access safety tools.',
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.safetyToolkit),
+                  subtitle:
+                      'Report an incident, share feedback, or access safety tools.',
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.safetyToolkit),
                 ),
                 _SupportTopicBentoCard(
                   icon: Icons.manage_accounts_rounded,
                   title: 'Account & App',
-                  subtitle: 'Manage profile settings, passwords, and app performance.',
+                  subtitle:
+                      'Manage profile settings, passwords, and app performance.',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
                 ),
                 _SupportTopicBentoCard(
@@ -202,13 +213,11 @@ class SupportScreen extends StatelessWidget {
               children: [
                 const Text(
                   'Help with a recent trip',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                 ),
                 TextButton(
-                  onPressed: () => _showSupportMessage(context, 'All trips opened'),
+                  onPressed: () =>
+                      _showSupportMessage(context, 'All trips opened'),
                   child: const Text(
                     'View all',
                     style: TextStyle(
@@ -261,10 +270,7 @@ class SupportScreen extends StatelessWidget {
                           SizedBox(height: 2),
                           Text(
                             'To: 124 Main St. • \$14.50',
-                            style: TextStyle(
-                              color: Helper.muted,
-                              fontSize: 12,
-                            ),
+                            style: TextStyle(color: Helper.muted, fontSize: 12),
                           ),
                         ],
                       ),
@@ -292,13 +298,11 @@ class SupportScreen extends StatelessWidget {
                 elevation: 0,
               ),
               icon: const Icon(Icons.support_agent_rounded),
-              onPressed: () => _showSupportMessage(context, 'Support chat started'),
+              onPressed: () =>
+                  _showSupportMessage(context, 'Support chat started'),
               label: const Text(
                 'Contact Support',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
               ),
             ),
 
@@ -310,9 +314,9 @@ class SupportScreen extends StatelessWidget {
   }
 
   void _showSupportMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -404,10 +408,7 @@ class _SupportTopicBentoCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      color: Helper.muted,
-                      fontSize: 11,
-                    ),
+                    style: const TextStyle(color: Helper.muted, fontSize: 11),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

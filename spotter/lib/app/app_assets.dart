@@ -7,6 +7,9 @@ class AppAssets {
   static const String calendar = 'Calendar.png';
   static const String rikshaw = 'Rikshaw.png';
   static const String rikshawClock = 'Rikshaw_Clock.png';
+  static const String route = 'route.png';
+  static const String safety = 'safety.png';
+  static const String verification = 'verification.png';
 
   static String forRideId(String id) {
     switch (id.toLowerCase()) {

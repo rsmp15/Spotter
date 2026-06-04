@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../app/app_assets.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../helper.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/spacing.dart';
+import '../core/theme/typography.dart';
+import '../core/components/marketplace_card.dart';
 import '../spotter_widgets.dart';
 
 class ServicesScreen extends StatelessWidget {
@@ -12,445 +15,569 @@ class ServicesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-    final colors = _ServiceColors(isDark);
-
-    final primaryServices = [
-      _ServiceAction(
-        title: 'Find Trip',
-        subtitle: 'Search trips and share costs',
-        assetPath: AppAssets.car,
-        fallbackIcon: Icons.search_rounded,
-        badge: 'Popular',
-        onTap: () => Navigator.pushNamed(context, AppRoutes.destination),
-      ),
-      _ServiceAction(
-        title: 'Offer Trip',
-        subtitle: 'Share your route and earn',
-        assetPath: AppAssets.carClock,
-        fallbackIcon: Icons.add_road_rounded,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.createTrip),
-      ),
-      _ServiceAction(
-        title: 'Send Parcel',
-        subtitle: 'Ship via verified travelers',
-        assetPath: AppAssets.parcel,
-        fallbackIcon: Icons.inventory_2_rounded,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.parcelBooking),
-      ),
-      _ServiceAction(
-        title: 'My Trips',
-        subtitle: 'Past and upcoming trips',
-        assetPath: AppAssets.calendar,
-        fallbackIcon: Icons.history_rounded,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.activity),
-      ),
-    ];
-
-
+    final colors = _ServiceColors(ride.isDarkMode);
 
     return Scaffold(
       backgroundColor: colors.background,
       drawer: const SpotterMenuDrawer(),
       body: SafeArea(
         child: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
+          padding: const EdgeInsets.symmetric(
+            horizontal: SpottSpacing.lg,
+            vertical: SpottSpacing.lg,
+          ),
           children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _Header(colors: colors),
-                    const SizedBox(height: 20),
-                    _SearchCard(
-                      colors: colors,
-                      onTap: () =>
-                          Navigator.pushNamed(context, AppRoutes.destination),
-                    ),
-                    const SizedBox(height: 26),
-                    _SectionHeader(
-                      title: 'Travel and share',
-                      actionLabel: 'History',
-                      colors: colors,
-                      onActionTap: () =>
-                          Navigator.pushNamed(context, AppRoutes.activity),
-                    ),
-                    const SizedBox(height: 12),
-                    _ServiceGrid(actions: primaryServices, colors: colors),
-                    const SizedBox(height: 28),
-                    _SectionHeader(title: 'Manage your trip', colors: colors),
-                    const SizedBox(height: 12),
-                    _UtilityRows(colors: colors),
-                  ],
-                ),
-              ),
-            ),
+            _buildHeader(context, colors),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildHeroSearch(context, colors),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildServiceGrid(context, colors),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildFeaturedServices(context, colors),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildActivitySection(context, colors),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildUtilitiesSection(context, colors),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildPremiumBanner(context, colors),
+            const SizedBox(height: SpottSpacing.xl),
+            _buildBecomeTravelerBanner(context, colors),
+            const SizedBox(height: SpottSpacing.pageBottom),
           ],
         ),
       ),
     );
   }
-}
 
-class _Header extends StatelessWidget {
-  final _ServiceColors colors;
-
-  const _Header({required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildHeader(BuildContext context, _ServiceColors colors) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        IconButton(
-          icon: Icon(Icons.menu_rounded, color: colors.text),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Services',
-                style: TextStyle(
-                  color: colors.text,
-                  fontSize: 34,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Inter',
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Share rides, send parcels, save money',
-                style: TextStyle(
-                  color: colors.subtleText,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-        ),
-        IconButton.filledTonal(
-          tooltip: 'Payments',
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.wallet),
-          icon: const Icon(Icons.account_balance_wallet_rounded),
-        ),
-      ],
-    );
-  }
-}
-
-class _SearchCard extends StatelessWidget {
-  final _ServiceColors colors;
-  final VoidCallback onTap;
-
-  const _SearchCard({required this.colors, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 116),
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: colors.accent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
+        Row(
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    'Ready to go?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Find a trip and share travel costs',
-                    style: TextStyle(
-                      color: Color(0xFFE0E7FF),
-                      fontSize: 13,
-                      height: 1.25,
-                    ),
-                  ),
-                ],
-              ),
+            IconButton(
+              icon: Icon(Icons.menu_rounded, color: colors.text, size: 28),
+              onPressed: () => Scaffold.of(context).openDrawer(),
             ),
-            const SizedBox(width: 14),
-            Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.18),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.arrow_forward_rounded,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  final String? actionLabel;
-  final VoidCallback? onActionTap;
-  final _ServiceColors colors;
-
-  const _SectionHeader({
-    required this.title,
-    required this.colors,
-    this.actionLabel,
-    this.onActionTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            style: TextStyle(
-              color: colors.text,
-              fontSize: 21,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Inter',
-            ),
-          ),
-        ),
-        if (actionLabel != null)
-          TextButton(
-            onPressed: onActionTap,
-            child: Text(
-              actionLabel!,
-              style: const TextStyle(fontWeight: FontWeight.w800),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _ServiceGrid extends StatelessWidget {
-  final List<_ServiceAction> actions;
-  final _ServiceColors colors;
-
-  const _ServiceGrid({required this.actions, required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      itemCount: actions.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.34,
-      ),
-      itemBuilder: (context, index) {
-        return _ServiceCard(action: actions[index], colors: colors);
-      },
-    );
-  }
-}
-
-class _ServiceCard extends StatelessWidget {
-  final _ServiceAction action;
-  final _ServiceColors colors;
-
-  const _ServiceCard({required this.action, required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: action.onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: colors.card,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.border),
-        ),
-        child: Stack(
-          children: [
-            if (action.badge != null)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: _Badge(label: action.badge!, colors: colors),
-              ),
+            const SizedBox(width: SpottSpacing.sm),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _ServiceImage(
-                  assetPath: action.assetPath,
-                  fallbackIcon: action.fallbackIcon,
-                  size: 44,
-                  iconColor: colors.icon,
+                Text(
+                  'Services',
+                  style: SpottTextStyles.headline.copyWith(
+                    color: colors.text,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      action.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colors.text,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      action.subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colors.subtleText,
-                        fontSize: 11,
-                        height: 1.2,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 2),
+                Text(
+                  'Travel • Parcel • Community',
+                  style: SpottTextStyles.caption.copyWith(
+                    color: colors.subtleText,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-
-
-class _UtilityRows extends StatelessWidget {
-  final _ServiceColors colors;
-
-  const _UtilityRows({required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _ServiceRow(
-          icon: Icons.account_balance_wallet_rounded,
-          title: 'Payments',
-          subtitle: 'Review payments and transactions',
-          colors: colors,
-          onTap: () => Navigator.pushNamed(context, AppRoutes.wallet),
-        ),
-        const SizedBox(height: 10),
-        _ServiceRow(
-          icon: Icons.shield_rounded,
-          title: 'Safety toolkit',
-          subtitle: 'Trip sharing, help, and support',
-          colors: colors,
-          onTap: () => Navigator.pushNamed(context, AppRoutes.safetyToolkit),
-        ),
-        const SizedBox(height: 10),
-        _ServiceRow(
-          icon: Icons.person_rounded,
-          title: 'Account preferences',
-          subtitle: 'Profile and settings',
-          colors: colors,
-          onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+        IconButton(
+          tooltip: 'Wallet',
+          icon: Icon(Icons.account_balance_wallet_rounded, color: colors.text),
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.wallet),
         ),
       ],
     );
   }
-}
 
-class _ServiceRow extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-  final _ServiceColors colors;
+  Widget _buildHeroSearch(BuildContext context, _ServiceColors colors) {
+    return _MarketCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Search Trips & Services',
+            style: SpottTextStyles.title.copyWith(
+              color: colors.text,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: SpottSpacing.md),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSearchCategory('🔍 Find Ride'),
+              _buildSearchCategory('📦 Send Parcel'),
+              _buildSearchCategory('🚗 Offer Trip'),
+            ],
+          ),
+          const SizedBox(height: SpottSpacing.lg),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () =>
+                  Navigator.pushNamed(context, AppRoutes.destination),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: SpottColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: SpottSpacing.md),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+              child: const Text('Search', style: SpottTextStyles.titleSmall),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  const _ServiceRow({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-    required this.colors,
-  });
+  Widget _buildSearchCategory(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: SpottColors.surface2,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: SpottColors.border),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: SpottColors.textPrimary,
+        ),
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
+  Widget _buildServiceGrid(BuildContext context, _ServiceColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _GridItem(
+                title: 'Find Trip',
+                subtitle: '1,240 active rides',
+                icon: Icons.directions_car_rounded,
+                accentColor: SpottColors.primary,
+                onTap: () =>
+                    Navigator.pushNamed(context, AppRoutes.destination),
+              ),
+            ),
+            const SizedBox(width: SpottSpacing.md),
+            Expanded(
+              child: _GridItem(
+                title: 'Offer Trip',
+                subtitle: 'Earn ₹800 avg',
+                icon: Icons.add_road_rounded,
+                accentColor: SpottColors.success,
+                onTap: () => Navigator.pushNamed(context, AppRoutes.createTrip),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: SpottSpacing.md),
+        Row(
+          children: [
+            Expanded(
+              child: _GridItem(
+                title: 'Send Parcel',
+                subtitle: '300 deliveries today',
+                icon: Icons.inventory_2_outlined,
+                accentColor: SpottColors.warning,
+                onTap: () =>
+                    Navigator.pushNamed(context, AppRoutes.parcelBooking),
+              ),
+            ),
+            const SizedBox(width: SpottSpacing.md),
+            Expanded(
+              child: _GridItem(
+                title: 'Nearby',
+                subtitle: '42 travelers nearby',
+                icon: Icons.people_outline_rounded,
+                accentColor: SpottColors.accentPurple,
+                onTap: () => Navigator.pushNamed(context, AppRoutes.activity),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeaturedServices(BuildContext context, _ServiceColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Featured This Week', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
+        SizedBox(
+          height: 140,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            children: [
+              _buildFeaturedCard(
+                title: 'Ride Sharing',
+                label1: 'Save up to ₹1200',
+                label2: '12k active travelers',
+                icon: Icons.directions_car_filled_outlined,
+                color: SpottColors.primary,
+              ),
+              const SizedBox(width: SpottSpacing.md),
+              _buildFeaturedCard(
+                title: 'Parcel Delivery',
+                label1: 'Starting ₹99',
+                label2: '99% success rate',
+                icon: Icons.local_shipping_outlined,
+                color: SpottColors.accentPurple,
+              ),
+              const SizedBox(width: SpottSpacing.md),
+              _buildFeaturedCard(
+                title: 'Group Travel',
+                label1: 'Weekend trips',
+                label2: 'College routes',
+                icon: Icons.group_outlined,
+                color: SpottColors.success,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeaturedCard({
+    required String title,
+    required String label1,
+    required String label2,
+    required IconData icon,
+    required Color color,
+  }) {
+    return SizedBox(
+      width: 200,
+      child: _MarketCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: SpottTextStyles.titleSmall.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Text(
+              label1,
+              style: SpottTextStyles.label.copyWith(
+                color: SpottColors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label2,
+              style: SpottTextStyles.caption.copyWith(
+                color: SpottColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActivitySection(BuildContext context, _ServiceColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Your Activity', style: SpottTextStyles.headline),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.activity),
+              child: const Text(
+                'See All',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: SpottSpacing.xs),
+        Row(
+          children: [
+            Expanded(
+              child: _MarketCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Upcoming Ride',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: SpottColors.primary,
+                          ),
+                        ),
+                        Icon(
+                          Icons.directions_car_rounded,
+                          color: SpottColors.primary,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: SpottSpacing.sm),
+                    Text(
+                      'Kolhapur → Pune',
+                      style: SpottTextStyles.titleSmall.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Tomorrow • 9:00 AM',
+                      style: SpottTextStyles.caption.copyWith(
+                        color: SpottColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: SpottSpacing.md),
+            Expanded(
+              child: _MarketCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Send Parcel',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: SpottColors.accentPurple,
+                          ),
+                        ),
+                        Icon(
+                          Icons.inventory_2_rounded,
+                          color: SpottColors.accentPurple,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: SpottSpacing.sm),
+                    Text(
+                      'Package Delivered',
+                      style: SpottTextStyles.titleSmall.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '2 hrs ago',
+                      style: SpottTextStyles.caption.copyWith(
+                        color: SpottColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUtilitiesSection(BuildContext context, _ServiceColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Utilities', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
+        _UtilityRow(
+          icon: Icons.account_balance_wallet_rounded,
+          title: 'Wallet',
+          subtitle: 'Review payments and transactions',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.wallet),
+        ),
+        const SizedBox(height: SpottSpacing.sm),
+        _UtilityRow(
+          icon: Icons.shield_rounded,
+          title: 'Safety Toolkit',
+          subtitle: 'Trip sharing, help, and support',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.safetyToolkit),
+        ),
+        const SizedBox(height: SpottSpacing.sm),
+        _UtilityRow(
+          icon: Icons.person_rounded,
+          title: 'Profile',
+          subtitle: 'Account details and preferences',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+        ),
+        const SizedBox(height: SpottSpacing.sm),
+        _UtilityRow(
+          icon: Icons.support_agent_rounded,
+          title: 'Support',
+          subtitle: 'Get help and resolve issues',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.support),
+        ),
+        const SizedBox(height: SpottSpacing.sm),
+        _UtilityRow(
+          icon: Icons.notifications_rounded,
+          title: 'Notifications',
+          subtitle: 'Check alerts and messages',
+          onTap: () {},
+        ),
+        const SizedBox(height: SpottSpacing.sm),
+        _UtilityRow(
+          icon: Icons.share_rounded,
+          title: 'Invite Friends',
+          subtitle: 'Share Spott and get rewards',
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPremiumBanner(BuildContext context, _ServiceColors colors) {
+    return MarketplaceCard(
+      onTap: () {},
+      borderRadius: 24,
+      padding: EdgeInsets.zero,
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(SpottSpacing.lg),
         decoration: BoxDecoration(
-          color: colors.card,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.border),
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         child: Row(
           children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: colors.chip,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(icon, color: colors.icon, size: 22),
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
-                    style: TextStyle(
-                      color: colors.text,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                    'SPOTT Premium',
+                    style: SpottTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: SpottSpacing.xs),
                   Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: colors.subtleText,
+                    'Priority support • Early trip access • Exclusive discounts',
+                    style: SpottTextStyles.caption.copyWith(
+                      color: Colors.white.withOpacity(0.9),
                       fontSize: 12,
-                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: colors.subtleText),
+            const SizedBox(width: SpottSpacing.md),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Learn More',
+                style: SpottTextStyles.label.copyWith(
+                  color: const Color(0xFF6D28D9),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBecomeTravelerBanner(
+    BuildContext context,
+    _ServiceColors colors,
+  ) {
+    return MarketplaceCard(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.kyc),
+      borderRadius: 24,
+      padding: EdgeInsets.zero,
+      child: Container(
+        padding: const EdgeInsets.all(SpottSpacing.lg),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            colors: [SpottColors.primary, SpottColors.primaryDark],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Earn From Empty Seats',
+                    style: SpottTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: SpottSpacing.xs),
+                  Text(
+                    'Recover fuel costs and travel smarter.',
+                    style: SpottTextStyles.caption.copyWith(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: SpottSpacing.md),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Join Now',
+                style: SpottTextStyles.label.copyWith(
+                  color: SpottColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -458,75 +585,143 @@ class _ServiceRow extends StatelessWidget {
   }
 }
 
-class _Badge extends StatelessWidget {
-  final String label;
-  final _ServiceColors colors;
+class _GridItem extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color accentColor;
+  final VoidCallback onTap;
 
-  const _Badge({required this.label, required this.colors});
+  const _GridItem({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MarketplaceCard(
+      onTap: onTap,
+      borderRadius: 24,
+      padding: const EdgeInsets.all(SpottSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: accentColor, size: 24),
+          ),
+          const SizedBox(height: SpottSpacing.md),
+          Text(
+            title,
+            style: SpottTextStyles.titleSmall.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: SpottTextStyles.caption.copyWith(
+              color: SpottColors.textSecondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UtilityRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _UtilityRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MarketplaceCard(
+      onTap: onTap,
+      borderRadius: 16,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              color: SpottColors.surface2,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: SpottColors.primary, size: 20),
+          ),
+          const SizedBox(width: SpottSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: SpottTextStyles.titleSmall.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: SpottTextStyles.caption.copyWith(
+                    color: SpottColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right_rounded, color: SpottColors.textMuted),
+        ],
+      ),
+    );
+  }
+}
+
+class _MarketCard extends StatelessWidget {
+  final Widget child;
+
+  const _MarketCard({required this.child});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.all(SpottSpacing.cardInner),
       decoration: BoxDecoration(
-        color: colors.warning,
-        borderRadius: BorderRadius.circular(999),
+        color: SpottColors.surface1,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: SpottColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 9,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
+      child: child,
     );
   }
-}
-
-class _ServiceImage extends StatelessWidget {
-  final String assetPath;
-  final IconData fallbackIcon;
-  final double size;
-  final Color iconColor;
-
-  const _ServiceImage({
-    required this.assetPath,
-    required this.fallbackIcon,
-    required this.size,
-    required this.iconColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      assetPath,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(fallbackIcon, size: size, color: iconColor);
-      },
-    );
-  }
-}
-
-class _ServiceAction {
-  final String title;
-  final String subtitle;
-  final String assetPath;
-  final IconData fallbackIcon;
-  final String? badge;
-  final VoidCallback onTap;
-
-  const _ServiceAction({
-    required this.title,
-    required this.subtitle,
-    required this.assetPath,
-    required this.fallbackIcon,
-    required this.onTap,
-    this.badge,
-  });
 }
 
 class _ServiceColors {
@@ -536,13 +731,6 @@ class _ServiceColors {
 
   Color get background =>
       isDark ? Helper.darkBackground : Helper.backgroundColor;
-  Color get card => isDark ? const Color(0xFF121212) : Colors.white;
   Color get text => isDark ? Colors.white : Helper.ink;
   Color get subtleText => isDark ? const Color(0xFF98A2B3) : Helper.muted;
-  Color get border => isDark ? const Color(0xFF222530) : Helper.lineColor;
-  Color get chip => isDark ? const Color(0xFF1E293B) : const Color(0xFFF2F4F7);
-  Color get icon => isDark ? Colors.white : Helper.primary;
-  Color get accent => isDark ? const Color(0xFF1F3EA8) : Helper.primary;
-  Color get inverse => isDark ? const Color(0xFF1E293B) : Helper.ink;
-  Color get warning => isDark ? const Color(0xFFFFB020) : Helper.warning;
 }

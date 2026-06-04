@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _rideController = RideController();
     unawaited(_rideController.initialize());
-    
+
     _remoteConfigRepository = RemoteConfigRepository();
     unawaited(_remoteConfigRepository.fetchAndActivate());
   }

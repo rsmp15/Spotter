@@ -43,14 +43,8 @@ class RideOtpScreen extends StatelessWidget {
         ),
         const SpotterCard(
           children: [
-            InfoRow(
-              label: 'Driver ID',
-              value: 'Matched',
-            ),
-            InfoRow(
-              label: 'Vehicle plate',
-              value: 'Matched',
-            ),
+            InfoRow(label: 'Driver ID', value: 'Matched'),
+            InfoRow(label: 'Vehicle plate', value: 'Matched'),
             InfoRow(label: 'Start trip', value: 'After OTP'),
           ],
         ),

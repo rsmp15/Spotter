@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'app_routes.dart';
 import '../controllers/ride_controller.dart';
@@ -21,7 +22,7 @@ import '../screens/payment_screen.dart';
 import '../screens/ride_otp_screen.dart';
 import '../screens/ride_complete_screen.dart';
 import '../screens/rating_screen.dart';
-import '../screens/rider_bottom_nav.dart';
+import '../core/components/floating_bottom_nav.dart';
 
 class SpotterOverlayShell extends StatefulWidget {
   const SpotterOverlayShell({super.key});
@@ -119,7 +120,11 @@ class _SpotterOverlayShellState extends State<SpotterOverlayShell>
       backgroundColor: Helper.backgroundColor,
       drawer: const _HomeMenuDrawer(),
       bottomNavigationBar: showBottomNavBar
-          ? const RiderBottomNav(activeTab: RiderBottomTab.home)
+          ? FloatingBottomNav(
+              role: ride.currentUserRole,
+              currentIndex: ride.activeTabIndex,
+              onTap: (index) => ride.switchTab(index),
+            )
           : null,
       body: Stack(
         children: [
@@ -133,7 +138,8 @@ class _SpotterOverlayShellState extends State<SpotterOverlayShell>
                     status: ride.status,
                     animationValue: _mapAnimationController.value,
                     isDarkMode: ride.isDarkMode,
-                    isPooling: ride.selectedRideOption?.id == 'pool' ||
+                    isPooling:
+                        ride.selectedRideOption?.id == 'pool' ||
                         ride.selectedRideOption?.id == 'bike_pool',
                   ),
                 );
@@ -488,6 +494,12 @@ class _HomeMenuDrawer extends StatelessWidget {
               label: 'Services',
               routeName: '/services',
             ),
+            if (kDebugMode)
+              const _DrawerLink(
+                icon: Icons.developer_mode_rounded,
+                label: 'UI Sandbox',
+                routeName: '/figma-plugin-sandbox',
+              ),
           ],
         ),
       ),
@@ -668,7 +680,11 @@ class MockMapPainter extends CustomPainter {
           10,
           Paint()..color = const Color(0xFFFF8A00).withValues(alpha: 0.25),
         );
-        canvas.drawCircle(coPickupOffset, 5, Paint()..color = const Color(0xFFFF8A00));
+        canvas.drawCircle(
+          coPickupOffset,
+          5,
+          Paint()..color = const Color(0xFFFF8A00),
+        );
 
         // Co-rider 1 Drop Dot (Amber)
         canvas.drawCircle(
@@ -676,7 +692,11 @@ class MockMapPainter extends CustomPainter {
           10,
           Paint()..color = const Color(0xFFFF8A00).withValues(alpha: 0.25),
         );
-        canvas.drawCircle(coDropOffset, 5, Paint()..color = const Color(0xFFFF8A00));
+        canvas.drawCircle(
+          coDropOffset,
+          5,
+          Paint()..color = const Color(0xFFFF8A00),
+        );
       }
 
       // Route endpoint markers

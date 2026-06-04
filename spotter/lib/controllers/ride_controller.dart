@@ -7,7 +7,6 @@ import '../models/ride_models.dart';
 import '../models/spott_models.dart' hide TripStatus;
 import '../models/spott_models.dart' as spott;
 import '../repositories/ride_repository.dart';
-import '../screens/rider_bottom_nav.dart';
 
 enum RideLoadState { idle, loading, ready, failure }
 
@@ -41,7 +40,7 @@ class RideController extends ChangeNotifier {
   String shareLink = MockRideRepository.seedData.shareLink;
   RecoverableActionState actionState = RecoverableActionState.idle;
   bool isDarkMode = false;
-  RiderBottomTab activeTab = RiderBottomTab.home;
+  int activeTabIndex = 0;
 
   // Parcel delivery states
   ParcelPackage? activeParcel;
@@ -51,6 +50,13 @@ class RideController extends ChangeNotifier {
 
   // Active trips search result
   List<Trip> activeTrips = [];
+
+  // Vehicle Management State
+  List<Vehicle> vehicles = [];
+  String? selectedVehicleId;
+
+  // Traveler Trips Management State
+  List<Trip> travelerTrips = [];
 
   // Mock passenger DB for requests mapping
   static const Map<String, Map<String, dynamic>> mockPassengerDb = {
@@ -133,8 +139,8 @@ class RideController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void switchTab(RiderBottomTab tab) {
-    activeTab = tab;
+  void switchTab(int tabIndex) {
+    activeTabIndex = tabIndex;
     notifyListeners();
   }
 
@@ -143,7 +149,64 @@ class RideController extends ChangeNotifier {
   RideController({RideRepository? repository})
     : _repository = repository ?? const MockRideRepository() {
     _selectSafeDefaults();
-    
+
+    // Seed default vehicles
+    vehicles = [
+      const Vehicle(
+        id: 'veh_01',
+        userId: 'current_user',
+        vehicleType: 'Car',
+        vehicleNumber: 'MH-12-PQ-9876',
+        vehicleModel: 'Honda City',
+        verificationStatus: VerificationStatus.verified,
+      ),
+      const Vehicle(
+        id: 'veh_02',
+        userId: 'current_user',
+        vehicleType: 'Bike',
+        vehicleNumber: 'MH-12-RS-5432',
+        vehicleModel: 'Honda Activa 6G',
+        verificationStatus: VerificationStatus.verified,
+      ),
+      const Vehicle(
+        id: 'veh_03',
+        userId: 'current_user',
+        vehicleType: 'Car',
+        vehicleNumber: 'MH-12-XY-0001',
+        vehicleModel: 'Maruti Swift',
+        verificationStatus: VerificationStatus.pending,
+      ),
+    ];
+    selectedVehicleId = 'veh_02';
+
+    // Seed drivers including current user
+    drivers = [
+      ...MockRideRepository.seedData.drivers,
+      const Driver(
+        id: 'current_user',
+        name: 'Ritesh Mahatme (You)',
+        vehicle: 'Honda Activa 6G - MH 12 RS 5432',
+        eta: 'Departs 10:00 PM',
+        rating: 5.0,
+        completedRides: 147,
+      ),
+    ];
+
+    // Seed traveler trips
+    travelerTrips = [
+      Trip(
+        id: 'trip_traveler_01',
+        travelerId: 'current_user',
+        source: 'Pune',
+        destination: 'Kolhapur',
+        departureTime: DateTime.now().add(const Duration(hours: 5)),
+        availableSeats: 2,
+        pricePerSeat: 450,
+        parcelAllowed: true,
+        status: spott.TripStatus.active,
+      ),
+    ];
+
     // Seed active trips for search
     activeTrips = [
       Trip(
@@ -179,13 +242,26 @@ class RideController extends ChangeNotifier {
         parcelAllowed: true,
         status: spott.TripStatus.active,
       ),
+      ...travelerTrips,
     ];
 
     // Seed incoming requests for Traveler flow
     tripRequests = [
-      const TripRequest(id: 'req_01', tripId: 'trip_pune_mumbai', passengerId: 'usr_psg_01'),
-      const TripRequest(id: 'req_02', tripId: 'trip_pune_mumbai', passengerId: 'usr_psg_02'),
-      const TripRequest(id: 'req_03', tripId: 'trip_pune_mumbai', passengerId: 'usr_psg_03'),
+      const TripRequest(
+        id: 'req_01',
+        tripId: 'trip_pune_mumbai',
+        passengerId: 'usr_psg_01',
+      ),
+      const TripRequest(
+        id: 'req_02',
+        tripId: 'trip_pune_mumbai',
+        passengerId: 'usr_psg_02',
+      ),
+      const TripRequest(
+        id: 'req_03',
+        tripId: 'trip_pune_mumbai',
+        passengerId: 'usr_psg_03',
+      ),
     ];
   }
 
@@ -354,7 +430,17 @@ class RideController extends ChangeNotifier {
     pickup = data.pickup;
     destination = data.destination;
     rideOptions = List.unmodifiable(data.rideOptions);
-    drivers = List.unmodifiable(data.drivers);
+    drivers = List.unmodifiable([
+      ...data.drivers,
+      const Driver(
+        id: 'current_user',
+        name: 'Ritesh Mahatme (You)',
+        vehicle: 'Honda Activa 6G - MH 12 RS 5432',
+        eta: 'Departs 10:00 PM',
+        rating: 5.0,
+        completedRides: 147,
+      ),
+    ]);
     paymentMethods = List.unmodifiable(data.paymentMethods);
     shareLink = data.shareLink;
     _selectSafeDefaults();
@@ -421,6 +507,57 @@ class RideController extends ChangeNotifier {
   /// Generate a random 4-digit PIN for parcel verification.
   static String _generatePin() {
     return (Random().nextInt(9000) + 1000).toString();
+  }
+
+  Future<void> confirmRide() async {
+    status = TripStatus.driverAssigned;
+    notifyListeners();
+  }
+
+  // --- Vehicle CRUD ---
+  void addVehicle(Vehicle vehicle) {
+    vehicles = [...vehicles, vehicle];
+    selectedVehicleId ??= vehicle.id;
+    notifyListeners();
+  }
+
+  void updateVehicle(Vehicle vehicle) {
+    vehicles = vehicles.map((v) => v.id == vehicle.id ? vehicle : v).toList();
+    notifyListeners();
+  }
+
+  void deleteVehicle(String id) {
+    vehicles = vehicles.where((v) => v.id != id).toList();
+    if (selectedVehicleId == id) {
+      selectedVehicleId = vehicles.isNotEmpty ? vehicles.first.id : null;
+    }
+    notifyListeners();
+  }
+
+  void setSelectedVehicle(String id) {
+    selectedVehicleId = id;
+    notifyListeners();
+  }
+
+  // --- Trip CRUD ---
+  void addTrip(Trip trip) {
+    travelerTrips = [...travelerTrips, trip];
+    activeTrips = [...activeTrips, trip];
+    notifyListeners();
+  }
+
+  void updateTrip(Trip trip) {
+    travelerTrips = travelerTrips
+        .map((t) => t.id == trip.id ? trip : t)
+        .toList();
+    activeTrips = activeTrips.map((t) => t.id == trip.id ? trip : t).toList();
+    notifyListeners();
+  }
+
+  void deleteTrip(String id) {
+    travelerTrips = travelerTrips.where((t) => t.id != id).toList();
+    activeTrips = activeTrips.where((t) => t.id != id).toList();
+    notifyListeners();
   }
 
   @override

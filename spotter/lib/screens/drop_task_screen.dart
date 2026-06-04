@@ -18,10 +18,7 @@ class DropTaskScreen extends StatelessWidget {
           children: [
             InfoRow(label: 'Rider', value: 'Ritesh M'),
             InfoRow(label: 'Drop', value: 'Koregaon Park'),
-            InfoRow(
-              label: 'Payment',
-              value: 'Confirmed',
-            ),
+            InfoRow(label: 'Payment', value: 'Confirmed'),
           ],
         ),
       ],

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../helper.dart';
 import '../spotter_widgets.dart';
-import '../screens/rider_bottom_nav.dart';
+// no bottom nav
 
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key});
@@ -15,7 +15,6 @@ class WalletScreen extends StatelessWidget {
       subtitle: 'Balance, payment methods, offers, and recent activity.',
       showBack: false,
       showMenu: true,
-      bottomNavigationBar: const RiderBottomNav(activeTab: RiderBottomTab.profile),
       content: [
         SpotterCard(
           color: Helper.primary,
@@ -82,7 +81,10 @@ class WalletScreen extends StatelessWidget {
                       ),
                       minimumSize: const Size.fromHeight(56),
                     ),
-                    child: const Text('Methods', style: TextStyle(fontWeight: FontWeight.w500)),
+                    child: const Text(
+                      'Methods',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
               ],
@@ -95,10 +97,7 @@ class WalletScreen extends StatelessWidget {
             SizedBox(height: 12),
             InfoRow(label: 'Default card', value: 'Personal **** 4242'),
             InfoRow(label: 'Auto top-up', value: 'Enabled'),
-            InfoRow(
-              label: 'Reward credits',
-              value: 'Rs 64',
-            ),
+            InfoRow(label: 'Reward credits', value: 'Rs 64'),
           ],
         ),
         _WalletActionCard(
@@ -194,7 +193,7 @@ class _WalletActionCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Helper.mutedColor(context), 
+                      color: Helper.mutedColor(context),
                       fontSize: 13,
                     ),
                   ),
@@ -227,7 +226,7 @@ class _WalletSectionTitle extends StatelessWidget {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 18, 
+          fontSize: 18,
           fontWeight: FontWeight.w700,
           color: Helper.inkColor(context),
         ),
@@ -276,7 +275,7 @@ class _TransactionTile extends StatelessWidget {
                   Text(
                     time,
                     style: TextStyle(
-                      color: Helper.mutedColor(context), 
+                      color: Helper.mutedColor(context),
                       fontSize: 12,
                     ),
                   ),

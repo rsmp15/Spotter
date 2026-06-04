@@ -41,14 +41,8 @@ class _DisputeCaseScreenState extends State<DisputeCaseScreen> {
           children: [
             InfoRow(label: 'Ride reference', value: supportCase.rideReference),
             InfoRow(label: 'Role', value: supportCase.roleLabel),
-            InfoRow(
-              label: 'Issue category',
-              value: supportCase.categoryLabel,
-            ),
-            InfoRow(
-              label: 'Status',
-              value: supportCase.statusLabel,
-            ),
+            InfoRow(label: 'Issue category', value: supportCase.categoryLabel),
+            InfoRow(label: 'Status', value: supportCase.statusLabel),
           ],
         ),
         WhiteTextField(

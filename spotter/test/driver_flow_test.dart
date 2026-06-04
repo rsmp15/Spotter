@@ -7,6 +7,8 @@ import 'helpers/app_test_harness.dart';
 void main() {
   testWidgets('driver workflow reaches pickup and drop tasks', (tester) async {
     await pumpSpotterRoute(tester, AppRoutes.driverHome);
+    tester.view.physicalSize = const Size(800, 2400);
+    await tester.pump();
 
     expect(find.text('Earn on your trip'), findsOneWidget);
 

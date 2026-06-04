@@ -2,10 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
-import '../helper.dart';
 import '../models/ride_models.dart';
-import '../spotter_widgets.dart';
-import '../white_text_field.dart';
+import '../core/components/glass_card.dart';
+import '../core/components/glass_scaffold.dart';
+import '../core/components/spott_buttons.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/spacing.dart';
+import '../core/theme/typography.dart';
+import '../core/theme/radius.dart';
 
 class ParcelTrackingScreen extends StatefulWidget {
   const ParcelTrackingScreen({super.key});
@@ -50,7 +54,7 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Invalid Recipient PIN! Check with recipient (PIN is ${ride.parcelVerificationPin})'),
-          backgroundColor: Colors.red,
+          backgroundColor: SpottColors.primary,
         ),
       );
     }
@@ -59,149 +63,185 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
     final package = ride.activeParcel;
     final driver = ride.assignedParcelDriver ?? ride.drivers.first;
 
-    final contentColor = isDark ? Colors.white : Colors.black;
+    return GlassScaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const BackButton(color: SpottColors.textPrimary),
+        title: const Text('Track Parcel', style: SpottTextStyles.sectionTitle),
+        centerTitle: true,
+      ),
+      body: Stack(
+        children: [
+          ListView(
+            padding: const EdgeInsets.all(SpottSpacing.lg),
+            children: [
+              Text('Real-time delivery progress via private transport.', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
+              const SizedBox(height: SpottSpacing.xl),
 
-
-    return SpotterScreen(
-      title: 'Track Parcel',
-      subtitle: 'Real-time delivery progress via private transport.',
-      content: [
-        // Map Preview
-        const MapPlaceholder(height: 180),
-        const SizedBox(height: 14),
-
-        // Active Delivery Driver details
-        SpotterCard(
-          color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-          padding: const EdgeInsets.all(16),
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Helper.canvasSoft,
-                  child: Text(
-                    driver.name[0],
-                    style: const TextStyle(
-                      color: Helper.ink,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+              // Map Preview
+              Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  color: SpottColors.surface1,
+                  borderRadius: BorderRadius.circular(SpottRadius.card),
+                  border: Border.all(color: SpottColors.border),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        driver.name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: contentColor,
+                child: const Center(
+                  child: Icon(Icons.map_rounded, size: 48, color: SpottColors.textSecondary),
+                ),
+              ),
+              const SizedBox(height: SpottSpacing.md),
+
+              // Active Delivery Driver details
+              GlassCard(
+                padding: const EdgeInsets.all(SpottSpacing.md),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: SpottColors.surface1,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: SpottColors.border),
+                      ),
+                      child: Center(
+                        child: Text(
+                          driver.name[0],
+                          style: SpottTextStyles.sectionTitle.copyWith(color: SpottColors.textPrimary),
                         ),
                       ),
-                      Text(
-                        '${driver.vehicle} • ${driver.rating} ★',
-                        style: const TextStyle(
-                          color: Helper.muted,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    _internalStatus == TripStatus.driverAssigned ? '3 mins' : 'En route',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      color: contentColor,
                     ),
-                  ),
+                    const SizedBox(width: SpottSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(driver.name, style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold, color: SpottColors.textPrimary)),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              const Icon(Icons.directions_car_rounded, color: SpottColors.textSecondary, size: 14),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  '${driver.vehicle}  •  ${driver.rating} ★',
+                                  style: SpottTextStyles.caption,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: SpottColors.primary.withValues(alpha: 0.15),
+                        border: Border.all(color: SpottColors.primary),
+                        borderRadius: BorderRadius.circular(SpottRadius.sm),
+                      ),
+                      child: Text(
+                        _internalStatus == TripStatus.driverAssigned ? '3 mins' : 'En route',
+                        style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold, color: SpottColors.primary),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
+              ),
+              const SizedBox(height: SpottSpacing.md),
 
-        // Status Timeline Details
-        SpotterCard(
-          color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              'Delivery Milestone',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: contentColor),
-            ),
-            const SizedBox(height: 16),
-            _buildMilestoneRow(
-              label: 'Delivery Partner Assigned',
-              detail: 'Private driver ${driver.name} is on the way',
-              active: true,
-              completed: true,
-              isDark: isDark,
-            ),
-            _buildMilestoneRow(
-              label: 'Package Picked Up',
-              detail: 'Driver collected items from ${package?.pickup.title ?? "Hostel Block A"}',
-              active: _internalStatus == TripStatus.inProgress,
-              completed: _internalStatus == TripStatus.inProgress,
-              isDark: isDark,
-            ),
-            _buildMilestoneRow(
-              label: 'Delivered (Requires PIN)',
-              detail: 'Enter recipient PIN to complete transaction',
-              active: _internalStatus == TripStatus.inProgress,
-              completed: false,
-              isLast: true,
-              isDark: isDark,
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
+              // Status Timeline Details
+              GlassCard(
+                padding: const EdgeInsets.all(SpottSpacing.xl),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Delivery Milestone', style: SpottTextStyles.sectionTitle),
+                    const SizedBox(height: SpottSpacing.xl),
+                    _buildMilestoneRow(
+                      label: 'Delivery Partner Assigned',
+                      detail: 'Private driver ${driver.name} is on the way',
+                      active: true,
+                      completed: true,
+                    ),
+                    _buildMilestoneRow(
+                      label: 'Package Picked Up',
+                      detail: 'Driver collected items from ${package?.pickup.title ?? "Hostel Block A"}',
+                      active: _internalStatus == TripStatus.inProgress,
+                      completed: _internalStatus == TripStatus.inProgress,
+                    ),
+                    _buildMilestoneRow(
+                      label: 'Delivered (Requires PIN)',
+                      detail: 'Enter recipient PIN to complete transaction',
+                      active: _internalStatus == TripStatus.inProgress,
+                      completed: false,
+                      isLast: true,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: SpottSpacing.md),
 
-        // PoD OTP verification Box
-        SpotterCard(
-          color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.5) : Colors.white,
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              'Enter Recipient Delivery PIN',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: contentColor),
+              // PoD OTP verification Box
+              GlassCard(
+                padding: const EdgeInsets.all(SpottSpacing.xl),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.vpn_key_rounded, color: SpottColors.primary, size: 20),
+                        const SizedBox(width: SpottSpacing.sm),
+                        Expanded(
+                          child: Text('Enter Recipient Delivery PIN', style: SpottTextStyles.sectionTitle),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: SpottSpacing.xs),
+                    Text(
+                      'Verify with receiver to get their secret 4-digit drop-off PIN.',
+                      style: SpottTextStyles.caption,
+                    ),
+                    const SizedBox(height: SpottSpacing.lg),
+                    TextField(
+                      controller: _pinController,
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _verifyAndComplete(context, ride),
+                      style: SpottTextStyles.body.copyWith(color: SpottColors.textPrimary),
+                      decoration: InputDecoration(
+                        labelText: 'Recipient PIN',
+                        hintText: 'Enter 4-digit PIN (e.g. ${ride.parcelVerificationPin})',
+                        labelStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+                        hintStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+                        filled: true,
+                        fillColor: SpottColors.surface1,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.md),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(SpottRadius.md), borderSide: BorderSide.none),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 100),
+            ],
+          ),
+          Positioned(
+            bottom: SpottSpacing.lg,
+            left: SpottSpacing.lg,
+            right: SpottSpacing.lg,
+            child: SpottButton.primary(
+              label: 'Confirm PIN & Complete Drop',
+              onPressed: () => _verifyAndComplete(context, ride),
             ),
-            const SizedBox(height: 4),
-            const Text(
-              'Verify with receiver to get their secret 4-digit drop-off PIN.',
-              style: TextStyle(fontSize: 12, color: Helper.muted),
-            ),
-            const SizedBox(height: 12),
-            WhiteTextField(
-              controller: _pinController,
-              labelText: 'Recipient PIN',
-              hintText: 'Enter 4-digit PIN (e.g. ${ride.parcelVerificationPin})',
-              keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _verifyAndComplete(context, ride),
-            ),
-          ],
-        ),
-      ],
-      bottom: PrimaryAction(
-        label: 'Confirm PIN & Complete Drop',
-        onPressed: () => _verifyAndComplete(context, ride),
+          ),
+        ],
       ),
     );
   }
@@ -211,13 +251,62 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
     required String detail,
     required bool active,
     required bool completed,
-    required bool isDark,
     bool isLast = false,
   }) {
-    final titleColor = isDark ? Colors.white : Colors.black;
-    final dotColor = completed
-        ? Helper.success
-        : (active ? (isDark ? Colors.white : Colors.black) : Colors.grey[350]!);
+    Color accentColor;
+    Widget dotIndicator;
+
+    if (completed) {
+      accentColor = SpottColors.success;
+      dotIndicator = Container(
+        width: 22,
+        height: 22,
+        decoration: BoxDecoration(
+          color: SpottColors.success.withValues(alpha: 0.15),
+          shape: BoxShape.circle,
+          border: Border.all(color: SpottColors.success, width: 2),
+        ),
+        child: const Center(
+          child: Icon(Icons.check_rounded, size: 12, color: SpottColors.success),
+        ),
+      );
+    } else if (active) {
+      accentColor = SpottColors.primary;
+      dotIndicator = Container(
+        width: 22,
+        height: 22,
+        decoration: BoxDecoration(
+          color: SpottColors.primary.withValues(alpha: 0.15),
+          shape: BoxShape.circle,
+          border: Border.all(color: SpottColors.primary, width: 2),
+        ),
+        child: Center(
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(color: SpottColors.primary, shape: BoxShape.circle),
+          ),
+        ),
+      );
+    } else {
+      accentColor = SpottColors.border;
+      dotIndicator = Container(
+        width: 22,
+        height: 22,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          shape: BoxShape.circle,
+          border: Border.all(color: SpottColors.border, width: 2),
+        ),
+        child: Center(
+          child: Container(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(color: SpottColors.border, shape: BoxShape.circle),
+          ),
+        ),
+      );
+    }
 
     return IntrinsicHeight(
       child: Row(
@@ -225,44 +314,36 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
         children: [
           Column(
             children: [
-              Container(
-                width: 14,
-                height: 14,
-                decoration: BoxDecoration(
-                  color: dotColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
+              dotIndicator,
               if (!isLast)
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: completed ? Helper.success : Colors.grey[300]!,
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    color: completed ? SpottColors.success.withValues(alpha: 0.5) : (active ? SpottColors.primary.withValues(alpha: 0.3) : SpottColors.border),
                   ),
                 ),
             ],
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: SpottSpacing.md),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(bottom: SpottSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     label,
-                    style: TextStyle(
+                    style: SpottTextStyles.body.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: active ? titleColor : Colors.grey[500]!,
+                      color: active ? SpottColors.textPrimary : SpottColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     detail,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: active ? (isDark ? Colors.grey[400]! : Helper.muted) : Colors.grey[400]!,
+                    style: SpottTextStyles.caption.copyWith(
+                      color: active ? SpottColors.textSecondary : SpottColors.textSecondary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],

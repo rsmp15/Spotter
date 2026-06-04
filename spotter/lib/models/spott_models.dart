@@ -20,7 +20,14 @@ enum TripStatus { draft, active, inProgress, completed, cancelled }
 enum TripRequestStatus { pending, accepted, rejected, cancelled }
 
 /// Parcel hand-off lifecycle.
-enum ParcelStatus { created, accepted, pickedUp, inTransit, delivered, cancelled }
+enum ParcelStatus {
+  created,
+  accepted,
+  pickedUp,
+  inTransit,
+  delivered,
+  cancelled,
+}
 
 // ---------------------------------------------------------------------------
 // 1. SpottUser
@@ -64,15 +71,15 @@ class SpottUser {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'phone': phone,
-        'email': email,
-        'profile_image': profileImage,
-        'rating': rating,
-        'role': role.name,
-        'created_at': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'phone': phone,
+    'email': email,
+    'profile_image': profileImage,
+    'rating': rating,
+    'role': role.name,
+    'created_at': createdAt.toIso8601String(),
+  };
 
   SpottUser copyWith({
     String? id,
@@ -130,12 +137,12 @@ class DriverVerification {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'dl_number': dlNumber,
-        'dl_image': dlImage,
-        'verification_status': verificationStatus.name,
-      };
+    'id': id,
+    'user_id': userId,
+    'dl_number': dlNumber,
+    'dl_image': dlImage,
+    'verification_status': verificationStatus.name,
+  };
 
   DriverVerification copyWith({
     String? id,
@@ -193,14 +200,14 @@ class Vehicle {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'vehicle_type': vehicleType,
-        'vehicle_number': vehicleNumber,
-        'vehicle_model': vehicleModel,
-        'rc_image': rcImage,
-        'verification_status': verificationStatus.name,
-      };
+    'id': id,
+    'user_id': userId,
+    'vehicle_type': vehicleType,
+    'vehicle_number': vehicleNumber,
+    'vehicle_model': vehicleModel,
+    'rc_image': rcImage,
+    'verification_status': verificationStatus.name,
+  };
 
   Vehicle copyWith({
     String? id,
@@ -268,16 +275,16 @@ class Trip {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'traveler_id': travelerId,
-        'source': source,
-        'destination': destination,
-        'departure_time': departureTime.toIso8601String(),
-        'available_seats': availableSeats,
-        'price_per_seat': pricePerSeat,
-        'parcel_allowed': parcelAllowed,
-        'status': status.name,
-      };
+    'id': id,
+    'traveler_id': travelerId,
+    'source': source,
+    'destination': destination,
+    'departure_time': departureTime.toIso8601String(),
+    'available_seats': availableSeats,
+    'price_per_seat': pricePerSeat,
+    'parcel_allowed': parcelAllowed,
+    'status': status.name,
+  };
 
   Trip copyWith({
     String? id,
@@ -336,11 +343,11 @@ class TripRequest {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'trip_id': tripId,
-        'passenger_id': passengerId,
-        'status': status.name,
-      };
+    'id': id,
+    'trip_id': tripId,
+    'passenger_id': passengerId,
+    'status': status.name,
+  };
 
   TripRequest copyWith({
     String? id,
@@ -402,16 +409,16 @@ class Parcel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'sender_id': senderId,
-        'traveler_id': travelerId,
-        'weight': weight,
-        'description': description,
-        'photo': photo,
-        'pickup_otp': pickupOtp,
-        'delivery_otp': deliveryOtp,
-        'status': status.name,
-      };
+    'id': id,
+    'sender_id': senderId,
+    'traveler_id': travelerId,
+    'weight': weight,
+    'description': description,
+    'photo': photo,
+    'pickup_otp': pickupOtp,
+    'delivery_otp': deliveryOtp,
+    'status': status.name,
+  };
 
   Parcel copyWith({
     String? id,
@@ -468,12 +475,12 @@ class Review {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'reviewer_id': reviewerId,
-        'reviewed_user_id': reviewedUserId,
-        'rating': rating,
-        'comment': comment,
-      };
+    'id': id,
+    'reviewer_id': reviewerId,
+    'reviewed_user_id': reviewedUserId,
+    'rating': rating,
+    'comment': comment,
+  };
 
   Review copyWith({
     String? id,

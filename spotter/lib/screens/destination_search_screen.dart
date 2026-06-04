@@ -100,7 +100,11 @@ class _DestinationSearchScreenState extends State<DestinationSearchScreen> {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false),
+                        onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          AppRoutes.home,
+                          (route) => false,
+                        ),
                         icon: Icon(Icons.arrow_back, color: textColor),
                       ),
                       Expanded(

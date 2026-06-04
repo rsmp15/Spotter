@@ -1,1715 +1,1316 @@
-import json
+"""
+SPOTT PREMIUM UI GENERATOR — Complete Design System Rebuild
+Produces a standalone Figma Plugin code.js with embedded base64 assets.
+Architecture: Auto Layout everywhere, real glassmorphism, bento grids, premium typography.
+"""
+
+import sys
 import os
 import base64
 from PIL import Image
 from io import BytesIO
 
-code_js_path = r"D:\PROJECTS\Spotter\spotter\figma-plugin\code.js"
+# Force UTF-8 output on Windows
+sys.stdout.reconfigure(encoding='utf-8', errors='replace') if hasattr(sys.stdout, 'reconfigure') else None
 
-# ============================================================
-# PREMIUM DESIGN SYSTEM — Airbnb × Uber × Pinterest × Linear
-# ============================================================
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIG
+# ─────────────────────────────────────────────────────────────────────────────
+CODE_JS_PATH = r"D:\PROJECTS\Spotter\spotter\figma-plugin\code.js"
+ASSET_DIR = r"D:\PROJECTS\Spotter\spotter"
+MAX_IMAGE_DIM = 400  # px — higher quality than before
 
-# Deep, rich background with subtle warmth (not dead black)
-C_BG_DEEP    = {"r": 0.035, "g": 0.027, "b": 0.055}    # #09071E — deep navy-black
-C_BG         = {"r": 0.047, "g": 0.039, "b": 0.071}    # #0C0A12 — rich dark
-C_SURFACE    = {"r": 0.075, "g": 0.063, "b": 0.114}    # #13101D — elevated surface
-C_CARD       = {"r": 0.098, "g": 0.082, "b": 0.149}    # #191526 — card layer
-C_CARD_HOVER = {"r": 0.122, "g": 0.102, "b": 0.184}    # #1F1A2F — hover/active
-
-# Primary: Vibrant coral-red (Pinterest-inspired, warmer than pure red)
-C_PRIMARY       = {"r": 0.933, "g": 0.180, "b": 0.275}  # #EE2E46
-C_PRIMARY_LIGHT = {"r": 1.0,   "g": 0.333, "b": 0.400}  # #FF5566
-C_PRIMARY_DARK  = {"r": 0.710, "g": 0.075, "b": 0.176}  # #B5132D
-C_PRIMARY_GLOW  = {"r": 1.0,   "g": 0.267, "b": 0.353, "a": 0.20}  # glow shadow
-
-# Accent: Electric violet-blue (Linear-inspired)
-C_ACCENT       = {"r": 0.376, "g": 0.310, "b": 1.0}    # #604FFF
-C_ACCENT_LIGHT = {"r": 0.533, "g": 0.467, "b": 1.0}    # #8877FF
-C_ACCENT_GLOW  = {"r": 0.376, "g": 0.310, "b": 1.0, "a": 0.15}
-
-# Success: Rich emerald
-C_GREEN      = {"r": 0.118, "g": 0.820, "b": 0.443}    # #1ED171
-C_GREEN_DARK = {"r": 0.059, "g": 0.302, "b": 0.169}    # #0F4D2B
-C_GREEN_GLOW = {"r": 0.118, "g": 0.820, "b": 0.443, "a": 0.15}
-
-# Warning: Warm amber-gold
-C_AMBER      = {"r": 1.0,   "g": 0.694, "b": 0.216}    # #FFB137
-C_AMBER_DARK = {"r": 0.302, "g": 0.208, "b": 0.067}    # #4D3511
-
-# Text hierarchy
-C_WHITE      = {"r": 1.0,   "g": 1.0,   "b": 1.0}
-C_TEXT_PRI   = {"r": 0.953, "g": 0.941, "b": 0.973}     # #F3F0F8 — primary text
-C_TEXT_SEC   = {"r": 0.600, "g": 0.561, "b": 0.690}     # #998FB0 — secondary
-C_TEXT_TER   = {"r": 0.420, "g": 0.380, "b": 0.510}     # #6B6182 — tertiary
-C_TEXT_MUTED = {"r": 0.302, "g": 0.271, "b": 0.376}     # #4D4560 — muted
-
-# Glass & overlay
-C_GLASS      = {"r": 1.0,   "g": 1.0,   "b": 1.0, "a": 0.06}
-C_GLASS_EDGE = {"r": 1.0,   "g": 1.0,   "b": 1.0, "a": 0.12}
-C_OVERLAY    = {"r": 0.0,   "g": 0.0,   "b": 0.0, "a": 0.50}
-
-# Borders
-C_BORDER     = {"r": 1.0,   "g": 1.0,   "b": 1.0, "a": 0.08}
-C_BORDER_ACC = {"r": 0.376, "g": 0.310, "b": 1.0, "a": 0.25}
-
-# Radii — generous, premium
-R_XS     = 8
-R_SM     = 12
-R_MD     = 16
-R_LG     = 20
-R_XL     = 24
-R_XXL    = 28
-R_FULL   = 100
-
-SCREEN_W = 390
-SCREEN_H = 844
-
-# ============================================================
-# ASSET LOADING
-# ============================================================
-def load_png_as_base64(filepath, max_size=400):
-    if not os.path.exists(filepath):
-        print(f"Warning: {filepath} not found.")
+# ─────────────────────────────────────────────────────────────────────────────
+# ASSET LOADER
+# ─────────────────────────────────────────────────────────────────────────────
+def load_asset(filename: str) -> str:
+    """Load a PNG, thumbnail it, return base64 string."""
+    path = os.path.join(ASSET_DIR, filename)
+    if not os.path.exists(path):
+        print(f"  ⚠  Asset not found: {filename}")
         return ""
-    try:
-        img = Image.open(filepath)
-        img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
-        buf = BytesIO()
-        img.save(buf, format="PNG", optimize=True)
-        return base64.b64encode(buf.getvalue()).decode('utf-8')
-    except Exception as e:
-        print(f"Error loading {filepath}: {e}")
-        return ""
+    img = Image.open(path).convert("RGBA")
+    img.thumbnail((MAX_IMAGE_DIM, MAX_IMAGE_DIM), Image.LANCZOS)
+    buf = BytesIO()
+    img.save(buf, format="PNG", optimize=True)
+    data = base64.b64encode(buf.getvalue()).decode("utf-8")
+    print(f"  [OK] Loaded {filename}  ({img.size[0]}x{img.size[1]})")
+    return data
 
-print("Loading PNG assets at high quality...")
-car_img = load_png_as_base64("Car.png", 400)
-bike_img = load_png_as_base64("Bike.png", 400)
-parcel_img = load_png_as_base64("Parcel.png", 400)
-rikshaw_img = load_png_as_base64("Rikshaw.png", 400)
-calendar_img = load_png_as_base64("Calendar.png", 400)
-safety_img = load_png_as_base64("safety.png", 400)
-verification_img = load_png_as_base64("verification.png", 400)
-route_img = load_png_as_base64("route.png", 400)
-car_clock_img = load_png_as_base64("Car_Clock.png", 400)
-bike_clock_img = load_png_as_base64("Bike_Clock.png", 400)
-rikshaw_clock_img = load_png_as_base64("Rikshaw_Clock.png", 400)
-print("All assets loaded successfully.")
+print("Loading PNG assets...")
+ASSETS = {
+    "bike":         load_asset("Bike.png"),
+    "bike_clock":   load_asset("Bike_Clock.png"),
+    "car":          load_asset("Car.png"),
+    "car_clock":    load_asset("Car_Clock.png"),
+    "parcel":       load_asset("Parcel.png"),
+    "rikshaw":      load_asset("Rikshaw.png"),
+    "rikshaw_clock":load_asset("Rikshaw_Clock.png"),
+    "calendar":     load_asset("Calendar.png"),
+    "route":        load_asset("route.png"),
+    "safety":       load_asset("safety.png"),
+    "verification": load_asset("verification.png"),
+}
+print("[OK] All assets loaded.\n")
 
-# ============================================================
-# COMPONENT PRIMITIVES
-# ============================================================
+# ─────────────────────────────────────────────────────────────────────────────
+# JS TEMPLATE — Figma Plugin Runtime
+# This is the complete, standalone plugin. Python only supplies asset data.
+# ─────────────────────────────────────────────────────────────────────────────
+JS_PLUGIN = r"""
+// ═══════════════════════════════════════════════════════════════════════════
+//  SPOTT PREMIUM UI GENERATOR — Figma Plugin Runtime
+//  Design System: Airbnb × Linear × Pinterest × Apple × Stripe
+// ═══════════════════════════════════════════════════════════════════════════
 
-def rect(x, y, w, h, fill, r=0, name="Rect", blur=False, shadow=False, shadow_color=None, shadow_offset=None, shadow_radius=None, opacity=None, stroke=None, stroke_width=None):
-    node = {
-        "type": "rect",
-        "x": x, "y": y,
-        "width": w, "height": h,
-        "fill": fill,
-        "cornerRadius": r,
-        "hasBlur": blur,
-        "hasShadow": shadow,
-        "name": name
-    }
-    if shadow_color:
-        node["shadowColor"] = shadow_color
-    if shadow_offset:
-        node["shadowOffset"] = shadow_offset
-    if shadow_radius:
-        node["shadowRadius"] = shadow_radius
-    if opacity is not None:
-        node["opacity"] = opacity
-    if stroke:
-        node["stroke"] = stroke
-    if stroke_width:
-        node["strokeWidth"] = stroke_width
-    return node
+// ─────────────────────────────────────────────────
+// 0. ASSET REGISTRY (Injected by Python)
+// ─────────────────────────────────────────────────
+const ASSETS = __ASSETS__;
 
-def gradient_rect(x, y, w, h, stops, r=0, name="GradientRect", direction="vertical", shadow=False, shadow_color=None, shadow_radius=None, blur=False, stroke=None, stroke_width=None):
-    """Multi-stop gradient rectangle — the core premium element"""
-    node = {
-        "type": "rect",
-        "x": x, "y": y,
-        "width": w, "height": h,
-        "gradientStops": stops,  # list of {"position": 0-1, "color": {r,g,b,a}}
-        "gradientDirection": direction,  # vertical, horizontal, diagonal
-        "cornerRadius": r,
-        "hasShadow": shadow,
-        "hasBlur": blur,
-        "name": name
-    }
-    if shadow_color:
-        node["shadowColor"] = shadow_color
-    if shadow_radius:
-        node["shadowRadius"] = shadow_radius
-    if stroke:
-        node["stroke"] = stroke
-    if stroke_width:
-        node["strokeWidth"] = stroke_width
-    return node
+// ─────────────────────────────────────────────────
+// 1. DESIGN TOKENS
+// ─────────────────────────────────────────────────
+const T = {
+  // Backgrounds
+  bgBase:    {r:0.031, g:0.024, b:0.051},  // #080618 — ultra-deep
+  bgMid:     {r:0.055, g:0.043, b:0.090},  // #0E0B17
+  bgSurf:    {r:0.082, g:0.063, b:0.129},  // #151021
+  bgCard:    {r:0.110, g:0.086, b:0.169},  // #1C162B
 
-def gradient_card(x, y, w, h, color1, color2, r=R_XL, name="GradientCard", blur=False, shadow=True, shadow_color=None, stroke=None, stroke_width=None):
-    node = {
-        "type": "rect",
-        "x": x, "y": y,
-        "width": w, "height": h,
-        "color1": color1,
-        "color2": color2,
-        "cornerRadius": r,
-        "hasBlur": blur,
-        "hasShadow": shadow,
-        "name": name
-    }
-    if shadow_color:
-        node["shadowColor"] = shadow_color
-    if stroke:
-        node["stroke"] = stroke
-    if stroke_width:
-        node["strokeWidth"] = stroke_width
-    return node
+  // Primary — vibrant coral-red (Pinterest DNA)
+  pri:       {r:0.933, g:0.200, b:0.290},  // #EE334A
+  priLight:  {r:1.000, g:0.380, b:0.440},  // #FF6170
+  priDark:   {r:0.647, g:0.071, b:0.161},  // #A51229
+  priGlow:   {r:0.933, g:0.200, b:0.290, a:0.28},
 
-def glass_panel(x, y, w, h, r=R_XL, name="GlassPanel", opacity=0.06):
-    """Glassmorphism panel with blur + translucent fill + subtle border"""
-    return rect(x, y, w, h, {"r": 1.0, "g": 1.0, "b": 1.0, "a": opacity}, r, name, blur=True, shadow=True,
-                shadow_color={"r": 0, "g": 0, "b": 0, "a": 0.25}, shadow_radius=30,
-                stroke={"r": 1.0, "g": 1.0, "b": 1.0, "a": 0.10}, stroke_width=1)
+  // Accent — electric violet (Linear DNA)
+  acc:       {r:0.400, g:0.320, b:1.000},  // #6652FF
+  accLight:  {r:0.565, g:0.502, b:1.000},  // #9080FF
+  accGlow:   {r:0.400, g:0.320, b:1.000, a:0.20},
 
-def image_node(x, y, w, h, base64_str, r=0, name="Image", shadow=False, shadow_color=None):
-    node = {
-        "type": "rect",
-        "x": x, "y": y,
-        "width": w, "height": h,
-        "base64": base64_str,
-        "cornerRadius": r,
-        "name": name,
-        "hasShadow": shadow
-    }
-    if shadow_color:
-        node["shadowColor"] = shadow_color
-    return node
+  // Success — emerald
+  green:     {r:0.133, g:0.820, b:0.443},  // #22D171
+  greenDark: {r:0.051, g:0.271, b:0.153},  // #0D4527
+  greenGlow: {r:0.133, g:0.820, b:0.443, a:0.18},
 
-def text(x, y, txt, size=14, color=None, weight="Regular", name="Text", w=None, align="LEFT", letter_spacing=None, line_height=None):
-    if color is None:
-        color = C_TEXT_PRI
-    node = {
-        "type": "text",
-        "x": x, "y": y,
-        "text": txt,
-        "fontSize": size,
-        "color": color,
-        "font": {"family": "Inter", "style": weight},
-        "name": name,
-        "width": w,
-        "align": align
-    }
-    if letter_spacing is not None:
-        node["letterSpacing"] = letter_spacing
-    if line_height is not None:
-        node["lineHeight"] = line_height
-    return node
+  // Warning — amber gold
+  amber:     {r:0.996, g:0.710, b:0.235},  // #FEB53C
+  amberDark: {r:0.271, g:0.188, b:0.047},  // #45300C
 
-def button(x, y, w, h, txt, fill=None, txt_color=None, size=15, r=R_MD, name="Button", shadow=False, shadow_color=None):
-    if fill is None:
-        fill = C_PRIMARY
-    if txt_color is None:
-        txt_color = C_WHITE
-    node = {
-        "type": "button",
-        "x": x, "y": y,
-        "width": w, "height": h,
-        "text": txt,
-        "fill": fill,
-        "textColor": txt_color,
-        "fontSize": size,
-        "cornerRadius": r,
-        "name": name,
-        "font": {"family": "Inter", "style": "Bold"},
-        "hasShadow": shadow
-    }
-    if shadow_color:
-        node["shadowColor"] = shadow_color
-    return node
+  // Text
+  textHi:    {r:0.973, g:0.957, b:0.988},  // #F8F4FC
+  textMed:   {r:0.659, g:0.627, b:0.737},  // #A8A0BC
+  textLow:   {r:0.404, g:0.369, b:0.498},  // #675E7F
+  textMute:  {r:0.243, g:0.220, b:0.310},  // #3E384F
 
-def chip(x, y, w, h, txt, fill=None, txt_color=None, size=12, r=R_FULL, name="Chip", stroke=None):
-    if fill is None:
-        fill = C_CARD
-    if txt_color is None:
-        txt_color = C_TEXT_PRI
-    node = {
-        "type": "chip",
-        "x": x, "y": y,
-        "width": w, "height": h,
-        "text": txt,
-        "fill": fill,
-        "textColor": txt_color,
-        "fontSize": size,
-        "cornerRadius": r,
-        "name": name,
-        "font": {"family": "Inter", "style": "Medium"}
-    }
-    if stroke:
-        node["stroke"] = stroke
-    return node
+  // Glass / overlay
+  glass:     {r:1.0, g:1.0, b:1.0, a:0.05},
+  glassHi:   {r:1.0, g:1.0, b:1.0, a:0.10},
+  glassEdge: {r:1.0, g:1.0, b:1.0, a:0.14},
+  overlay:   {r:0.0, g:0.0, b:0.0, a:0.55},
 
-# ============================================================
-# PREMIUM COMPOUND COMPONENTS
-# ============================================================
+  // Borders
+  border:    {r:1.0, g:1.0, b:1.0, a:0.07},
+  borderAcc: {r:0.400, g:0.320, b:1.000, a:0.30},
+  borderPri: {r:0.933, g:0.200, b:0.290, a:0.40},
+};
 
-def status_bar():
-    """iOS-style status bar"""
-    return [
-        text(34, 14, "9:41", 14, C_TEXT_PRI, "Semi Bold", "Time"),
-        rect(290, 14, 20, 12, C_TEXT_PRI, 3, "Signal"),
-        rect(315, 14, 16, 12, C_TEXT_PRI, 3, "WiFi"),
-        rect(336, 15, 27, 11, C_TEXT_PRI, 3, "Battery"),
+const R = { xs:8, sm:12, md:16, lg:20, xl:24, xxl:32, pill:50 };
+const W = 390; const H = 844;
+
+// ─────────────────────────────────────────────────
+// 2. FILL / STROKE / EFFECT HELPERS
+// ─────────────────────────────────────────────────
+function _a(c) { return (c && c.a !== undefined) ? c.a : 1; }
+
+function solid(c, op) {
+  if (op === undefined) op = 1.0;
+  return [{type:'SOLID', color:{r:c.r,g:c.g,b:c.b}, opacity: op}];
+}
+function gradV(c1,c2,op) {
+  if (op === undefined) op = 1.0;
+  return [{
+    type:'GRADIENT_LINEAR',
+    gradientTransform:[[0,1,0],[1,0,0]],
+    gradientStops:[
+      {position:0, color:{r:c1.r,g:c1.g,b:c1.b,a:_a(c1)*op}},
+      {position:1, color:{r:c2.r,g:c2.g,b:c2.b,a:_a(c2)*op}}
     ]
-
-def dynamic_island():
-    return rect(125, 8, 140, 37, {"r": 0, "g": 0, "b": 0}, 20, "Dynamic Island")
-
-def premium_header(greeting, subtitle, has_avatar=True, has_notification=True):
-    """Airbnb-style header with avatar + greeting"""
-    children = []
-    if has_avatar:
-        # Avatar with gradient ring
-        children.append(rect(24, 65, 52, 52, C_ACCENT, 26, "Avatar Ring"))
-        children.append(rect(26, 67, 48, 48, C_BG, 24, "Avatar Inner"))
-        children.append(text(26, 78, "AS", 16, C_ACCENT_LIGHT, "Bold", "Avatar Initials", w=48, align="CENTER"))
-    
-    tx = 88 if has_avatar else 24
-    children.append(text(tx, 68, greeting, 22, C_TEXT_PRI, "Bold", "Greeting", letter_spacing=-0.5))
-    children.append(text(tx, 94, subtitle, 13, C_TEXT_SEC, "Regular", "Subtitle"))
-    
-    if has_notification:
-        # Notification bell with glow dot
-        children.append(glass_panel(318, 68, 48, 48, 24, "Notif Button", 0.06))
-        children.append(text(318, 78, "🔔", 18, C_WHITE, "Regular", "Bell Icon", w=48, align="CENTER"))
-        children.append(rect(350, 68, 10, 10, C_PRIMARY, 5, "Notif Dot"))
-    return children
-
-def premium_search_bar(x, y, w=342, placeholder="Where are you heading?"):
-    """Uber-style search bar with gradient border"""
-    return [
-        # Outer glow
-        rect(x-1, y-1, w+2, 58, C_BORDER_ACC, R_LG, "Search Glow", shadow=True, shadow_color=C_ACCENT_GLOW, shadow_radius=20),
-        # Inner
-        rect(x, y, w, 56, C_SURFACE, R_LG-1, "Search Inner"),
-        text(x+48, y+18, placeholder, 15, C_TEXT_TER, "Regular", "Search Placeholder"),
-        rect(x+16, y+16, 24, 24, C_ACCENT, R_SM, "Search Icon Bg"),
-        text(x+16, y+17, "🔍", 14, C_WHITE, "Regular", "Search Icon", w=24, align="CENTER"),
+  }];
+}
+function gradD(c1,c2) {
+  return [{
+    type:'GRADIENT_LINEAR',
+    gradientTransform:[[0.707,0.707,0],[-0.707,0.707,0]],
+    gradientStops:[
+      {position:0, color:{r:c1.r,g:c1.g,b:c1.b,a:_a(c1)}},
+      {position:1, color:{r:c2.r,g:c2.g,b:c2.b,a:_a(c2)}}
     ]
+  }];
+}
+function noFill() { return []; }
 
-def bento_card(x, y, w, h, title, subtitle, img_b64=None, gradient_start=None, gradient_end=None, accent_color=None, r=R_XL, badge=None):
-    """Pinterest-style bento grid card with rich visuals"""
-    children = []
-    
-    if gradient_start and gradient_end:
-        children.append(gradient_card(x, y, w, h, gradient_start, gradient_end, r, f"Bento {title}",
-                        shadow=True, shadow_color={"r": gradient_start.get("r",0)*0.5, "g": gradient_start.get("g",0)*0.5, "b": gradient_start.get("b",0)*0.5, "a": 0.30},
-                        stroke={"r": 1.0, "g": 1.0, "b": 1.0, "a": 0.08}, stroke_width=1))
-    else:
-        children.append(rect(x, y, w, h, C_CARD, r, f"Bento {title}", shadow=True,
-                       shadow_color={"r": 0, "g": 0, "b": 0, "a": 0.3}, shadow_radius=20,
-                       stroke=C_BORDER, stroke_width=1))
-    
-    children.append(text(x+20, y+20, title, 17, C_TEXT_PRI, "Bold", f"Bento Title {title}"))
-    children.append(text(x+20, y+42, subtitle, 12, C_TEXT_SEC if not gradient_start else {"r":1,"g":0.85,"b":0.88}, "Regular", f"Bento Sub {title}", w=w-80))
-    
-    if img_b64:
-        img_w = min(w-20, 140)
-        img_h = min(h-50, 120)
-        children.append(image_node(x+w-img_w-8, y+h-img_h-8, img_w, img_h, img_b64, r-4, f"Bento Img {title}"))
-    
-    if badge:
-        children.append(chip(x+20, y+h-40, len(badge)*8+16, 24, badge, {"r":0,"g":0,"b":0,"a":0.4}, C_WHITE, 10, R_FULL, f"Badge {badge}"))
-    
-    return children
+function shadowLayer(color, dy, blur, spread, op) {
+  if (spread === undefined) spread = 0;
+  if (op === undefined) op = 1.0;
+  return {type:'DROP_SHADOW', visible:true, blendMode:'NORMAL',
+    color:{r:color.r, g:color.g, b:color.b, a:_a(color)*op},
+    offset:{x:0,y:dy}, radius:blur, spread:spread};
+}
+function bgBlur(r) { if (r === undefined) r = 20; return {type:'BACKGROUND_BLUR', radius:r, visible:true}; }
 
-def floating_nav(selected_index=0, mode="passenger"):
-    """Premium floating glass navigation bar"""
-    children = [
-        # Outer glow
-        rect(20, 752, 350, 72, {"r": 0.05, "g": 0.04, "b": 0.08, "a": 0.90}, R_XXL, "Nav Outer", blur=True, shadow=True,
-             shadow_color={"r": 0, "g": 0, "b": 0, "a": 0.5}, shadow_radius=30,
-             stroke=C_BORDER, stroke_width=1),
-    ]
-    
-    if mode == "passenger":
-        tabs = [("Home", "🏠"), ("Explore", "🧭"), ("Trips", "🚗"), ("Activity", "⚡"), ("Profile", "👤")]
-    else:
-        tabs = [("Dash", "📊"), ("Requests", "📬"), ("Trips", "🚗"), ("Vehicle", "🔧"), ("Profile", "👤")]
-    
-    tab_w = 310 // len(tabs)
-    start_x = 40
-    
-    for i, (label, icon) in enumerate(tabs):
-        tx = start_x + i * tab_w
-        is_sel = (i == selected_index)
-        
-        if is_sel:
-            # Selected: accent pill behind
-            children.append(rect(tx-4, 762, tab_w-2, 42, C_PRIMARY, R_MD, f"Tab Active Bg",
-                               shadow=True, shadow_color=C_PRIMARY_GLOW, shadow_radius=12))
-            children.append(text(tx, 766, icon, 16, C_WHITE, "Regular", f"Tab Icon {label}", w=tab_w-8, align="CENTER"))
-            children.append(text(tx, 786, label, 10, C_WHITE, "Bold", f"Tab Label {label}", w=tab_w-8, align="CENTER"))
-        else:
-            children.append(text(tx, 770, icon, 16, C_TEXT_TER, "Regular", f"Tab Icon {label}", w=tab_w-8, align="CENTER"))
-            children.append(text(tx, 790, label, 9, C_TEXT_MUTED, "Medium", f"Tab Label {label}", w=tab_w-8, align="CENTER"))
-    
-    return children
+function glassShadows(glowColor) {
+  const s = [
+    shadowLayer({r:0,g:0,b:0},20,48,0,0.45),
+    shadowLayer({r:0,g:0,b:0},6,12,0,0.30),
+  ];
+  if (glowColor) s.push(shadowLayer(glowColor,8,24,0,0.35));
+  return s;
+}
 
-def timeline_premium(x, y, steps, active_step=0):
-    """Stripe-style timeline with glowing nodes"""
-    children = []
-    curr_y = y
-    
-    for i, (time_str, label, sub) in enumerate(steps):
-        is_active = (i <= active_step)
-        is_current = (i == active_step)
-        
-        # Node
-        node_color = C_PRIMARY if is_active else C_CARD_HOVER
-        if is_current:
-            # Glowing pulse ring
-            children.append(rect(x-6, curr_y-2, 28, 28, C_PRIMARY_GLOW, 14, f"Glow {i}"))
-            children.append(rect(x, curr_y+2, 16, 16, C_PRIMARY, 8, f"Node {i}"))
-            children.append(rect(x+4, curr_y+6, 8, 8, C_WHITE, 4, f"NodeInner {i}"))
-        elif is_active:
-            children.append(rect(x, curr_y+2, 16, 16, C_GREEN, 8, f"Node {i}"))
-            children.append(text(x, curr_y+2, "✓", 10, C_WHITE, "Bold", f"Check {i}", w=16, align="CENTER"))
-        else:
-            children.append(rect(x, curr_y+2, 16, 16, C_CARD_HOVER, 8, f"Node {i}"))
-        
-        # Labels
-        text_color = C_TEXT_PRI if is_active else C_TEXT_TER
-        children.append(text(x+30, curr_y, label, 15, text_color, "Bold" if is_current else "Medium", f"Step {i}"))
-        children.append(text(x+30, curr_y+22, f"{time_str} · {sub}", 12, C_TEXT_SEC, "Regular", f"Detail {i}"))
-        
-        # Connector line
-        if i < len(steps) - 1:
-            line_c = C_GREEN if is_active and not is_current else C_CARD_HOVER
-            children.append(rect(x+7, curr_y+20, 2, 42, line_c, 1, f"Line {i}"))
-        curr_y += 62
-    return children
+function stroke(c, w, align) {
+  if (w === undefined) w = 1;
+  if (align === undefined) align = 'INSIDE';
+  return {fills:solid(c), weight:w, align:align, visible:true};
+}
 
-def verification_badges(x, y, w=342):
-    """Modern verification display — no trust scores"""
-    children = [
-        rect(x, y, w, 160, C_CARD, R_XL, "Verify Card", shadow=True,
-             shadow_color={"r":0,"g":0,"b":0,"a":0.2}, shadow_radius=16,
-             stroke=C_BORDER, stroke_width=1),
-        text(x+20, y+16, "VERIFIED CREDENTIALS", 10, C_TEXT_TER, "Bold", letter_spacing=2),
-    ]
-    
-    badges = [
-        ("Identity Verified", "✓", C_GREEN),
-        ("Driving License Verified", "✓", C_GREEN),
-        ("Vehicle RC Verified", "✓", C_GREEN),
-    ]
-    
-    for i, (label, icon, color) in enumerate(badges):
-        by = y + 42 + i * 28
-        children.append(rect(x+20, by, 18, 18, {**color, "a": 0.15}, 9, f"Badge Bg {i}"))
-        children.append(text(x+22, by+2, icon, 10, color, "Bold", f"Badge Icon {i}", w=14, align="CENTER"))
-        children.append(text(x+46, by+1, label, 13, C_TEXT_PRI, "Medium", f"Badge Label {i}"))
-    
-    children.append(rect(x+20, y+130, w-40, 1, C_BORDER, 0, "Divider"))
-    children.append(text(x+20, y+138, "147 Trips Completed · Member since Jan 2024", 11, C_TEXT_SEC, "Regular"))
-    return children
+// ─────────────────────────────────────────────────
+// 3. NODE FACTORY — core primitives
+// ─────────────────────────────────────────────────
+async function makeFrame(name, w, h) {
+  const f = figma.createFrame();
+  f.name = name; f.resize(w,h); f.clipsContent=true; f.layoutMode='NONE';
+  return f;
+}
+async function makeAutoFrame(name, w, h, dir='VERTICAL') {
+  const f = figma.createFrame();
+  f.name=name; f.resize(w,h);
+  f.layoutMode=dir;
+  f.primaryAxisSizingMode='FIXED';
+  f.counterAxisSizingMode='FIXED';
+  f.clipsContent=true;
+  return f;
+}
+function makeRect(name, w, h, fills, cr=0) {
+  const r = figma.createRectangle();
+  r.name=name; r.resize(w,h); r.fills=fills; r.cornerRadius=cr;
+  return r;
+}
+async function makeText(content, size, style, color, op=1.0, align='LEFT') {
+  const t = figma.createText();
+  await figma.loadFontAsync({family:'Inter', style:style});
+  t.characters = content;
+  t.fontName = {family:'Inter', style:style};
+  t.fontSize = size;
+  t.fills = solid(color, op);
+  t.textAlignHorizontal = align;
+  t.letterSpacing = {value: size>=28 ? -0.04*size : size>=18 ? -0.02*size : -0.01*size, unit:'PIXELS'};
+  t.lineHeight = {value: size>=28 ? size*1.15 : size*1.4, unit:'PIXELS'};
+  t.textAutoResize='WIDTH_AND_HEIGHT';
+  return t;
+}
 
-def hero_gradient_bg(x, y, w, h, primary_color, secondary_color, name="Hero BG"):
-    """Multi-layered gradient background for hero sections"""
-    return [
-        gradient_rect(x, y, w, h, [
-            {"position": 0, "color": {**primary_color, "a": 1.0}},
-            {"position": 0.5, "color": {"r": (primary_color["r"]+secondary_color["r"])/2, "g": (primary_color["g"]+secondary_color["g"])/2, "b": (primary_color["b"]+secondary_color["b"])/2, "a": 1.0}},
-            {"position": 1.0, "color": {**secondary_color, "a": 1.0}},
-        ], R_XL, name, "diagonal", shadow=True,
-        shadow_color={"r": primary_color["r"]*0.5, "g": primary_color["g"]*0.5, "b": primary_color["b"]*0.5, "a": 0.35},
-        shadow_radius=30,
-        stroke={"r":1,"g":1,"b":1,"a":0.08}, stroke_width=1),
-        # Noise overlay for texture
-        rect(x, y, w, h, {"r":1,"g":1,"b":1,"a":0.03}, R_XL, f"{name} Texture"),
-    ]
+// ─────────────────────────────────────────────────
+// 4. GLASS CONTAINER SYSTEM
+// ─────────────────────────────────────────────────
+function applyGlass(frame, cr=R.xl, glowColor=null, borderOpacity=0.14) {
+  frame.cornerRadius = cr;
+  frame.fills = [...gradV(T.bgCard, T.bgSurf, 0.8), ...solid(T.glass)];
+  frame.strokes = solid(T.glassEdge, borderOpacity>0?1:0);
+  frame.strokeWeight = 1;
+  frame.strokeAlign = 'INSIDE';
+  frame.effects = [bgBlur(24), ...glassShadows(glowColor)];
+}
 
-def metric_card(x, y, w, h, title, value, trend, trend_up=True, accent=None):
-    """Fintech-style metric with sparkline"""
-    if accent is None:
-        accent = C_GREEN if trend_up else C_PRIMARY
-    
-    children = [
-        rect(x, y, w, h, C_CARD, R_XL, f"Metric {title}", shadow=True,
-             shadow_color={"r":0,"g":0,"b":0,"a":0.2}, shadow_radius=16,
-             stroke=C_BORDER, stroke_width=1),
-        text(x+20, y+16, title, 12, C_TEXT_TER, "Medium", letter_spacing=1),
-        text(x+20, y+34, value, 26, C_TEXT_PRI, "Bold"),
-    ]
-    
-    # Trend badge
-    trend_bg = {**accent, "a": 0.12}
-    trend_sign = "↑" if trend_up else "↓"
-    children.append(rect(x+20, y+68, 80, 22, trend_bg, R_FULL, "Trend Pill"))
-    children.append(text(x+28, y+71, f"{trend_sign} {trend}", 11, accent, "Bold"))
-    
-    # Sparkline bars
-    heights = [12, 18, 10, 24, 16, 28, 20]
-    for idx, bh in enumerate(heights):
-        bx = x + w - 70 + idx * 8
-        children.append(rect(bx, y + h - 20 - bh, 4, bh, {**accent, "a": 0.6 if idx < len(heights)-1 else 1.0}, 2, f"Spark {idx}"))
-    
-    return children
+function applyPrimaryCard(frame, cr=R.xl) {
+  frame.cornerRadius = cr;
+  frame.fills = gradD(T.pri, T.priDark);
+  frame.strokes = solid(T.priLight, 0.3);
+  frame.strokeWeight = 1.5;
+  frame.strokeAlign = 'INSIDE';
+  frame.effects = [shadowLayer(T.priGlow,12,32,0,1), shadowLayer({r:0,g:0,b:0},4,12,0,0.4)];
+}
 
-def premium_card(x, y, w, h, r=R_XL, name="Card"):
-    """Standard elevated card with border + shadow"""
-    return rect(x, y, w, h, C_CARD, r, name, shadow=True,
-                shadow_color={"r":0,"g":0,"b":0,"a":0.25}, shadow_radius=20,
-                stroke=C_BORDER, stroke_width=1)
+function applyAccentCard(frame, cr=R.xl) {
+  frame.cornerRadius = cr;
+  frame.fills = gradD(T.acc, {r:0.2,g:0.16,b:0.6});
+  frame.strokes = solid(T.accLight, 0.25);
+  frame.strokeWeight = 1.5;
+  frame.strokeAlign = 'INSIDE';
+  frame.effects = [shadowLayer(T.accGlow,12,32,0,1), shadowLayer({r:0,g:0,b:0},4,12,0,0.4)];
+}
 
-# ============================================================
-# SCREEN BUILDER
-# ============================================================
+function applySuccessCard(frame, cr=R.xl) {
+  frame.cornerRadius = cr;
+  frame.fills = [...gradV(T.greenDark,{r:0.04,g:0.12,b:0.07}), ...solid(T.glass)];
+  frame.strokes = solid(T.green, 0.3);
+  frame.strokeWeight = 1;
+  frame.strokeAlign = 'INSIDE';
+  frame.effects = [bgBlur(12), shadowLayer(T.greenGlow,8,20,0,1)];
+}
 
-def screen(name, x, y, children):
-    return {
-        "name": name,
-        "x": x, "y": y,
-        "width": SCREEN_W, "height": SCREEN_H,
-        "fill": C_BG,
-        "children": [dynamic_island()] + children
+// ─────────────────────────────────────────────────
+// 5. IMAGE HELPER
+// ─────────────────────────────────────────────────
+function makeImageFill(key) {
+  const b64 = ASSETS[key];
+  if (!b64) return solid(T.bgCard);
+  try {
+    const bytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
+    const img = figma.createImage(bytes);
+    return [{type:'IMAGE', imageHash:img.hash, scaleMode:'FILL', opacity:1}];
+  } catch(e) { return solid(T.bgCard); }
+}
+
+// ─────────────────────────────────────────────────
+// 6. REUSABLE COMPONENTS
+// ─────────────────────────────────────────────────
+
+// ── Status Bar ─────────────────────────────────
+async function makeStatusBar(parent) {
+  const bar = await makeAutoFrame('Status Bar', W, 54, 'HORIZONTAL');
+  bar.fills = noFill();
+  bar.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  bar.counterAxisAlignItems = 'CENTER';
+  bar.paddingLeft=24; bar.paddingRight=24; bar.paddingTop=16;
+
+  const time = await makeText('9:41', 15, 'Bold', T.textHi);
+  const icons = await makeText('▲ 5G  ▐▐ 100%', 13, 'Medium', T.textHi, 0.7);
+  bar.appendChild(time); bar.appendChild(icons);
+  parent.appendChild(bar);
+}
+
+// ── Floating Glass Nav Bar ─────────────────────
+async function makeFloatingNav(parent, activeIdx=0) {
+  const tabs = [
+    {label:'Home',    icon:'⊙'},
+    {label:'Search',  icon:'◎'},
+    {label:'Trips',   icon:'↗'},
+    {label:'Parcels', icon:'⬡'},
+    {label:'Profile', icon:'○'},
+  ];
+  const navW = W - 32;
+  const nav = await makeAutoFrame('Floating Nav', navW, 68, 'HORIZONTAL');
+  nav.x = 16; nav.y = H - 68 - 20;
+  nav.cornerRadius = R.pill;
+  nav.fills = [...solid(T.bgCard, 0.75), ...solid(T.glass)];
+  nav.strokes = solid(T.glassEdge);
+  nav.strokeWeight = 1;
+  nav.strokeAlign = 'INSIDE';
+  nav.effects = [bgBlur(32), shadowLayer({r:0,g:0,b:0},8,32,0,0.5)];
+  nav.primaryAxisAlignItems = 'SPACE_BETWEEN';
+  nav.counterAxisAlignItems = 'CENTER';
+  nav.paddingLeft=24; nav.paddingRight=24;
+
+  for (let i=0;i<tabs.length;i++) {
+    const t = tabs[i];
+    const item = await makeAutoFrame(`Tab: ${t.label}`, 50, 48, 'VERTICAL');
+    item.fills=noFill(); item.primaryAxisAlignItems='CENTER'; item.counterAxisAlignItems='CENTER'; item.itemSpacing=2;
+
+    const icon = await makeText(t.icon, i===activeIdx?18:15, 'Medium', i===activeIdx?T.pri:T.textLow);
+    const lbl  = await makeText(t.label, 10, i===activeIdx?'Bold':'Medium', i===activeIdx?T.pri:T.textLow, i===activeIdx?1:0.5);
+    item.appendChild(icon); item.appendChild(lbl);
+
+    if (i===activeIdx) {
+      const dot = figma.createEllipse();
+      dot.name='Active Dot'; dot.resize(4,4);
+      dot.fills = solid(T.pri);
+      item.appendChild(dot);
+    }
+    nav.appendChild(item);
+  }
+  parent.appendChild(nav);
+}
+
+// ── Chip / Tag ─────────────────────────────────
+async function makeChip(label, color=T.textMed, bg=T.bgCard, borderColor=null, cr=R.pill) {
+  const chip = figma.createFrame();
+  chip.name=`Chip: ${label}`;
+  chip.layoutMode='HORIZONTAL';
+  chip.primaryAxisSizingMode='AUTO';
+  chip.counterAxisSizingMode='AUTO';
+  chip.cornerRadius=cr;
+  chip.paddingLeft=12; chip.paddingRight=12; chip.paddingTop=6; chip.paddingBottom=6;
+  chip.fills = solid(bg, 0.7);
+  if (borderColor) { chip.strokes=solid(borderColor, 0.4); chip.strokeWeight=1; chip.strokeAlign='INSIDE'; }
+  const txt = await makeText(label,12,'Medium',color);
+  chip.appendChild(txt);
+  return chip;
+}
+
+// ── Primary Button ─────────────────────────────
+async function makePrimaryBtn(label, w, h=52) {
+  const btn = figma.createFrame();
+  btn.name=`Button: ${label}`;
+  btn.resize(w,h); btn.cornerRadius=h/2;
+  btn.layoutMode='HORIZONTAL';
+  btn.primaryAxisAlignItems='CENTER'; btn.counterAxisAlignItems='CENTER';
+  btn.fills = gradD(T.pri, T.priDark);
+  btn.strokes = solid(T.priLight, 0.35); btn.strokeWeight=1; btn.strokeAlign='INSIDE';
+  btn.effects=[shadowLayer(T.priGlow,8,20,0,1), shadowLayer({r:0,g:0,b:0},4,8,0,0.3)];
+  const lbl = await makeText(label,15,'Bold',T.textHi);
+  btn.appendChild(lbl);
+  return btn;
+}
+
+// ── Ghost / Secondary Button ───────────────────
+async function makeGhostBtn(label, w, h=52) {
+  const btn = figma.createFrame();
+  btn.name=`GhostBtn: ${label}`;
+  btn.resize(w,h); btn.cornerRadius=h/2;
+  btn.layoutMode='HORIZONTAL';
+  btn.primaryAxisAlignItems='CENTER'; btn.counterAxisAlignItems='CENTER';
+  btn.fills=solid(T.glass); btn.strokes=solid(T.glassEdge); btn.strokeWeight=1; btn.strokeAlign='INSIDE';
+  const lbl = await makeText(label,15,'Medium',T.textHi, 0.85);
+  btn.appendChild(lbl);
+  return btn;
+}
+
+// ── Verification Badge Row ─────────────────────
+async function makeVerificationRow(parent) {
+  const row = figma.createFrame();
+  row.name='Verification Badges';
+  row.layoutMode='HORIZONTAL'; row.primaryAxisSizingMode='AUTO'; row.counterAxisSizingMode='AUTO';
+  row.itemSpacing=8; row.fills=noFill();
+
+  const badges = [
+    {label:'✓ ID Verified', c:T.green, bg:T.greenDark},
+    {label:'✓ License', c:T.green, bg:T.greenDark},
+    {label:'✓ Vehicle', c:T.green, bg:T.greenDark},
+  ];
+  for (const b of badges) {
+    const chip = await makeChip(b.label, b.c, b.bg, T.green);
+    row.appendChild(chip);
+  }
+  parent.appendChild(row);
+}
+
+// ── Traveler Mini Card ─────────────────────────
+async function makeTravelerMiniCard(name, route, seats, price, rating, imgKey, x, y) {
+  const card = await makeAutoFrame(`Traveler: ${name}`, 320, 140, 'HORIZONTAL');
+  applyGlass(card, R.xl);
+  card.x=x; card.y=y;
+  card.itemSpacing=16; card.paddingLeft=16; card.paddingRight=16; card.paddingTop=16; card.paddingBottom=16;
+  card.counterAxisAlignItems='CENTER';
+
+  // Vehicle image
+  const imgRect = makeRect('Vehicle', 100, 100, makeImageFill(imgKey), R.lg);
+  card.appendChild(imgRect);
+
+  // Text block
+  const info = await makeAutoFrame('Info', 168, 108, 'VERTICAL');
+  info.fills=noFill(); info.itemSpacing=6; info.counterAxisSizingMode='FIXED';
+
+  const nm   = await makeText(name, 15, 'Bold', T.textHi);
+  const rt   = await makeText(route, 12, 'Medium', T.textMed, 0.85);
+  const sRow = figma.createFrame();
+  sRow.layoutMode='HORIZONTAL'; sRow.primaryAxisSizingMode='AUTO'; sRow.counterAxisSizingMode='AUTO';
+  sRow.itemSpacing=8; sRow.fills=noFill();
+  const sChip = await makeChip(`${seats} seats`,T.textHi,T.bgSurf);
+  const rChip = await makeChip(`★ ${rating}`,T.amber,T.amberDark);
+  sRow.appendChild(sChip); sRow.appendChild(rChip);
+  const pRow = await makeText(`₹${price} cost share`,16,'Bold',T.pri);
+
+  info.appendChild(nm); info.appendChild(rt); info.appendChild(sRow); info.appendChild(pRow);
+  card.appendChild(info);
+  return card;
+}
+
+// ─────────────────────────────────────────────────
+// 7. SCREENS
+// ─────────────────────────────────────────────────
+
+// ── Screen 1: SPLASH ──────────────────────────
+async function buildSplash(x, y) {
+  const sc = await makeFrame('Screen / Splash', W, H);
+  sc.x=x; sc.y=y;
+  // Rich diagonal gradient background
+  sc.fills = gradD(T.bgBase, {r:0.12,g:0.05,b:0.18});
+
+  // Radial glow behind logo
+  const glow = makeRect('Glow', 300, 300, gradV(T.priGlow, {r:0,g:0,b:0,a:0}), 150);
+  glow.x=(W-300)/2; glow.y=220; sc.appendChild(glow);
+
+  // Brand mark
+  const brand = await makeText('SPOTT', 56, 'Black', T.textHi);
+  brand.x=W/2; brand.y=302; brand.textAlignHorizontal='CENTER';
+  brand.letterSpacing={value:-3,unit:'PIXELS'};
+  sc.appendChild(brand);
+
+  const tagline = await makeText('Travel Together.\nSend Smarter.', 20, 'Medium', T.textMed, 0.8, 'CENTER');
+  tagline.x=W/2; tagline.y=375; tagline.textAlignHorizontal='CENTER';
+  sc.appendChild(tagline);
+
+  // Feature chips row
+  const chipRow = figma.createFrame();
+  chipRow.name='Feature Chips'; chipRow.layoutMode='HORIZONTAL'; chipRow.primaryAxisSizingMode='AUTO';
+  chipRow.counterAxisSizingMode='AUTO'; chipRow.itemSpacing=10; chipRow.fills=noFill();
+
+  const feats = ['⚡ Cost Sharing','📦 Parcel Delivery','🛡 Verified'];
+  for (const f of feats) {
+    const c = await makeChip(f, T.textMed, T.bgCard, T.glassEdge);
+    chipRow.appendChild(c);
+  }
+  chipRow.x=(W - 300)/2 - 10; chipRow.y=440;
+  sc.appendChild(chipRow);
+
+  // CTA buttons
+  const cta = await makePrimaryBtn('Get Started', W-48, 56);
+  cta.x=24; cta.y=680; sc.appendChild(cta);
+
+  const ghost = await makeGhostBtn('I already have an account', W-48, 48);
+  ghost.x=24; ghost.y=748; sc.appendChild(ghost);
+
+  await makeStatusBar(sc);
+  return sc;
+}
+
+// ── Screen 2: ROLE SELECTOR ───────────────────
+async function buildRoleSelector(x, y) {
+  const sc = await makeFrame('Screen / Role Selector', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  const title = await makeText('How will you\nuse Spott?', 38, 'Black', T.textHi);
+  title.x=24; title.y=80; sc.appendChild(title);
+
+  const sub = await makeText('You can switch anytime', 15, 'Medium', T.textMed, 0.7);
+  sub.x=24; sub.y=170; sc.appendChild(sub);
+
+  // Passenger Card
+  const passengerCard = await makeAutoFrame('Passenger Card', W-48, 175, 'HORIZONTAL');
+  applyGlass(passengerCard, R.xl);
+  passengerCard.x=24; passengerCard.y=210;
+  passengerCard.itemSpacing=0; passengerCard.counterAxisAlignItems='CENTER';
+
+  const carImg = makeRect('Car Asset', 150, 145, makeImageFill('car'), R.lg);
+  carImg.layoutGrow=0;
+
+  const pInfo = await makeAutoFrame('Passenger Info', 170, 145, 'VERTICAL');
+  pInfo.fills=noFill(); pInfo.itemSpacing=8; pInfo.paddingLeft=20; pInfo.paddingTop=24;
+  pInfo.primaryAxisAlignItems='SPACE_BETWEEN';
+
+  const pLabel = await makeText('Passenger', 11, 'Bold', T.pri, 0.9);
+  const pTitle = await makeText('Find &\nJoin Trips', 22, 'Black', T.textHi);
+  const pSub   = await makeText('Ride with\nverified travelers', 12, 'Medium', T.textMed, 0.7);
+  pInfo.appendChild(pLabel); pInfo.appendChild(pTitle); pInfo.appendChild(pSub);
+
+  passengerCard.appendChild(carImg); passengerCard.appendChild(pInfo);
+  sc.appendChild(passengerCard);
+
+  // Traveler Card
+  const travelerCard = await makeAutoFrame('Traveler Card', W-48, 175, 'HORIZONTAL');
+  applyGlass(travelerCard, R.xl, T.accGlow);
+  travelerCard.x=24; travelerCard.y=403;
+  travelerCard.itemSpacing=0; travelerCard.counterAxisAlignItems='CENTER';
+
+  const bikeImg = makeRect('Bike Asset', 150, 145, makeImageFill('bike'), R.lg);
+  const tInfo = await makeAutoFrame('Traveler Info', 170, 145, 'VERTICAL');
+  tInfo.fills=noFill(); tInfo.itemSpacing=8; tInfo.paddingLeft=20; tInfo.paddingTop=24;
+  tInfo.primaryAxisAlignItems='SPACE_BETWEEN';
+
+  const tLabel = await makeText('Traveler', 11, 'Bold', T.acc, 0.9);
+  const tTitle = await makeText('Offer &\nShare Trips', 22, 'Black', T.textHi);
+  const tSub   = await makeText('Recover costs,\nmeet co-travelers', 12, 'Medium', T.textMed, 0.7);
+  tInfo.appendChild(tLabel); tInfo.appendChild(tTitle); tInfo.appendChild(tSub);
+
+  travelerCard.appendChild(bikeImg); travelerCard.appendChild(tInfo);
+  sc.appendChild(travelerCard);
+
+  // Parcel Sender Card (smaller)
+  const parcelCard = await makeAutoFrame('Parcel Sender Card', W-48, 130, 'HORIZONTAL');
+  applyGlass(parcelCard, R.xl, T.accGlow);
+  parcelCard.x=24; parcelCard.y=596;
+  parcelCard.itemSpacing=0; parcelCard.counterAxisAlignItems='CENTER';
+
+  const parcelImg = makeRect('Parcel Asset', 110, 100, makeImageFill('parcel'), R.lg);
+  const paInfo = await makeAutoFrame('Parcel Info', 190, 100, 'VERTICAL');
+  paInfo.fills=noFill(); paInfo.itemSpacing=6; paInfo.paddingLeft=20; paInfo.paddingTop=16;
+
+  const paLabel = await makeText('Parcel Sender', 11, 'Bold', T.amber, 0.9);
+  const paTitle = await makeText('Ship via\nTravelers', 20, 'Black', T.textHi);
+  const paSub   = await makeText('Affordable • Fast • Tracked', 12, 'Medium', T.textMed, 0.7);
+  paInfo.appendChild(paLabel); paInfo.appendChild(paTitle); paInfo.appendChild(paSub);
+
+  parcelCard.appendChild(parcelImg); parcelCard.appendChild(paInfo);
+  sc.appendChild(parcelCard);
+
+  return sc;
+}
+
+// ── Screen 3: PASSENGER HOME ──────────────────
+async function buildPassengerHome(x, y) {
+  const sc = await makeFrame('Screen / Passenger Home', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  // Greeting
+  const hi = await makeText('Good evening, Ritesh 👋', 14, 'Medium', T.textMed, 0.8);
+  hi.x=24; hi.y=62; sc.appendChild(hi);
+  const where = await makeText('Where to?', 36, 'Black', T.textHi);
+  where.x=24; where.y=82; sc.appendChild(where);
+
+  // ── HERO SEARCH PANEL (Uber Reserve style) ─────
+  const searchPanel = await makeAutoFrame('Search Panel', W-48, 72, 'HORIZONTAL');
+  applyGlass(searchPanel, R.xl);
+  searchPanel.x=24; searchPanel.y=145;
+  searchPanel.counterAxisAlignItems='CENTER'; searchPanel.itemSpacing=12;
+  searchPanel.paddingLeft=20; searchPanel.paddingRight=16;
+
+  const searchIcon = await makeText('⊙', 20, 'Bold', T.pri);
+  const searchTxt  = await makeText('Search destination…', 16, 'Medium', T.textLow, 0.7);
+  const searchBtn  = await makePrimaryBtn('Go', 52, 42);
+  searchBtn.cornerRadius=R.lg;
+
+  searchPanel.appendChild(searchIcon); searchPanel.appendChild(searchTxt); searchPanel.appendChild(searchBtn);
+  sc.appendChild(searchPanel);
+
+  // ── VEHICLE CHIP ROW ─────────────────────────
+  const chipRow = figma.createFrame();
+  chipRow.name='Vehicle Chips'; chipRow.layoutMode='HORIZONTAL'; chipRow.primaryAxisSizingMode='AUTO';
+  chipRow.counterAxisSizingMode='AUTO'; chipRow.itemSpacing=8; chipRow.fills=noFill();
+  chipRow.x=24; chipRow.y=232;
+  const vehicles = [
+    {label:'🛵 Bike', active:true},
+    {label:'🚗 Car', active:false},
+    {label:'🛺 Rikshaw', active:false},
+    {label:'📦 Parcel', active:false},
+  ];
+  for (const v of vehicles) {
+    const c = await makeChip(v.label, v.active?T.textHi:T.textMed, v.active?T.pri:T.bgCard, v.active?null:T.border);
+    chipRow.appendChild(c);
+  }
+  sc.appendChild(chipRow);
+
+  // ── BENTO GRID ───────────────────────────────
+  // Row 1: Trip finder (large) + Parcel (small)
+  const bentoGap = 14;
+  const leftW = Math.floor((W-48-bentoGap)*0.58);
+  const rightW = W-48-bentoGap-leftW;
+  const bentoY = 290;
+
+  // Left: Find Trip hero card
+  const findCard = await makeAutoFrame('Bento: Find Trip', leftW, 220, 'VERTICAL');
+  applyPrimaryCard(findCard, R.xl);
+  findCard.x=24; findCard.y=bentoY;
+  findCard.primaryAxisAlignItems='SPACE_BETWEEN';
+  findCard.paddingLeft=18; findCard.paddingRight=18; findCard.paddingTop=20; findCard.paddingBottom=16;
+
+  const bikeImg2 = makeRect('Bike', leftW-36, 110, makeImageFill('bike_clock'), R.lg);
+  const findTitle = await makeText('Find\nYour Trip', 22, 'Black', T.textHi);
+  const findBtn   = await makePrimaryBtn('Search Now', leftW-36, 42);
+  findBtn.fills=solid(T.glass); findBtn.strokes=solid(T.glassEdge); findBtn.strokeWeight=1;
+  findBtn.effects=[];
+
+  findCard.appendChild(bikeImg2);
+  findCard.appendChild(findTitle);
+  findCard.appendChild(findBtn);
+  sc.appendChild(findCard);
+
+  // Right: Send Parcel card
+  const parcelCard2 = await makeAutoFrame('Bento: Parcel', rightW, 220, 'VERTICAL');
+  applyGlass(parcelCard2, R.xl, T.accGlow);
+  parcelCard2.x=24+leftW+bentoGap; parcelCard2.y=bentoY;
+  parcelCard2.primaryAxisAlignItems='SPACE_BETWEEN';
+  parcelCard2.paddingLeft=14; parcelCard2.paddingRight=14; parcelCard2.paddingTop=18; parcelCard2.paddingBottom=14;
+
+  const parcelImg2 = makeRect('Parcel', rightW-28, 100, makeImageFill('parcel'), R.lg);
+  const parcelTitle = await makeText('Send\nParcel', 18, 'Bold', T.textHi);
+  const parcelSub   = await makeText('Via travelers', 11, 'Medium', T.textMed, 0.7);
+
+  parcelCard2.appendChild(parcelImg2); parcelCard2.appendChild(parcelTitle); parcelCard2.appendChild(parcelSub);
+  sc.appendChild(parcelCard2);
+
+  // Row 2: Safety Widget (full width)
+  const safetyCard = await makeAutoFrame('Bento: Safety', W-48, 96, 'HORIZONTAL');
+  applySuccessCard(safetyCard, R.xl);
+  safetyCard.x=24; safetyCard.y=bentoY+220+bentoGap;
+  safetyCard.counterAxisAlignItems='CENTER'; safetyCard.itemSpacing=16;
+  safetyCard.paddingLeft=20; safetyCard.paddingRight=20; safetyCard.paddingTop=16; safetyCard.paddingBottom=16;
+
+  const safetyImg = makeRect('Safety', 64, 64, makeImageFill('safety'), R.lg);
+  const safetyInfo = figma.createFrame();
+  safetyInfo.layoutMode='VERTICAL'; safetyInfo.primaryAxisSizingMode='AUTO'; safetyInfo.counterAxisSizingMode='AUTO';
+  safetyInfo.itemSpacing=4; safetyInfo.fills=noFill();
+  const sTitle = await makeText('Safety Center', 16, 'Bold', T.textHi);
+  const sSub   = await makeText('SOS • Trusted Contacts • Live Sharing', 12, 'Medium', T.textMed, 0.75);
+  safetyInfo.appendChild(sTitle); safetyInfo.appendChild(sSub);
+
+  const arrowBtn = await makeText('→', 22, 'Bold', T.green);
+
+  safetyCard.appendChild(safetyImg);
+  safetyCard.appendChild(safetyInfo);
+  safetyCard.appendChild(arrowBtn);
+  sc.appendChild(safetyCard);
+
+  // ── NEARBY TRIPS HEADER ──────────────────────
+  const nearbyHeader = await makeText('Nearby Trips', 18, 'Bold', T.textHi);
+  nearbyHeader.x=24; nearbyHeader.y=bentoY+220+bentoGap+96+24; sc.appendChild(nearbyHeader);
+  const seeAll = await makeText('See all →', 13, 'Medium', T.pri);
+  seeAll.x=W-24-60; seeAll.y=bentoY+220+bentoGap+96+28; sc.appendChild(seeAll);
+
+  // Mini trip card
+  const tripCard = await makeTravelerMiniCard('Arjun K.','Pune → Kolhapur','3','850','4.8','car_clock',24,
+    bentoY+220+bentoGap+96+58);
+  sc.appendChild(tripCard);
+
+  await makeFloatingNav(sc, 0);
+  return sc;
+}
+
+// ── Screen 4: TRIP SEARCH RESULTS ─────────────
+async function buildSearchResults(x, y) {
+  const sc = await makeFrame('Screen / Search Results', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  // Back + title
+  const back = await makeText('← Search Results', 17, 'Bold', T.textHi);
+  back.x=24; back.y=64; sc.appendChild(back);
+
+  // Route summary chip
+  const routeRow = figma.createFrame();
+  routeRow.layoutMode='HORIZONTAL'; routeRow.primaryAxisSizingMode='AUTO'; routeRow.counterAxisSizingMode='AUTO';
+  routeRow.itemSpacing=8; routeRow.fills=noFill(); routeRow.x=24; routeRow.y=100;
+
+  const fromChip = await makeChip('📍 Pune', T.textHi, T.bgCard, T.border, R.lg);
+  const arrow2   = await makeText('→', 18, 'Bold', T.pri);
+  const toChip   = await makeChip('🏁 Kolhapur', T.textHi, T.bgCard, T.border, R.lg);
+  routeRow.appendChild(fromChip); routeRow.appendChild(arrow2); routeRow.appendChild(toChip);
+  sc.appendChild(routeRow);
+
+  // Filter chips
+  const filterRow = figma.createFrame();
+  filterRow.layoutMode='HORIZONTAL'; filterRow.primaryAxisSizingMode='AUTO'; filterRow.counterAxisSizingMode='AUTO';
+  filterRow.itemSpacing=8; filterRow.fills=noFill(); filterRow.x=24; filterRow.y=148;
+  const filters = [
+    {l:'All', active:true}, {l:'🚗 Car'}, {l:'🛵 Bike'}, {l:'Women Friendly'}, {l:'AC'}
+  ];
+  for (const f of filters) {
+    const c = await makeChip(f.l, f.active?T.textHi:T.textMed, f.active?T.pri:T.bgCard, f.active?null:T.border);
+    filterRow.appendChild(c);
+  }
+  sc.appendChild(filterRow);
+
+  // Result cards
+  const results = [
+    {name:'Arjun K.',    route:'Pune → Kolhapur',     seats:'2 left', price:'850', rating:'4.9', img:'car_clock',     y:190},
+    {name:'Priya M.',    route:'Pune → Kolhapur',     seats:'1 left', price:'700', rating:'4.7', img:'bike_clock',    y:348},
+    {name:'Ravi S.',     route:'Pune → Kolhapur',     seats:'3 left', price:'950', rating:'4.6', img:'rikshaw_clock', y:506},
+  ];
+
+  for (const r of results) {
+    const card = await makeAutoFrame(`Result: ${r.name}`, W-48, 142, 'HORIZONTAL');
+    applyGlass(card, R.xl);
+    card.x=24; card.y=r.y;
+    card.counterAxisAlignItems='CENTER'; card.itemSpacing=14;
+    card.paddingLeft=14; card.paddingRight=14; card.paddingTop=14; card.paddingBottom=14;
+
+    const img = makeRect('Vehicle', 106, 106, makeImageFill(r.img), R.lg);
+    card.appendChild(img);
+
+    const info = await makeAutoFrame('Info', 210, 110, 'VERTICAL');
+    info.fills=noFill(); info.itemSpacing=6;
+
+    const topRow = figma.createFrame();
+    topRow.layoutMode='HORIZONTAL'; topRow.primaryAxisSizingMode='AUTO'; topRow.counterAxisSizingMode='AUTO';
+    topRow.itemSpacing=8; topRow.fills=noFill();
+    const nameT = await makeText(r.name, 15, 'Bold', T.textHi);
+    const ratingChip = await makeChip(`★ ${r.rating}`, T.amber, T.amberDark);
+    topRow.appendChild(nameT); topRow.appendChild(ratingChip);
+
+    const routeT = await makeText(r.route, 12, 'Medium', T.textMed, 0.8);
+    const midRow = figma.createFrame();
+    midRow.layoutMode='HORIZONTAL'; midRow.primaryAxisSizingMode='AUTO'; midRow.counterAxisSizingMode='AUTO';
+    midRow.itemSpacing=8; midRow.fills=noFill();
+    const seatsC = await makeChip(r.seats, T.green, T.greenDark, T.green);
+    const priceT = await makeText(`₹${r.price}`, 17, 'Bold', T.pri);
+    midRow.appendChild(seatsC); midRow.appendChild(priceT);
+
+    const reqBtn = await makePrimaryBtn('Request Seat', 200, 38);
+    reqBtn.cornerRadius=R.lg;
+
+    info.appendChild(topRow); info.appendChild(routeT); info.appendChild(midRow); info.appendChild(reqBtn);
+    card.appendChild(info);
+    sc.appendChild(card);
+  }
+
+  await makeFloatingNav(sc, 1);
+  return sc;
+}
+
+// ── Screen 5: TRAVELER DASHBOARD ──────────────
+async function buildTravelerDashboard(x, y) {
+  const sc = await makeFrame('Screen / Traveler Dashboard', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  // Header
+  const headerRow = figma.createFrame();
+  headerRow.layoutMode='HORIZONTAL'; headerRow.primaryAxisSizingMode='FIXED'; headerRow.counterAxisSizingMode='AUTO';
+  headerRow.resize(W-48,40); headerRow.primaryAxisAlignItems='SPACE_BETWEEN'; headerRow.counterAxisAlignItems='CENTER';
+  headerRow.fills=noFill(); headerRow.x=24; headerRow.y=62;
+
+  const hTitle = await makeText('Traveler Mode', 24, 'Black', T.textHi);
+  const modeChip = await makeChip('● Active', T.green, T.greenDark, T.green);
+  headerRow.appendChild(hTitle); headerRow.appendChild(modeChip);
+  sc.appendChild(headerRow);
+
+  // ── NEXT TRIP HERO CARD ───────────────────────
+  const heroCard = await makeAutoFrame('Hero: Next Trip', W-48, 170, 'VERTICAL');
+  applyGlass(heroCard, R.xl);
+  heroCard.x=24; heroCard.y=116;
+  heroCard.primaryAxisAlignItems='SPACE_BETWEEN';
+  heroCard.paddingLeft=20; heroCard.paddingRight=20; heroCard.paddingTop=20; heroCard.paddingBottom=20;
+
+  const heroTop = figma.createFrame();
+  heroTop.layoutMode='HORIZONTAL'; heroTop.primaryAxisSizingMode='FIXED'; heroTop.counterAxisSizingMode='AUTO';
+  heroTop.resize(W-88,20); heroTop.primaryAxisAlignItems='SPACE_BETWEEN'; heroTop.fills=noFill();
+  const heroLabel = await makeText('Your Next Trip', 12, 'Medium', T.textMed, 0.8);
+  const timeChip  = await makeChip('Today, 4:30 PM', T.pri, T.priDark, T.pri, R.lg);
+  heroTop.appendChild(heroLabel); heroTop.appendChild(timeChip);
+
+  const routeBig = await makeText('Pune → Kolhapur', 28, 'Black', T.textHi);
+  const routeSub = await makeText('3 Seats Available   •   Parcel Enabled', 13, 'Medium', T.textMed, 0.8);
+
+  heroCard.appendChild(heroTop);
+  heroCard.appendChild(routeBig);
+  heroCard.appendChild(routeSub);
+  sc.appendChild(heroCard);
+
+  // ── STATS BENTO (2×2 equal) ──────────────────
+  const gap = 14;
+  const hw = Math.floor((W-48-gap)/2);
+  const statY = 300;
+
+  const stats = [
+    {label:'Passengers Joined', val:'2',    sub:'On this trip', color:T.acc,   glow:T.accGlow,   img:null},
+    {label:'Cost Recovery',     val:'₹850', sub:'This trip',    color:T.green, glow:T.greenGlow,  img:null},
+  ];
+
+  for (let i=0;i<stats.length;i++) {
+    const s = stats[i];
+    const statCard = await makeAutoFrame(`Stat: ${s.label}`, hw, 140, 'VERTICAL');
+    applyGlass(statCard, R.xl, s.glow);
+    statCard.x = 24 + i*(hw+gap); statCard.y=statY;
+    statCard.primaryAxisAlignItems='SPACE_BETWEEN';
+    statCard.paddingLeft=18; statCard.paddingRight=18; statCard.paddingTop=18; statCard.paddingBottom=18;
+
+    const valTxt = await makeText(s.val, 32, 'Black', s.color);
+    const lblTxt = await makeText(s.label, 13, 'Bold', T.textHi, 0.9);
+    const subTxt = await makeText(s.sub, 11, 'Medium', T.textMed, 0.7);
+
+    statCard.appendChild(valTxt); statCard.appendChild(lblTxt); statCard.appendChild(subTxt);
+    sc.appendChild(statCard);
+  }
+
+  // ── QUICK ACTIONS ROW ────────────────────────
+  const actY = statY+140+gap;
+  const actions = [
+    {label:'+ Offer Trip',  active:true},
+    {label:'Manage Trips',  active:false},
+    {label:'Requests 2',    active:false},
+  ];
+  const actW = Math.floor((W-48 - gap*2)/3);
+  for (let i=0;i<actions.length;i++) {
+    const a = actions[i];
+    const actBtn = await makeAutoFrame(`Action: ${a.label}`, actW, 52, 'HORIZONTAL');
+    actBtn.cornerRadius=R.pill;
+    actBtn.fills = a.active ? gradD(T.pri,T.priDark) : solid(T.bgCard);
+    actBtn.strokes = a.active ? solid(T.priLight,0.3) : solid(T.border);
+    actBtn.strokeWeight=1; actBtn.strokeAlign='INSIDE';
+    if (a.active) actBtn.effects=[shadowLayer(T.priGlow,6,16,0,1)];
+    actBtn.primaryAxisAlignItems='CENTER'; actBtn.counterAxisAlignItems='CENTER';
+    actBtn.x=24+i*(actW+gap); actBtn.y=actY;
+    const aLbl = await makeText(a.label, 12, a.active?'Bold':'Medium', a.active?T.textHi:T.textMed);
+    actBtn.appendChild(aLbl);
+    sc.appendChild(actBtn);
+  }
+
+  // ── VEHICLE CARD ─────────────────────────────
+  const vehCard = await makeAutoFrame('Vehicle Card', W-48, 120, 'HORIZONTAL');
+  applyGlass(vehCard, R.xl, T.accGlow);
+  vehCard.x=24; vehCard.y=actY+52+gap;
+  vehCard.counterAxisAlignItems='CENTER'; vehCard.itemSpacing=16;
+  vehCard.paddingLeft=16; vehCard.paddingRight=20; vehCard.paddingTop=16; vehCard.paddingBottom=16;
+
+  const vehImg = makeRect('Vehicle', 90, 88, makeImageFill('car_clock'), R.lg);
+  const vehInfo = await makeAutoFrame('Veh Info', W-48-90-16-36-32, 80, 'VERTICAL');
+  vehInfo.fills=noFill(); vehInfo.itemSpacing=4;
+  vehInfo.appendChild(await makeText('My Vehicle', 11, 'Bold', T.acc, 0.9));
+  vehInfo.appendChild(await makeText('Honda Activa 6G', 17, 'Bold', T.textHi));
+  vehInfo.appendChild(await makeText('MH-09 AB 1234  •  ✓ Verified', 12, 'Medium', T.textMed, 0.8));
+  const editBtn = await makeText('Edit →', 13, 'Bold', T.acc);
+
+  vehCard.appendChild(vehImg); vehCard.appendChild(vehInfo); vehCard.appendChild(editBtn);
+  sc.appendChild(vehCard);
+
+  await makeFloatingNav(sc, 0);
+  return sc;
+}
+
+// ── Screen 6: PARCEL BOOKING ──────────────────
+async function buildParcelBooking(x, y) {
+  const sc = await makeFrame('Screen / Parcel Booking', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  // Hero
+  const heroParcel = await makeAutoFrame('Parcel Hero', W, 240, 'VERTICAL');
+  heroParcel.fills = gradD(T.bgBase, {r:0.15,g:0.08,b:0.02});
+  heroParcel.x=0; heroParcel.y=0;
+  heroParcel.primaryAxisAlignItems='CENTER'; heroParcel.counterAxisAlignItems='CENTER'; heroParcel.itemSpacing=0;
+
+  const parcelBigImg = makeRect('Parcel Hero Image', 200, 160, makeImageFill('parcel'), R.xl);
+  parcelBigImg.x=(W-200)/2; parcelBigImg.y=54;
+  heroParcel.appendChild(parcelBigImg);
+  sc.appendChild(heroParcel);
+
+  const heroTitle = await makeText('Send a Parcel', 30, 'Black', T.textHi);
+  heroTitle.x=24; heroTitle.y=254; sc.appendChild(heroTitle);
+  const heroSub = await makeText('Via trusted travelers on your route', 14, 'Medium', T.textMed, 0.75);
+  heroSub.x=24; heroSub.y=292; sc.appendChild(heroSub);
+
+  // Package type picker
+  const pkgLabel = await makeText('Package Type', 13, 'Bold', T.textMed, 0.7);
+  pkgLabel.x=24; pkgLabel.y=334; sc.appendChild(pkgLabel);
+
+  const pkgRow = figma.createFrame();
+  pkgRow.layoutMode='HORIZONTAL'; pkgRow.primaryAxisSizingMode='AUTO'; pkgRow.counterAxisSizingMode='AUTO';
+  pkgRow.itemSpacing=12; pkgRow.fills=noFill(); pkgRow.x=24; pkgRow.y=360;
+
+  const pkgs = [
+    {icon:'📄', label:'Documents', desc:'≤1 kg', active:false},
+    {icon:'📦', label:'Medium Box', desc:'≤5 kg', active:true},
+    {icon:'🍎', label:'Perishable', desc:'Food', active:false},
+    {icon:'💊', label:'Medicine',   desc:'Health', active:false},
+  ];
+  for (const p of pkgs) {
+    const pkgCard = await makeAutoFrame(`Pkg: ${p.label}`, 88, 96, 'VERTICAL');
+    pkgCard.cornerRadius=R.xl;
+    pkgCard.fills = p.active ? [...solid(T.pri,0.15),...solid(T.glass)] : solid(T.bgCard,0.7);
+    pkgCard.strokes = p.active ? solid(T.pri,0.6) : solid(T.border);
+    pkgCard.strokeWeight = p.active?1.5:1; pkgCard.strokeAlign='INSIDE';
+    if (p.active) pkgCard.effects=[shadowLayer(T.priGlow,6,16,0,0.6)];
+    pkgCard.primaryAxisAlignItems='CENTER'; pkgCard.counterAxisAlignItems='CENTER'; pkgCard.itemSpacing=4;
+
+    const pkgIcon  = await makeText(p.icon, 24, 'Regular', T.textHi);
+    const pkgLbl   = await makeText(p.label, 11, 'Bold', p.active?T.pri:T.textHi, 0.9);
+    const pkgDesc  = await makeText(p.desc, 10, 'Medium', T.textMed, 0.6);
+
+    pkgCard.appendChild(pkgIcon); pkgCard.appendChild(pkgLbl); pkgCard.appendChild(pkgDesc);
+    pkgRow.appendChild(pkgCard);
+  }
+  sc.appendChild(pkgRow);
+
+  // Route inputs
+  const routeCard = await makeAutoFrame('Route Card', W-48, 130, 'VERTICAL');
+  applyGlass(routeCard, R.xl);
+  routeCard.x=24; routeCard.y=476;
+  routeCard.itemSpacing=0; routeCard.paddingLeft=20; routeCard.paddingRight=20; routeCard.paddingTop=8; routeCard.paddingBottom=8;
+
+  const pickup = await makeAutoFrame('Pickup Row', W-88, 52, 'HORIZONTAL');
+  pickup.fills=noFill(); pickup.counterAxisAlignItems='CENTER'; pickup.itemSpacing=12;
+  pickup.appendChild(await makeText('⊙', 18, 'Bold', T.green));
+  const pickupTxt = await makeAutoFrame('Pickup Fields', 100, 40, 'VERTICAL');
+  pickupTxt.fills=noFill();
+  pickupTxt.appendChild(await makeText('PICKUP', 9, 'Bold', T.textLow, 0.7));
+  pickupTxt.appendChild(await makeText('Shivaji Nagar, Pune', 14, 'Medium', T.textHi));
+  pickup.appendChild(pickupTxt);
+  routeCard.appendChild(pickup);
+
+  const divLine = makeRect('Divider', W-88, 1, solid(T.border), 0);
+  routeCard.appendChild(divLine);
+
+  const drop = await makeAutoFrame('Drop Row', W-88, 52, 'HORIZONTAL');
+  drop.fills=noFill(); drop.counterAxisAlignItems='CENTER'; drop.itemSpacing=12;
+  drop.appendChild(await makeText('●', 18, 'Bold', T.pri));
+  const dropTxt = await makeAutoFrame('Drop Fields', 100, 40, 'VERTICAL');
+  dropTxt.fills=noFill();
+  dropTxt.appendChild(await makeText('DROP', 9, 'Bold', T.textLow, 0.7));
+  dropTxt.appendChild(await makeText('Rajaram Puri, Kolhapur', 14, 'Medium', T.textHi));
+  drop.appendChild(dropTxt);
+  routeCard.appendChild(drop);
+  sc.appendChild(routeCard);
+
+  // CTA
+  const cta = await makePrimaryBtn('Find Traveler Match', W-48, 56);
+  cta.x=24; cta.y=H-72-24; sc.appendChild(cta);
+
+  await makeStatusBar(sc);
+  return sc;
+}
+
+// ── Screen 7: PARCEL TRACKING ─────────────────
+async function buildParcelTracking(x, y) {
+  const sc = await makeFrame('Screen / Parcel Tracking', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  const back = await makeText('← Track Parcel', 17, 'Bold', T.textHi);
+  back.x=24; back.y=64; sc.appendChild(back);
+
+  // Status hero card
+  const statusCard = await makeAutoFrame('Status Card', W-48, 110, 'HORIZONTAL');
+  applySuccessCard(statusCard, R.xl);
+  statusCard.x=24; statusCard.y=104;
+  statusCard.counterAxisAlignItems='CENTER'; statusCard.itemSpacing=16;
+  statusCard.paddingLeft=20; statusCard.paddingRight=20; statusCard.paddingTop=16; statusCard.paddingBottom=16;
+
+  const routeImg = makeRect('Route', 78, 78, makeImageFill('route'), R.lg);
+  statusCard.appendChild(routeImg);
+  const statusInfo = await makeAutoFrame('Status Info', W-48-78-16-40-16, 78, 'VERTICAL');
+  statusInfo.fills=noFill(); statusInfo.itemSpacing=4;
+  statusInfo.appendChild(await makeText('In Transit', 20, 'Black', T.green));
+  statusInfo.appendChild(await makeText('Pune → Kolhapur', 13, 'Medium', T.textMed, 0.8));
+  statusInfo.appendChild(await makeText('Est. Delivery: 4:00 PM', 12, 'Medium', T.textMed, 0.65));
+  statusCard.appendChild(statusInfo);
+  sc.appendChild(statusCard);
+
+  // Timeline
+  const tlLabel = await makeText('Tracking Timeline', 16, 'Bold', T.textHi);
+  tlLabel.x=24; tlLabel.y=234; sc.appendChild(tlLabel);
+
+  const tlSteps = [
+    {title:'Parcel Booked',         time:'10:00 AM',  done:true,   active:false},
+    {title:'Traveler Assigned',     time:'10:45 AM',  done:true,   active:false},
+    {title:'Picked Up',             time:'11:30 AM',  done:true,   active:false},
+    {title:'In Transit',            time:'12:15 PM',  done:false,  active:true},
+    {title:'Out for Delivery',      time:'Est. 3 PM',  done:false,  active:false},
+    {title:'Delivered',             time:'Pending',   done:false,  active:false},
+  ];
+
+  let tlY = 270;
+  for (let i=0; i<tlSteps.length; i++) {
+    const s = tlSteps[i];
+    // Node circle
+    const nodeCircle = figma.createEllipse();
+    nodeCircle.name=`TL Node ${i}`;
+    nodeCircle.resize(16,16);
+    nodeCircle.x=24+4; nodeCircle.y=tlY+2;
+    if (s.done)         nodeCircle.fills=solid(T.green);
+    else if (s.active)  { nodeCircle.fills=solid(T.pri); nodeCircle.effects=[shadowLayer(T.priGlow,0,12,4,1)]; }
+    else                nodeCircle.fills=solid(T.textMute);
+    sc.appendChild(nodeCircle);
+
+    // Connecting line (not for last)
+    if (i < tlSteps.length-1) {
+      const line = makeRect(`TL Line ${i}`, 2, 36, solid(s.done?T.green:T.border), 1);
+      line.x=24+4+7; line.y=tlY+16;
+      sc.appendChild(line);
     }
 
-screens = []
+    // Text
+    const stepTitle = await makeText(s.title, 14, s.active?'Bold':'Medium', s.done||s.active?T.textHi:T.textLow, s.done||s.active?1:0.5);
+    stepTitle.x=24+28; stepTitle.y=tlY;
+    const stepTime = await makeText(s.time, 11, 'Medium', s.done?T.green:T.textMute, s.active?0.9:0.55);
+    stepTime.x=24+28; stepTime.y=tlY+18;
+    sc.appendChild(stepTitle); sc.appendChild(stepTime);
 
-# ================================================================
-# ROW 1: ONBOARDING & AUTH (y=0)
-# ================================================================
-y1 = 0
-
-# --- SPLASH SCREEN ---
-screens.append(screen("Splash Screen", 0, y1, [
-    # Background ambient glow
-    rect(95, 150, 200, 200, C_PRIMARY_GLOW, 100, "Ambient Glow 1"),
-    rect(195, 350, 150, 150, C_ACCENT_GLOW, 75, "Ambient Glow 2"),
-    
-    # Logo with glow ring
-    rect(145, 260, 100, 100, C_PRIMARY_GLOW, 50, "Logo Glow"),
-    gradient_card(155, 270, 80, 80, C_PRIMARY, C_PRIMARY_LIGHT, 40, "Logo Circle"),
-    text(155, 295, "S", 40, C_WHITE, "Bold", "Logo Letter", w=80, align="CENTER"),
-    
-    # Brand name
-    text(24, 400, "Spott", 44, C_TEXT_PRI, "Bold", "Brand", w=342, align="CENTER", letter_spacing=-1.5),
-    text(24, 455, "Premium cost-sharing travel\n& parcel delivery network", 16, C_TEXT_SEC, "Regular", "Tagline", w=342, align="CENTER"),
-    
-    # Primary CTA with glow shadow
-    button(24, 630, 342, 56, "Get Started", C_PRIMARY, C_WHITE, 16, R_LG, "CTA Primary", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    button(24, 700, 342, 56, "Log In", C_SURFACE, C_TEXT_PRI, 16, R_LG, "CTA Secondary"),
-    
-    # Feature pills
-    chip(24, 780, 110, 30, "💰 Cost Share", C_CARD, C_TEXT_SEC, 11, R_FULL, "Pill 1", stroke=C_BORDER),
-    chip(142, 780, 110, 30, "🛡️ Safe Travel", C_CARD, C_TEXT_SEC, 11, R_FULL, "Pill 2", stroke=C_BORDER),
-    chip(260, 780, 106, 30, "📦 Fast Parcel", C_CARD, C_TEXT_SEC, 11, R_FULL, "Pill 3", stroke=C_BORDER),
-]))
-
-# --- ROLE SELECTOR ---
-screens.append(screen("Role Selector", 500, y1, [
-    # Ambient glow
-    rect(150, 60, 200, 200, C_ACCENT_GLOW, 100, "Ambient"),
-    
-    text(24, 75, "Choose your\njourney", 32, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    text(24, 148, "Select how you'd like to interact with Spott", 14, C_TEXT_SEC, "Regular", "Sub"),
-    
-    # Passenger Card — gradient hero with vehicle image
-    *hero_gradient_bg(24, 190, 342, 140, C_PRIMARY, C_PRIMARY_DARK, "Pass Hero"),
-    text(44, 210, "Passenger Mode", 20, C_WHITE, "Bold", "Pass Title"),
-    text(44, 236, "Find cost-sharing rides\non your daily commute", 13, {"r":1,"g":0.88,"b":0.90}, "Regular", "Pass Sub", w=180),
-    chip(44, 286, 100, 24, "🔥 Popular", {"r":0,"g":0,"b":0,"a":0.3}, C_WHITE, 10, R_FULL, "Pop Badge"),
-    image_node(245, 195, 120, 120, car_img, 0, "Car Hero"),
-    
-    # Traveler Card
-    premium_card(24, 350, 342, 130, R_XL, "Traveler Card"),
-    text(44, 370, "Traveler Mode", 20, C_TEXT_PRI, "Bold", "Trav Title"),
-    text(44, 396, "Share empty seats, offset\nyour fuel costs", 13, C_TEXT_SEC, "Regular", "Trav Sub", w=180),
-    chip(44, 440, 140, 24, "🚗 Recover fuel cost", C_GREEN_DARK, C_GREEN, 10, R_FULL, "Earn Badge"),
-    image_node(255, 355, 100, 100, bike_img, 0, "Bike Hero"),
-    
-    # Parcel Card
-    premium_card(24, 500, 342, 130, R_XL, "Parcel Card"),
-    text(44, 520, "Parcel Sender", 20, C_TEXT_PRI, "Bold", "Par Title"),
-    text(44, 546, "Send packages via verified\ntravelers on their route", 13, C_TEXT_SEC, "Regular", "Par Sub", w=180),
-    chip(44, 590, 130, 24, "📦 Same-day", C_AMBER_DARK, C_AMBER, 10, R_FULL, "Speed Badge"),
-    image_node(255, 510, 100, 100, parcel_img, 0, "Parcel Hero"),
-    
-    button(24, 660, 342, 56, "Continue", C_PRIMARY, C_WHITE, 16, R_LG, "Continue CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-]))
-
-# --- LOGIN ---
-screens.append(screen("Login", 1000, y1, [
-    rect(200, 30, 180, 180, C_ACCENT_GLOW, 90, "Ambient"),
-    
-    text(24, 90, "Welcome back", 32, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    text(24, 130, "Enter your mobile number to continue", 14, C_TEXT_SEC, "Regular", "Sub"),
-    
-    # Phone input with accent border
-    rect(23, 195, 344, 60, C_BORDER_ACC, R_LG, "Input Glow"),
-    rect(24, 196, 342, 58, C_SURFACE, R_LG-1, "Input Bg"),
-    text(48, 216, "+91", 16, C_TEXT_PRI, "Bold", "Country"),
-    rect(85, 210, 1, 30, C_BORDER, 0, "Divider"),
-    text(100, 216, "98765 43210", 16, C_TEXT_PRI, "Medium", "Phone"),
-    
-    button(24, 280, 342, 56, "Request Access Code", C_PRIMARY, C_WHITE, 15, R_LG, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    
-    # Divider
-    rect(24, 370, 150, 1, C_BORDER, 0, "Div L"),
-    text(174, 363, "or", 13, C_TEXT_TER, "Regular", "Or", w=42, align="CENTER"),
-    rect(216, 370, 150, 1, C_BORDER, 0, "Div R"),
-    
-    # Social buttons
-    rect(24, 400, 342, 56, C_SURFACE, R_LG, "Google Btn", stroke=C_BORDER, stroke_width=1),
-    text(24, 418, "Sign in with Google", 15, C_TEXT_PRI, "Medium", "Google Label", w=342, align="CENTER"),
-    
-    rect(24, 470, 342, 56, C_WHITE, R_LG, "Apple Btn"),
-    text(24, 488, "Sign in with Apple", 15, {"r":0,"g":0,"b":0}, "Medium", "Apple Label", w=342, align="CENTER"),
-]))
-
-# --- OTP ---
-screens.append(screen("OTP Verification", 1500, y1, [
-    text(24, 90, "Enter Passcode", 32, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    text(24, 130, "4-digit code sent to +91 98765 43210", 14, C_TEXT_SEC, "Regular"),
-    
-    # OTP boxes with active state glow
-    rect(24, 200, 75, 75, C_SURFACE, R_LG, "OTP 1", stroke=C_BORDER, stroke_width=1),
-    text(24, 222, "4", 30, C_TEXT_PRI, "Bold", "D1", w=75, align="CENTER"),
-    
-    rect(114, 200, 75, 75, C_SURFACE, R_LG, "OTP 2", stroke=C_BORDER, stroke_width=1),
-    text(114, 222, "8", 30, C_TEXT_PRI, "Bold", "D2", w=75, align="CENTER"),
-    
-    rect(204, 200, 75, 75, C_SURFACE, R_LG, "OTP 3", stroke=C_BORDER, stroke_width=1),
-    text(204, 222, "2", 30, C_TEXT_PRI, "Bold", "D3", w=75, align="CENTER"),
-    
-    # Active OTP with accent border
-    rect(293, 199, 77, 77, C_ACCENT, R_LG, "OTP 4 Glow", shadow=True, shadow_color=C_ACCENT_GLOW, shadow_radius=12),
-    rect(294, 200, 75, 75, C_SURFACE, R_LG-1, "OTP 4"),
-    rect(327, 230, 3, 20, C_ACCENT, 1, "Cursor"),
-    
-    button(24, 310, 342, 56, "Verify & Enter", C_PRIMARY, C_WHITE, 15, R_LG, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    text(24, 390, "Resend code in 44s", 13, C_TEXT_TER, "Medium", "Resend", w=342, align="CENTER"),
-]))
-
-# ================================================================
-# ROW 2: PASSENGER FLOW (y=1000)
-# ================================================================
-y2 = 1000
-
-# --- PASSENGER HOME ---
-screens.append(screen("Passenger Home", 0, y2, [
-    # Subtle ambient glow at top
-    rect(0, 0, 390, 200, {"r": 0.376, "g": 0.310, "b": 1.0, "a": 0.04}, 0, "Top Ambient"),
-    
-    *premium_header("Hey Amit 👋", "Pune, Maharashtra"),
-    
-    # Premium search bar
-    *premium_search_bar(24, 135),
-    
-    # Recent routes
-    text(24, 210, "RECENT ROUTES", 10, C_TEXT_TER, "Bold", "Section Label", letter_spacing=2),
-    chip(24, 232, 140, 32, "⚡ Kolhapur → Pune", C_CARD, C_TEXT_PRI, 12, R_FULL, "Route 1", stroke=C_BORDER),
-    chip(172, 232, 130, 32, "⚡ Pune → Mumbai", C_CARD, C_TEXT_PRI, 12, R_FULL, "Route 2", stroke=C_BORDER),
-    
-    # Bento Grid — visually rich
-    *bento_card(24, 282, 170, 180, "Find Trip", "Cost-share\nshared rides", car_img, C_PRIMARY, C_PRIMARY_DARK, badge="Most Popular"),
-    *bento_card(206, 282, 160, 120, "Send Parcel", "Fast same-day\ncourier", parcel_img, accent_color=C_AMBER),
-    *bento_card(206, 414, 160, 120, "Weekly Pass", "Save up to 35%", calendar_img, accent_color=C_ACCENT),
-    *bento_card(24, 474, 170, 120, "Safety Hub", "SOS & Live\nTracking", safety_img, accent_color=C_GREEN),
-    
-    # Active travelers section
-    text(24, 614, "Active Commuters", 18, C_TEXT_PRI, "Bold", "Section Title"),
-    text(280, 618, "See All →", 13, C_ACCENT_LIGHT, "Medium", "See All"),
-    
-    # Nearby trip card
-    premium_card(24, 646, 342, 95, R_XL, "Trip Card"),
-    rect(44, 662, 44, 44, C_SURFACE, 22, "Traveler Pic"),
-    text(44, 670, "PK", 14, C_ACCENT_LIGHT, "Bold", "Initials", w=44, align="CENTER"),
-    text(100, 658, "Pune → Mumbai", 16, C_TEXT_PRI, "Bold", "Trip Route"),
-    text(100, 678, "Priya K. · Verna AC", 13, C_TEXT_SEC, "Medium", "Trip Detail"),
-    text(100, 698, "Identity Verified ✓", 11, C_GREEN, "Medium", "Trust"),
-    text(290, 658, "₹450", 20, C_PRIMARY_LIGHT, "Bold", "Price"),
-    chip(290, 688, 52, 22, "★ 4.9", C_CARD_HOVER, C_AMBER, 10, R_FULL, "Rating"),
-    
-    *floating_nav(0, "passenger"),
-]))
-
-# --- PASSENGER EXPLORE ---
-screens.append(screen("Passenger Explore", 500, y2, [
-    # Map background
-    rect(0, 0, 390, 844, C_SURFACE, 0, "Map BG"),
-    rect(0, 0, 390, 130, C_BG, 0, "Top Shade"),
-    
-    text(24, 70, "Explore", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    # Search bar
-    rect(24, 110, 342, 48, C_CARD, R_MD, "Search", stroke=C_BORDER, stroke_width=1),
-    text(52, 124, "🔍 Search routes or cities…", 14, C_TEXT_TER, "Medium", "Placeholder"),
-    
-    # Map pins
-    rect(100, 280, 44, 44, C_PRIMARY, 22, "Pin 1 Ring", shadow=True, shadow_color=C_PRIMARY_GLOW, shadow_radius=15),
-    text(100, 290, "🚗", 18, C_WHITE, "Regular", "Pin 1 Icon", w=44, align="CENTER"),
-    
-    rect(230, 380, 44, 44, C_GREEN, 22, "Pin 2 Ring", shadow=True, shadow_color=C_GREEN_GLOW, shadow_radius=15),
-    text(230, 390, "🏍️", 18, C_WHITE, "Regular", "Pin 2 Icon", w=44, align="CENTER"),
-    
-    rect(170, 440, 44, 44, C_ACCENT, 22, "Pin 3 Ring", shadow=True, shadow_color=C_ACCENT_GLOW, shadow_radius=15),
-    text(170, 450, "📦", 18, C_WHITE, "Regular", "Pin 3 Icon", w=44, align="CENTER"),
-    
-    # Floating card at bottom
-    glass_panel(16, 570, 358, 160, R_XL, "Selected Card", 0.08),
-    rect(36, 590, 48, 48, C_SURFACE, 24, "Avatar"),
-    text(36, 600, "VM", 14, C_ACCENT_LIGHT, "Bold", "Init", w=48, align="CENTER"),
-    text(96, 588, "Pune-Mumbai Express", 17, C_TEXT_PRI, "Bold", "Name"),
-    text(96, 610, "Vikram M. · Identity Verified ✓", 12, C_GREEN, "Medium", "Trust"),
-    chip(96, 636, 75, 22, "★ 4.9", C_CARD_HOVER, C_AMBER, 10, R_FULL, "Rate"),
-    chip(177, 636, 100, 22, "147 Trips", C_CARD_HOVER, C_TEXT_SEC, 10, R_FULL, "Count"),
-    
-    button(256, 680, 100, 38, "Request", C_PRIMARY, C_WHITE, 13, R_MD, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    
-    *floating_nav(1, "passenger"),
-]))
-
-# --- PASSENGER TRIPS ---
-screens.append(screen("Passenger Trips", 1000, y2, [
-    rect(0, 0, 390, 120, {"r":0.376,"g":0.310,"b":1.0,"a":0.03}, 0, "Ambient"),
-    
-    text(24, 70, "Your Trips", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    # Filter chips
-    chip(24, 112, 100, 34, "Upcoming", C_PRIMARY, C_WHITE, 12, R_FULL, "Filter Active"),
-    chip(130, 112, 80, 34, "History", C_CARD, C_TEXT_SEC, 12, R_FULL, "Filter 2", stroke=C_BORDER),
-    chip(216, 112, 80, 34, "Parcels", C_CARD, C_TEXT_SEC, 12, R_FULL, "Filter 3", stroke=C_BORDER),
-    
-    # Upcoming trip card
-    premium_card(24, 164, 342, 160, R_XL, "Trip Card"),
-    chip(44, 180, 70, 22, "Tomorrow", C_ACCENT, C_WHITE, 10, R_FULL, "Time Badge"),
-    text(44, 212, "Pune → Kolhapur", 20, C_TEXT_PRI, "Bold", "Route"),
-    text(44, 238, "08:30 AM · 1 Seat Booked", 13, C_TEXT_SEC, "Regular", "Detail"),
-    rect(44, 268, 302, 1, C_BORDER, 0, "Divider"),
-    text(44, 280, "Traveler: Priya K. · License Verified ✓", 12, C_GREEN, "Medium", "Trust"),
-    button(232, 274, 114, 36, "View Details", C_CARD_HOVER, C_TEXT_PRI, 12, R_MD, "CTA"),
-    
-    *floating_nav(2, "passenger"),
-]))
-
-# --- PASSENGER ACTIVITY ---
-screens.append(screen("Passenger Activity", 1500, y2, [
-    text(24, 70, "Activity", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    text(24, 115, "TODAY", 10, C_TEXT_TER, "Bold", "Date Section", letter_spacing=2),
-    
-    premium_card(24, 138, 342, 110, R_XL, "Activity 1"),
-    rect(44, 158, 40, 40, C_GREEN_DARK, 20, "Icon Bg 1"),
-    text(44, 166, "📦", 16, C_WHITE, "Regular", "Icon 1", w=40, align="CENTER"),
-    text(94, 154, "Parcel Delivered", 16, C_TEXT_PRI, "Bold", "Title 1"),
-    text(94, 176, "Documents to Mumbai Hub", 13, C_TEXT_SEC, "Regular", "Sub 1"),
-    text(94, 198, "OTP Verified ✓ · 4:15 PM", 11, C_GREEN, "Medium", "Status 1"),
-    
-    text(24, 270, "LAST WEEK", 10, C_TEXT_TER, "Bold", "Date Section 2", letter_spacing=2),
-    
-    premium_card(24, 293, 342, 110, R_XL, "Activity 2"),
-    rect(44, 313, 40, 40, {"r": 0.15, "g": 0.10, "b": 0.28}, 20, "Icon Bg 2"),
-    text(44, 321, "🚗", 16, C_WHITE, "Regular", "Icon 2", w=40, align="CENTER"),
-    text(94, 309, "Trip Completed", 16, C_TEXT_PRI, "Bold", "Title 2"),
-    text(94, 331, "Pune → Lonavala · Fuel Split ₹180", 13, C_TEXT_SEC, "Regular", "Sub 2"),
-    text(94, 353, "Completed · May 8, 11:30 AM", 11, C_ACCENT_LIGHT, "Medium", "Status 2"),
-    
-    *floating_nav(3, "passenger"),
-]))
-
-# --- PASSENGER PROFILE ---
-screens.append(screen("Passenger Profile", 2000, y2, [
-    # Profile ambient glow
-    rect(120, 60, 150, 150, C_ACCENT_GLOW, 75, "Profile Glow"),
-    
-    text(24, 70, "Profile", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    # Avatar with gradient ring
-    rect(152, 120, 86, 86, C_ACCENT, 43, "Ring"),
-    rect(155, 123, 80, 80, C_BG, 40, "Inner"),
-    text(155, 148, "AS", 22, C_ACCENT_LIGHT, "Bold", "Initials", w=80, align="CENTER"),
-    
-    text(24, 222, "Amit Sharma", 24, C_TEXT_PRI, "Bold", "Name", w=342, align="CENTER"),
-    text(24, 252, "Member since January 2024", 13, C_TEXT_SEC, "Medium", "Since", w=342, align="CENTER"),
-    
-    *verification_badges(24, 285),
-    
-    # Settings menu
-    premium_card(24, 465, 342, 56, R_LG, "Menu 1"),
-    text(44, 483, "Personal Details", 15, C_TEXT_PRI, "Medium", "M1"),
-    text(340, 483, "→", 15, C_TEXT_TER, "Regular", "Arrow 1"),
-    
-    premium_card(24, 531, 342, 56, R_LG, "Menu 2"),
-    text(44, 549, "Payment & Split Settings", 15, C_TEXT_PRI, "Medium", "M2"),
-    text(340, 549, "→", 15, C_TEXT_TER, "Regular", "Arrow 2"),
-    
-    premium_card(24, 597, 342, 56, R_LG, "Menu 3"),
-    text(44, 615, "Route Alerts", 15, C_TEXT_PRI, "Medium", "M3"),
-    chip(240, 612, 60, 22, "3 active", C_PRIMARY, C_WHITE, 10, R_FULL, "Alert Count"),
-    text(340, 615, "→", 15, C_TEXT_TER, "Regular", "Arrow 3"),
-    
-    *floating_nav(4, "passenger"),
-]))
-
-# --- TRIP SEARCH SHEET ---
-screens.append(screen("Trip Search Sheet", 2500, y2, [
-    # Map area
-    rect(0, 0, 390, 380, C_SURFACE, 0, "Map Area"),
-    rect(100, 200, 14, 14, C_PRIMARY, 7, "Pin Origin", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    rect(260, 280, 14, 14, C_GREEN, 7, "Pin Dest", shadow=True, shadow_color=C_GREEN_GLOW),
-    # Route line
-    rect(107, 210, 2, 80, C_PRIMARY, 1, "Route Line"),
-    
-    # Bottom sheet
-    rect(0, 340, 390, 504, C_BG, R_XXL, "Sheet", shadow=True, shadow_color={"r":0,"g":0,"b":0,"a":0.5}, shadow_radius=30),
-    rect(170, 354, 50, 5, C_CARD_HOVER, 3, "Handle"),
-    
-    text(24, 380, "Find a Shared Trip", 24, C_TEXT_PRI, "Bold", "Title", letter_spacing=-0.5),
-    
-    # Route input card
-    premium_card(24, 420, 342, 130, R_XL, "Route Input"),
-    # Origin
-    rect(48, 450, 14, 14, C_GREEN, 7, "Origin Dot"),
-    text(72, 446, "Pune Station", 15, C_TEXT_PRI, "Medium", "Origin"),
-    # Connector
-    rect(54, 468, 2, 28, C_BORDER, 1, "Connector"),
-    # Destination
-    rect(48, 500, 14, 14, C_PRIMARY, 7, "Dest Dot"),
-    text(72, 496, "Mumbai Airport (T2)", 15, C_TEXT_PRI, "Bold", "Dest"),
-    
-    # Quick locations
-    chip(24, 570, 110, 32, "📍 Wakad", C_CARD, C_TEXT_SEC, 12, R_FULL, "Loc 1", stroke=C_BORDER),
-    chip(142, 570, 120, 32, "📍 Hinjewadi", C_CARD, C_TEXT_SEC, 12, R_FULL, "Loc 2", stroke=C_BORDER),
-    chip(270, 570, 96, 32, "📍 Baner", C_CARD, C_TEXT_SEC, 12, R_FULL, "Loc 3", stroke=C_BORDER),
-    
-    # Schedule
-    text(24, 620, "SCHEDULE", 10, C_TEXT_TER, "Bold", "Schedule Label", letter_spacing=2),
-    chip(24, 642, 90, 34, "📅 Today", C_PRIMARY, C_WHITE, 12, R_FULL, "Today"),
-    chip(122, 642, 100, 34, "📅 Tomorrow", C_CARD, C_TEXT_SEC, 12, R_FULL, "Tomorrow", stroke=C_BORDER),
-    chip(230, 642, 110, 34, "📅 Pick Date", C_CARD, C_TEXT_SEC, 12, R_FULL, "Custom", stroke=C_BORDER),
-    
-    button(24, 740, 342, 56, "Search Commuters", C_PRIMARY, C_WHITE, 16, R_LG, "Search CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-]))
-
-# --- SEARCH RESULTS ---
-screens.append(screen("Search Results", 3000, y2, [
-    # Top bar
-    rect(0, 0, 390, 130, C_SURFACE, 0, "Top Bar"),
-    rect(0, 120, 390, 10, C_BG, 0, "Transition"),
-    text(24, 65, "← Pune → Mumbai", 18, C_TEXT_PRI, "Bold", "Route"),
-    text(24, 90, "Today, 10:30 AM · 1 Seat", 13, C_TEXT_SEC, "Regular", "Detail"),
-    chip(280, 67, 86, 24, "3 results", C_ACCENT, C_WHITE, 10, R_FULL, "Count"),
-    
-    # Result Card 1 — Premium
-    premium_card(24, 148, 342, 210, R_XL, "Result 1"),
-    rect(44, 170, 50, 50, C_SURFACE, 25, "Avatar 1"),
-    text(44, 180, "PK", 16, C_PRIMARY_LIGHT, "Bold", "Init 1", w=50, align="CENTER"),
-    text(106, 170, "Priya K.", 18, C_TEXT_PRI, "Bold", "Name 1"),
-    text(106, 194, "Identity & License Verified ✓", 12, C_GREEN, "Medium", "Trust 1"),
-    chip(260, 170, 80, 24, "★ 4.9", C_CARD_HOVER, C_AMBER, 11, R_FULL, "Rate 1"),
-    
-    image_node(258, 206, 100, 100, car_img, R_MD, "Car 1"),
-    text(44, 234, "Honda City AC · 2 seats left", 13, C_TEXT_SEC, "Regular", "Vehicle 1"),
-    text(44, 258, "Route Match: 96%", 13, C_GREEN, "Bold", "Match 1"),
-    
-    rect(44, 284, 260, 1, C_BORDER, 0, "Divider 1"),
-    text(44, 300, "₹450", 24, C_PRIMARY_LIGHT, "Bold", "Price 1"),
-    text(100, 308, "per seat", 12, C_TEXT_TER, "Regular", "Per 1"),
-    button(244, 296, 102, 40, "Request", C_PRIMARY, C_WHITE, 13, R_MD, "CTA 1", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    
-    # Result Card 2
-    premium_card(24, 376, 342, 210, R_XL, "Result 2"),
-    rect(44, 398, 50, 50, C_SURFACE, 25, "Avatar 2"),
-    text(44, 408, "RS", 16, C_ACCENT_LIGHT, "Bold", "Init 2", w=50, align="CENTER"),
-    text(106, 398, "Rahul S.", 18, C_TEXT_PRI, "Bold", "Name 2"),
-    text(106, 422, "Identity Verified ✓ · 89 Trips", 12, C_GREEN, "Medium", "Trust 2"),
-    chip(260, 398, 80, 24, "★ 4.8", C_CARD_HOVER, C_AMBER, 11, R_FULL, "Rate 2"),
-    
-    image_node(258, 434, 100, 100, rikshaw_img, R_MD, "Auto 2"),
-    text(44, 462, "Bajaj RE Auto · 1 seat left", 13, C_TEXT_SEC, "Regular", "Vehicle 2"),
-    text(44, 486, "Route Match: 88%", 13, C_AMBER, "Bold", "Match 2"),
-    
-    rect(44, 512, 260, 1, C_BORDER, 0, "Divider 2"),
-    text(44, 528, "₹250", 24, C_PRIMARY_LIGHT, "Bold", "Price 2"),
-    text(100, 536, "per seat", 12, C_TEXT_TER, "Regular", "Per 2"),
-    button(244, 524, 102, 40, "Request", C_PRIMARY, C_WHITE, 13, R_MD, "CTA 2"),
-    
-    *floating_nav(1, "passenger"),
-]))
-
-# --- TRIP DETAILS ---
-screens.append(screen("Trip Details", 3500, y2, [
-    # Map header
-    rect(0, 0, 390, 220, C_SURFACE, 0, "Map Preview"),
-    text(24, 20, "←", 24, C_TEXT_PRI, "Bold", "Back"),
-    
-    # Bottom sheet
-    rect(0, 190, 390, 654, C_BG, R_XXL, "Detail Sheet", shadow=True, shadow_color={"r":0,"g":0,"b":0,"a":0.5}),
-    rect(170, 204, 50, 5, C_CARD_HOVER, 3, "Handle"),
-    
-    # Traveler info
-    rect(24, 230, 56, 56, C_SURFACE, 28, "Pic"),
-    text(24, 242, "PK", 18, C_PRIMARY_LIGHT, "Bold", "Init", w=56, align="CENTER"),
-    text(92, 236, "Priya K.", 20, C_TEXT_PRI, "Bold", "Name"),
-    text(92, 260, "Honda City · MH12-AB-9876", 13, C_TEXT_SEC, "Regular", "Vehicle"),
-    chip(280, 240, 86, 26, "Verified ✓", C_GREEN_DARK, C_GREEN, 10, R_FULL, "Badge"),
-    
-    # Timeline
-    text(24, 306, "TRIP ROUTE", 10, C_TEXT_TER, "Bold", "Section", letter_spacing=2),
-    *timeline_premium(38, 334, [
-        ("10:30 AM", "Pune Station", "Origin"),
-        ("11:10 AM", "Wakad Highway", "Pickup stop"),
-        ("01:45 PM", "Panvel Express", "Drop point"),
-        ("02:15 PM", "Mumbai Airport T2", "Destination"),
-    ], 1),
-    
-    # Verification
-    *verification_badges(24, 590, 342),
-    
-    # Bottom action
-    rect(0, 758, 390, 86, C_SURFACE, 0, "Bottom Action"),
-    text(24, 772, "SPLIT AMOUNT", 10, C_TEXT_TER, "Bold", "Label", letter_spacing=1),
-    text(24, 790, "₹450", 28, C_TEXT_PRI, "Bold", "Amount"),
-    button(180, 772, 186, 50, "Book Seat", C_PRIMARY, C_WHITE, 15, R_MD, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-]))
-
-# --- REQUEST SEAT PANEL ---
-screens.append(screen("Request Seat Panel", 4000, y2, [
-    rect(0, 0, 390, 844, C_OVERLAY, 0, "Dimmed BG"),
-    
-    # Bottom sheet
-    rect(0, 380, 390, 464, C_BG, R_XXL, "Confirm Sheet", shadow=True, shadow_color={"r":0,"g":0,"b":0,"a":0.6}),
-    rect(170, 394, 50, 5, C_CARD_HOVER, 3, "Handle"),
-    
-    text(24, 420, "Confirm Booking", 24, C_TEXT_PRI, "Bold", "Title", letter_spacing=-0.5),
-    
-    # Receipt
-    text(24, 460, "SPLIT RECEIPT", 10, C_TEXT_TER, "Bold", "Receipt Label", letter_spacing=2),
-    
-    premium_card(24, 482, 342, 130, R_XL, "Receipt Card"),
-    text(44, 502, "Pune → Mumbai Seat", 14, C_TEXT_PRI, "Regular", "Item 1"),
-    text(300, 502, "₹450", 14, C_TEXT_PRI, "Bold", "Amt 1"),
-    text(44, 528, "Safety Fee", 14, C_TEXT_SEC, "Regular", "Item 2"),
-    text(300, 528, "₹35", 14, C_TEXT_SEC, "Regular", "Amt 2"),
-    text(44, 554, "First Ride Discount", 14, C_GREEN, "Regular", "Item 3"),
-    text(294, 554, "- ₹50", 14, C_GREEN, "Bold", "Amt 3"),
-    rect(44, 580, 302, 1, C_BORDER, 0, "Divider"),
-    text(44, 592, "Total", 16, C_TEXT_PRI, "Bold", "Total Label"),
-    text(290, 590, "₹435", 22, C_PRIMARY_LIGHT, "Bold", "Total Amt"),
-    
-    text(24, 650, "⚡ Instant notification to Priya", 13, C_TEXT_TER, "Medium", "Info", w=342, align="CENTER"),
-    
-    button(24, 685, 342, 54, "Pay & Request", C_PRIMARY, C_WHITE, 16, R_LG, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    button(24, 750, 342, 46, "Cancel", C_CARD, C_TEXT_SEC, 14, R_LG, "Cancel"),
-]))
-
-# ================================================================
-# ROW 3: PARCEL FLOW (y=2000)
-# ================================================================
-y3 = 2000
-
-# --- SEND PARCEL ---
-screens.append(screen("Send Parcel", 0, y3, [
-    text(24, 70, "← Send Parcel", 22, C_TEXT_PRI, "Bold", "Title"),
-    
-    # Hero
-    *hero_gradient_bg(24, 110, 342, 130, C_ACCENT, {"r":0.20,"g":0.15,"b":0.50}, "Parcel Hero"),
-    text(44, 126, "Same-day delivery network", 18, C_WHITE, "Bold", "Hero Title"),
-    text(44, 150, "Verified travelers carry\nyour items securely", 13, {"r":0.8,"g":0.78,"b":1.0}, "Regular", "Hero Sub", w=180),
-    image_node(260, 115, 100, 100, parcel_img, 0, "Hero Img"),
-    
-    # Step 1: Type
-    text(24, 260, "1. WHAT ARE YOU SENDING?", 10, C_TEXT_TER, "Bold", "Step 1", letter_spacing=2),
-    
-    # Selected type with accent border
-    rect(23, 283, 106, 82, C_ACCENT, R_LG, "Type 1 Active Border"),
-    rect(24, 284, 104, 80, C_CARD, R_LG-1, "Type 1 Bg"),
-    text(34, 298, "📄", 24, C_WHITE, "Regular", "Type 1 Icon"),
-    text(34, 330, "Documents", 12, C_TEXT_PRI, "Bold", "Type 1 Label"),
-    
-    rect(142, 284, 104, 80, C_CARD, R_LG, "Type 2 Bg", stroke=C_BORDER, stroke_width=1),
-    text(152, 298, "📦", 24, C_WHITE, "Regular", "Type 2 Icon"),
-    text(152, 330, "Medium Box", 12, C_TEXT_SEC, "Medium", "Type 2 Label"),
-    
-    rect(261, 284, 104, 80, C_CARD, R_LG, "Type 3 Bg", stroke=C_BORDER, stroke_width=1),
-    text(271, 298, "🥡", 24, C_WHITE, "Regular", "Type 3 Icon"),
-    text(271, 330, "Perishable", 12, C_TEXT_SEC, "Medium", "Type 3 Label"),
-    
-    # Step 2: Weight
-    text(24, 388, "2. WEIGHT RANGE", 10, C_TEXT_TER, "Bold", "Step 2", letter_spacing=2),
-    chip(24, 410, 90, 34, "Under 1 kg", C_PRIMARY, C_WHITE, 12, R_FULL, "W1"),
-    chip(122, 410, 90, 34, "1 - 5 kg", C_CARD, C_TEXT_SEC, 12, R_FULL, "W2", stroke=C_BORDER),
-    chip(220, 410, 90, 34, "Over 5 kg", C_CARD, C_TEXT_SEC, 12, R_FULL, "W3", stroke=C_BORDER),
-    
-    # Step 3: Route
-    text(24, 468, "3. ROUTE", 10, C_TEXT_TER, "Bold", "Step 3", letter_spacing=2),
-    premium_card(24, 490, 342, 100, R_XL, "Route Card"),
-    rect(48, 514, 12, 12, C_GREEN, 6, "Origin Dot"),
-    text(70, 510, "Pune Station area", 14, C_TEXT_PRI, "Bold", "Origin"),
-    rect(53, 530, 2, 20, C_BORDER, 1, "Line"),
-    rect(48, 554, 12, 12, C_PRIMARY, 6, "Dest Dot"),
-    text(70, 550, "Mumbai Hub (Andheri)", 14, C_TEXT_PRI, "Bold", "Dest"),
-    
-    button(24, 730, 342, 56, "Search Matched Travelers", C_PRIMARY, C_WHITE, 15, R_LG, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-]))
-
-# --- TRACK PARCEL ---
-screens.append(screen("Track Parcel", 500, y3, [
-    text(24, 70, "← Tracking", 22, C_TEXT_PRI, "Bold", "Title"),
-    
-    # Status hero
-    *hero_gradient_bg(24, 110, 342, 100, C_GREEN, C_GREEN_DARK, "Status Hero"),
-    text(44, 128, "In Transit", 22, C_WHITE, "Bold", "Status"),
-    text(44, 154, "Pune → Mumbai · ETA 4:30 PM", 13, {"r":0.8,"g":1.0,"b":0.88}, "Regular", "ETA"),
-    chip(260, 132, 86, 24, "On Time", {"r":0,"g":0,"b":0,"a":0.3}, C_WHITE, 10, R_FULL, "Time Badge"),
-    
-    # Timeline
-    text(24, 235, "TRACKING STEPS", 10, C_TEXT_TER, "Bold", "Section", letter_spacing=2),
-    *timeline_premium(38, 262, [
-        ("2:00 PM", "Sender Handover", "Verified by Rahul M."),
-        ("2:45 PM", "Highway Passing", "Near Lonavala"),
-        ("Pending", "Out for Delivery", "Approaching destination"),
-        ("Pending", "Package Received", "Awaiting OTP"),
-    ], 1),
-    
-    # Carrier info
-    text(24, 530, "CARRIER", 10, C_TEXT_TER, "Bold", "Carrier Label", letter_spacing=2),
-    premium_card(24, 552, 342, 80, R_XL, "Carrier Card"),
-    rect(44, 568, 48, 48, C_SURFACE, 24, "Carrier Pic"),
-    text(44, 580, "RM", 14, C_ACCENT_LIGHT, "Bold", "Init", w=48, align="CENTER"),
-    text(104, 568, "Rahul M.", 16, C_TEXT_PRI, "Bold", "Name"),
-    text(104, 590, "Tata Nexon · MH12-EF-3344", 13, C_TEXT_SEC, "Regular", "Vehicle"),
-    button(260, 572, 86, 36, "Contact", C_ACCENT, C_WHITE, 12, R_MD, "Contact CTA"),
-]))
-
-# --- PARCEL HISTORY ---
-screens.append(screen("Parcel History", 1000, y3, [
-    text(24, 70, "Logistics History", 24, C_TEXT_PRI, "Bold", "Title", letter_spacing=-0.5),
-    
-    premium_card(24, 120, 342, 130, R_XL, "Past 1"),
-    image_node(44, 140, 65, 65, parcel_img, R_MD, "Icon 1"),
-    text(122, 138, "Document Folder", 17, C_TEXT_PRI, "Bold", "T1"),
-    text(122, 162, "Mumbai → Pune · < 1kg", 13, C_TEXT_SEC, "Regular", "D1"),
-    chip(122, 190, 100, 22, "✓ Delivered", C_GREEN_DARK, C_GREEN, 10, R_FULL, "Status 1"),
-    text(122, 218, "May 12, 2024", 11, C_TEXT_TER, "Regular", "Date 1"),
-    
-    premium_card(24, 268, 342, 130, R_XL, "Past 2"),
-    image_node(44, 288, 65, 65, parcel_img, R_MD, "Icon 2"),
-    text(122, 286, "Electronics Box", 17, C_TEXT_PRI, "Bold", "T2"),
-    text(122, 310, "Pune → Bangalore · 3kg", 13, C_TEXT_SEC, "Regular", "D2"),
-    chip(122, 338, 100, 22, "✗ Cancelled", {"r":0.25,"g":0.05,"b":0.08}, C_PRIMARY_LIGHT, 10, R_FULL, "Status 2"),
-    text(122, 366, "May 8, 2024", 11, C_TEXT_TER, "Regular", "Date 2"),
-]))
-
-# ================================================================
-# ROW 4: TRAVELER FLOW (y=3000)
-# ================================================================
-y4 = 3000
-
-# --- TRAVELER DASHBOARD ---
-screens.append(screen("Traveler Dashboard", 0, y4, [
-    rect(0, 0, 390, 200, {"r":0.933,"g":0.180,"b":0.275,"a":0.04}, 0, "Ambient"),
-    
-    text(24, 70, "Dashboard", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    # Availability toggle
-    glass_panel(24, 110, 342, 52, R_LG, "Toggle Panel"),
-    text(44, 126, "🟢 Accepting Passengers & Parcels", 13, C_GREEN, "Bold", "Toggle Label"),
-    rect(300, 124, 46, 26, C_GREEN, 13, "Toggle Body"),
-    rect(322, 127, 20, 20, C_WHITE, 10, "Toggle Knob"),
-    
-    # Next trip hero (NOT earnings first)
-    *hero_gradient_bg(24, 178, 342, 170, C_PRIMARY, C_PRIMARY_DARK, "Trip Hero"),
-    text(44, 195, "YOUR NEXT COMMUTE", 10, {"r":1,"g":0.8,"b":0.85}, "Bold", "Hero Label", letter_spacing=2),
-    text(44, 216, "Pune → Kolhapur", 24, C_WHITE, "Bold", "Hero Route"),
-    text(44, 246, "Today, 10:30 AM · Verna AC", 13, {"r":1,"g":0.9,"b":0.92}, "Regular", "Hero Detail"),
-    chip(44, 278, 100, 24, "3 Seats Left", {"r":0,"g":0,"b":0,"a":0.3}, C_WHITE, 10, R_FULL, "Seats"),
-    chip(150, 278, 120, 24, "2 Joined", {"r":0,"g":0,"b":0,"a":0.3}, C_WHITE, 10, R_FULL, "Joined"),
-    chip(276, 278, 80, 24, "📦 Parcel", {"r":0,"g":0,"b":0,"a":0.3}, C_AMBER, 10, R_FULL, "Parcel"),
-    image_node(270, 190, 90, 80, car_clock_img, 0, "Clock Car"),
-    
-    # Stats (fuel cost recovery, NOT earnings)
-    text(24, 370, "FUEL COST RECOVERY", 10, C_TEXT_TER, "Bold", "Stats Label", letter_spacing=2),
-    *metric_card(24, 392, 342, 100, "This Week Recovery", "₹4,890", "+22%", True, C_GREEN),
-    
-    # Bento stats
-    premium_card(24, 510, 163, 90, R_XL, "Stat 1"),
-    text(40, 526, "Trips Done", 11, C_TEXT_TER, "Medium"),
-    text(40, 544, "34", 24, C_TEXT_PRI, "Bold"),
-    chip(40, 574, 80, 18, "Verified ✓", C_GREEN_DARK, C_GREEN, 9, R_FULL, "V1"),
-    
-    premium_card(203, 510, 163, 90, R_XL, "Stat 2"),
-    text(219, 526, "CO₂ Saved", 11, C_TEXT_TER, "Medium"),
-    text(219, 544, "124 kg", 24, C_GREEN, "Bold"),
-    chip(219, 574, 80, 18, "Level 4 🌱", C_GREEN_DARK, C_GREEN, 9, R_FULL, "Eco"),
-    
-    *floating_nav(0, "traveler"),
-]))
-
-# --- TRAVELER REQUESTS ---
-screens.append(screen("Traveler Requests", 500, y4, [
-    text(24, 70, "Requests", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    # Passenger request
-    premium_card(24, 120, 342, 190, R_XL, "Req 1"),
-    chip(44, 138, 80, 22, "Passenger", C_ACCENT, C_WHITE, 10, R_FULL, "Type 1"),
-    rect(44, 170, 48, 48, C_SURFACE, 24, "Avatar 1"),
-    text(44, 182, "SS", 14, C_PRIMARY_LIGHT, "Bold", "Init 1", w=48, align="CENTER"),
-    text(104, 172, "Shreya Sen", 17, C_TEXT_PRI, "Bold", "Name 1"),
-    text(104, 194, "Identity Verified ✓ · ★ 4.9", 12, C_GREEN, "Medium", "Trust 1"),
-    text(44, 228, "📍 Pickup: Wakad (+2 min detour)", 13, C_TEXT_SEC, "Regular", "Pickup"),
-    
-    button(44, 260, 140, 38, "Decline", C_CARD, C_TEXT_SEC, 13, R_MD, "Decline 1"),
-    button(194, 260, 152, 38, "Accept Seat", C_GREEN, C_WHITE, 13, R_MD, "Accept 1", shadow=True, shadow_color=C_GREEN_GLOW),
-    
-    # Parcel request
-    premium_card(24, 328, 342, 200, R_XL, "Req 2"),
-    chip(44, 346, 60, 22, "Parcel", C_AMBER, {"r":0,"g":0,"b":0}, 10, R_FULL, "Type 2"),
-    image_node(44, 378, 65, 65, parcel_img, R_MD, "Parcel Img"),
-    text(122, 376, "Documents Envelope", 17, C_TEXT_PRI, "Bold", "Name 2"),
-    text(122, 400, "Sender: Amit S. · ID Verified ✓", 12, C_TEXT_SEC, "Regular", "Sender"),
-    text(122, 424, "Recovery: ₹180", 14, C_PRIMARY_LIGHT, "Bold", "Payout"),
-    
-    button(44, 470, 140, 38, "Decline", C_CARD, C_TEXT_SEC, 13, R_MD, "Decline 2"),
-    button(194, 470, 152, 38, "Accept Carry", C_PRIMARY, C_WHITE, 13, R_MD, "Accept 2", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    
-    *floating_nav(1, "traveler"),
-]))
-
-# --- TRAVELER TRIPS ---
-screens.append(screen("Traveler Trips", 1000, y4, [
-    text(24, 70, "Your Rides", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    # Active trip
-    premium_card(24, 120, 342, 175, R_XL, "Trip 1"),
-    chip(44, 138, 90, 22, "🟢 Active", C_GREEN_DARK, C_GREEN, 10, R_FULL, "Status 1"),
-    text(44, 172, "Pune → Mumbai Express", 18, C_TEXT_PRI, "Bold", "Route 1"),
-    text(44, 196, "Today, 10:30 AM · Verna AC", 13, C_TEXT_SEC, "Regular", "Detail 1"),
-    text(44, 222, "Seats: 3/4 filled", 14, C_GREEN, "Bold", "Seats 1"),
-    button(228, 222, 118, 36, "Manage", C_CARD_HOVER, C_TEXT_PRI, 12, R_MD, "Manage 1"),
-    image_node(280, 130, 80, 80, car_img, R_MD, "Car 1"),
-    
-    # Completed trip
-    premium_card(24, 313, 342, 140, R_XL, "Trip 2"),
-    chip(44, 331, 100, 22, "✓ Completed", C_CARD_HOVER, C_TEXT_SEC, 10, R_FULL, "Status 2"),
-    text(44, 365, "Mumbai → Pune Bypass", 18, C_TEXT_PRI, "Bold", "Route 2"),
-    text(44, 389, "May 31 · Recovered ₹1,250", 13, C_TEXT_SEC, "Regular", "Detail 2"),
-    
-    *floating_nav(2, "traveler"),
-]))
-
-# --- TRAVELER VEHICLE ---
-screens.append(screen("Traveler Vehicle", 1500, y4, [
-    text(24, 70, "Vehicle Profile", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    # Vehicle hero
-    *hero_gradient_bg(24, 115, 342, 160, C_ACCENT, {"r": 0.20, "g": 0.15, "b": 0.50}, "Vehicle Hero"),
-    text(44, 132, "REGISTERED VEHICLE", 10, {"r":0.8,"g":0.78,"b":1.0}, "Bold", "Hero Label", letter_spacing=2),
-    text(44, 152, "Hyundai Verna 1.5", 22, C_WHITE, "Bold", "Hero Name"),
-    text(44, 180, "MH12-AB-9876", 14, {"r":0.8,"g":0.78,"b":1.0}, "Regular", "Plate"),
-    chip(44, 212, 95, 24, "RC Verified ✓", {"r":0,"g":0,"b":0,"a":0.3}, C_GREEN, 10, R_FULL, "RC"),
-    chip(145, 212, 110, 24, "Insured ✓", {"r":0,"g":0,"b":0,"a":0.3}, C_GREEN, 10, R_FULL, "Insurance"),
-    image_node(258, 125, 100, 120, car_img, 0, "Car Badge"),
-    
-    # Specs
-    text(24, 296, "SPECIFICATIONS", 10, C_TEXT_TER, "Bold", "Specs Label", letter_spacing=2),
-    
-    premium_card(24, 318, 342, 52, R_LG, "Spec 1"),
-    text(44, 334, "Seat Capacity", 14, C_TEXT_SEC, "Medium"),
-    text(280, 334, "4 Max", 14, C_TEXT_PRI, "Bold"),
-    
-    premium_card(24, 380, 342, 52, R_LG, "Spec 2"),
-    text(44, 396, "Parcel Capacity", 14, C_TEXT_SEC, "Medium"),
-    text(260, 396, "15 kg (Trunk)", 14, C_TEXT_PRI, "Bold"),
-    
-    premium_card(24, 442, 342, 52, R_LG, "Spec 3"),
-    text(44, 458, "Amenities", 14, C_TEXT_SEC, "Medium"),
-    text(250, 458, "AC, Charger ✓", 14, C_GREEN, "Bold"),
-    
-    # Auto-match
-    text(24, 516, "AVAILABILITY", 10, C_TEXT_TER, "Bold", "Avail Label", letter_spacing=2),
-    premium_card(24, 538, 342, 52, R_LG, "Auto Match"),
-    text(44, 554, "Auto-match searches", 14, C_TEXT_PRI, "Medium"),
-    text(280, 554, "ON ✓", 14, C_GREEN, "Bold"),
-    
-    *floating_nav(3, "traveler"),
-]))
-
-# --- TRAVELER PROFILE ---
-screens.append(screen("Traveler Profile", 2000, y4, [
-    rect(120, 60, 150, 150, C_PRIMARY_GLOW, 75, "Profile Glow"),
-    
-    text(24, 70, "Profile", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    rect(152, 120, 86, 86, C_PRIMARY, 43, "Ring"),
-    rect(155, 123, 80, 80, C_BG, 40, "Inner"),
-    text(155, 148, "RM", 22, C_PRIMARY_LIGHT, "Bold", "Initials", w=80, align="CENTER"),
-    
-    text(24, 222, "Rahul Malhotra", 24, C_TEXT_PRI, "Bold", "Name", w=342, align="CENTER"),
-    text(24, 252, "Member since Feb 2024", 13, C_TEXT_SEC, "Medium", "Since", w=342, align="CENTER"),
-    
-    *verification_badges(24, 285),
-    
-    premium_card(24, 465, 342, 52, R_LG, "Menu 1"),
-    text(44, 481, "Driving History", 14, C_TEXT_PRI, "Medium"),
-    text(340, 481, "→", 14, C_TEXT_TER, "Regular"),
-    
-    premium_card(24, 527, 342, 52, R_LG, "Menu 2"),
-    text(44, 543, "Bank Account (Payouts)", 14, C_TEXT_PRI, "Medium"),
-    text(340, 543, "→", 14, C_TEXT_TER, "Regular"),
-    
-    *floating_nav(4, "traveler"),
-]))
-
-# --- CREATE TRIP WIZARD ---
-screens.append(screen("Create Trip", 2500, y4, [
-    text(24, 70, "Offer a Ride", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    text(24, 102, "Step 1 of 5 · Route Setup", 13, C_ACCENT_LIGHT, "Medium", "Progress Label"),
-    
-    # Progress bar
-    rect(24, 125, 66, 4, C_PRIMARY, 2, "Bar 1"),
-    rect(94, 125, 66, 4, C_CARD_HOVER, 2, "Bar 2"),
-    rect(164, 125, 66, 4, C_CARD_HOVER, 2, "Bar 3"),
-    rect(234, 125, 66, 4, C_CARD_HOVER, 2, "Bar 4"),
-    rect(304, 125, 62, 4, C_CARD_HOVER, 2, "Bar 5"),
-    
-    # Route section
-    text(24, 156, "1. DEFINE ROUTE", 10, C_TEXT_TER, "Bold", "Section 1", letter_spacing=2),
-    premium_card(24, 178, 342, 110, R_XL, "Route Card"),
-    rect(48, 202, 12, 12, C_GREEN, 6, "Start Dot"),
-    text(70, 198, "Baner, Pune", 14, C_TEXT_PRI, "Medium", "Start"),
-    rect(53, 218, 2, 24, C_BORDER, 1, "Line"),
-    rect(48, 248, 12, 12, C_PRIMARY, 6, "End Dot"),
-    text(70, 244, "Bandra, Mumbai", 14, C_TEXT_PRI, "Bold", "End"),
-    
-    # Vehicle
-    text(24, 312, "2. VEHICLE", 10, C_TEXT_TER, "Bold", "Section 2", letter_spacing=2),
-    chip(24, 334, 110, 36, "🚗 Verna AC", C_PRIMARY, C_WHITE, 12, R_FULL, "V1"),
-    chip(142, 334, 110, 36, "🏍️ Pulsar", C_CARD, C_TEXT_SEC, 12, R_FULL, "V2", stroke=C_BORDER),
-    
-    # Seats
-    text(24, 396, "3. SEATS", 10, C_TEXT_TER, "Bold", "Section 3", letter_spacing=2),
-    rect(24, 418, 160, 48, C_CARD, R_MD, "Stepper", stroke=C_BORDER, stroke_width=1),
-    text(24, 432, "−   3 seats   +", 16, C_TEXT_PRI, "Bold", "Stepper Val", w=160, align="CENTER"),
-    
-    # Pricing
-    text(24, 492, "4. SUGGESTED SPLIT", 10, C_TEXT_TER, "Bold", "Section 4", letter_spacing=2),
-    premium_card(24, 514, 342, 70, R_XL, "Pricing"),
-    text(44, 530, "Suggested: ₹420 - ₹480 / seat", 14, C_TEXT_PRI, "Bold", "Suggestion"),
-    text(44, 552, "This rate fills seats 90% faster", 12, C_GREEN, "Regular", "Tip"),
-    
-    button(24, 730, 342, 56, "Confirm & Continue", C_PRIMARY, C_WHITE, 15, R_LG, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-]))
-
-# ================================================================
-# ROW 5: UTILITY SCREENS (y=4000)
-# ================================================================
-y5 = 4000
-
-# --- ACTIVE TRIP ---
-screens.append(screen("Active Trip", 0, y5, [
-    rect(0, 0, 390, 844, C_SURFACE, 0, "Map View"),
-    
-    # Speed widget
-    glass_panel(24, 68, 105, 80, R_XL, "Speed Widget"),
-    text(24, 82, "Speed", 10, C_TEXT_TER, "Medium", "Speed Label", w=105, align="CENTER"),
-    text(24, 100, "84", 28, C_GREEN, "Bold", "Speed Val", w=105, align="CENTER"),
-    text(24, 130, "km/h", 10, C_TEXT_SEC, "Regular", "Speed Unit", w=105, align="CENTER"),
-    
-    # ETA widget
-    glass_panel(142, 68, 224, 80, R_XL, "ETA Widget"),
-    text(162, 82, "Next: Wakad Toll Gate", 14, C_TEXT_PRI, "Bold", "ETA Dest"),
-    text(162, 104, "ETA 12 min · 8.4 km", 12, C_TEXT_SEC, "Regular", "ETA Detail"),
-    text(162, 126, "⏱️ On Schedule", 12, C_GREEN, "Medium", "ETA Status"),
-    
-    # Bottom controls
-    rect(0, 590, 390, 254, C_BG, R_XXL, "Controls Sheet", shadow=True, shadow_color={"r":0,"g":0,"b":0,"a":0.5}),
-    rect(170, 604, 50, 5, C_CARD_HOVER, 3, "Handle"),
-    
-    text(24, 630, "En Route", 22, C_TEXT_PRI, "Bold", "Status"),
-    text(24, 656, "Pune → Mumbai · Rahul · Verna", 13, C_TEXT_SEC, "Regular", "Trip Info"),
-    
-    # Passenger list
-    rect(24, 690, 44, 44, C_SURFACE, 22, "P1"),
-    text(24, 700, "SS", 12, C_ACCENT_LIGHT, "Bold", "P1 Init", w=44, align="CENTER"),
-    rect(60, 690, 44, 44, C_SURFACE, 22, "P2"),
-    text(60, 700, "AK", 12, C_GREEN, "Bold", "P2 Init", w=44, align="CENTER"),
-    text(118, 700, "2 passengers onboard", 13, C_TEXT_SEC, "Regular", "P Count"),
-    
-    button(24, 750, 342, 50, "Share Live Location", C_CARD, C_TEXT_PRI, 14, R_LG, "Share"),
-    button(24, 808, 342, 50, "🚨 EMERGENCY SOS", C_PRIMARY, C_WHITE, 14, R_LG, "SOS", shadow=True, shadow_color=C_PRIMARY_GLOW),
-]))
-
-# --- SAFETY CENTER ---
-screens.append(screen("Safety Center", 500, y5, [
-    text(24, 70, "Safety Hub", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    # SOS Hero
-    *hero_gradient_bg(24, 115, 342, 140, C_PRIMARY, C_PRIMARY_DARK, "SOS Hero"),
-    text(44, 132, "EMERGENCY ALERT", 10, {"r":1,"g":0.8,"b":0.85}, "Bold", "SOS Label", letter_spacing=2),
-    text(44, 152, "Instantly trigger SOS", 22, C_WHITE, "Bold", "SOS Title"),
-    text(44, 180, "Notifies police (112) &\nyour trusted contacts", 13, {"r":1,"g":0.9,"b":0.92}, "Regular", "SOS Sub", w=200),
-    image_node(268, 120, 90, 90, safety_img, 0, "SOS Image"),
-    
-    # Safety features
-    premium_card(24, 275, 342, 80, R_XL, "Safety 1"),
-    rect(44, 295, 40, 40, {"r": 0.10, "g": 0.15, "b": 0.30}, 20, "Icon Bg 1"),
-    text(44, 305, "📍", 16, C_WHITE, "Regular", "Icon 1", w=40, align="CENTER"),
-    text(94, 295, "Share Live Tracking", 16, C_TEXT_PRI, "Bold", "T1"),
-    text(94, 317, "GPS link to relatives in real-time", 12, C_TEXT_SEC, "Regular", "D1"),
-    
-    premium_card(24, 370, 342, 80, R_XL, "Safety 2"),
-    rect(44, 390, 40, 40, {"r": 0.10, "g": 0.15, "b": 0.30}, 20, "Icon Bg 2"),
-    text(44, 400, "👥", 16, C_WHITE, "Regular", "Icon 2", w=40, align="CENTER"),
-    text(94, 390, "Trusted Contacts", 16, C_TEXT_PRI, "Bold", "T2"),
-    text(94, 412, "Up to 5 emergency SMS recipients", 12, C_TEXT_SEC, "Regular", "D2"),
-    
-    premium_card(24, 465, 342, 80, R_XL, "Safety 3"),
-    rect(44, 485, 40, 40, {"r": 0.15, "g": 0.08, "b": 0.10}, 20, "Icon Bg 3"),
-    text(44, 495, "🚩", 16, C_WHITE, "Regular", "Icon 3", w=40, align="CENTER"),
-    text(94, 485, "Report Incident", 16, C_TEXT_PRI, "Bold", "T3"),
-    text(94, 507, "Flag unsafe behavior or delays", 12, C_TEXT_SEC, "Regular", "D3"),
-    
-    button(24, 740, 342, 50, "Help Desk Support", C_CARD, C_TEXT_PRI, 14, R_LG, "Help"),
-]))
-
-# --- SETTINGS ---
-screens.append(screen("Settings", 1000, y5, [
-    text(24, 70, "Settings", 28, C_TEXT_PRI, "Bold", "Title", letter_spacing=-1),
-    
-    text(24, 120, "PREFERENCES", 10, C_TEXT_TER, "Bold", "S1", letter_spacing=2),
-    premium_card(24, 142, 342, 52, R_LG, "Pref 1"),
-    text(44, 158, "Push Notifications", 14, C_TEXT_PRI, "Medium"),
-    text(340, 158, "→", 14, C_TEXT_TER, "Regular"),
-    
-    premium_card(24, 204, 342, 52, R_LG, "Pref 2"),
-    text(44, 220, "Language", 14, C_TEXT_PRI, "Medium"),
-    text(290, 220, "English", 14, C_TEXT_SEC, "Regular"),
-    text(340, 220, "→", 14, C_TEXT_TER, "Regular"),
-    
-    text(24, 282, "LEGAL", 10, C_TEXT_TER, "Bold", "S2", letter_spacing=2),
-    premium_card(24, 304, 342, 52, R_LG, "Legal 1"),
-    text(44, 320, "Terms of Service", 14, C_TEXT_PRI, "Medium"),
-    text(340, 320, "→", 14, C_TEXT_TER, "Regular"),
-    
-    premium_card(24, 366, 342, 52, R_LG, "Legal 2"),
-    text(44, 382, "Privacy Policy", 14, C_TEXT_PRI, "Medium"),
-    text(340, 382, "→", 14, C_TEXT_TER, "Regular"),
-    
-    text(24, 444, "VEHICLE", 10, C_TEXT_TER, "Bold", "S3", letter_spacing=2),
-    premium_card(24, 466, 342, 52, R_LG, "Vehicle"),
-    text(44, 482, "Vehicle Registration", 14, C_TEXT_PRI, "Medium"),
-    text(340, 482, "→", 14, C_TEXT_TER, "Regular"),
-    
-    button(24, 730, 342, 50, "Log Out", C_CARD, C_PRIMARY_LIGHT, 14, R_LG, "Logout"),
-]))
-
-# --- EMPTY STATE ---
-screens.append(screen("Empty State", 1500, y5, [
-    rect(120, 220, 150, 150, C_ACCENT_GLOW, 75, "Ambient"),
-    rect(145, 250, 100, 100, C_CARD, 50, "Circle BG", stroke=C_BORDER, stroke_width=1),
-    text(145, 280, "🔍", 36, C_WHITE, "Regular", "Icon", w=100, align="CENTER"),
-    
-    text(24, 390, "No Active Trips", 24, C_TEXT_PRI, "Bold", "Title", w=342, align="CENTER"),
-    text(24, 425, "You don\\'t have any upcoming\ncost-sharing trips scheduled.", 14, C_TEXT_SEC, "Regular", "Sub", w=342, align="CENTER"),
-    
-    button(75, 490, 240, 54, "Offer a Ride", C_PRIMARY, C_WHITE, 15, R_LG, "CTA 1", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    button(75, 554, 240, 48, "Search Available Rides", C_CARD, C_TEXT_PRI, 14, R_LG, "CTA 2"),
-]))
-
-# --- NO RESULTS ---
-screens.append(screen("No Results", 2000, y5, [
-    rect(120, 220, 150, 150, C_PRIMARY_GLOW, 75, "Ambient"),
-    rect(145, 250, 100, 100, C_CARD, 50, "Circle BG", stroke=C_BORDER, stroke_width=1),
-    text(145, 280, "📍", 36, C_WHITE, "Regular", "Icon", w=100, align="CENTER"),
-    
-    text(24, 390, "No Commuters Found", 24, C_TEXT_PRI, "Bold", "Title", w=342, align="CENTER"),
-    text(24, 425, "Create a route alert to get\nnotified when a match appears.", 14, C_TEXT_SEC, "Regular", "Sub", w=342, align="CENTER"),
-    
-    button(75, 490, 240, 54, "Create Route Alert 🔔", C_PRIMARY, C_WHITE, 15, R_LG, "CTA 1", shadow=True, shadow_color=C_PRIMARY_GLOW),
-    button(75, 554, 240, 48, "Offer My Own Ride 🚗", C_CARD, C_TEXT_PRI, 14, R_LG, "CTA 2"),
-]))
-
-# --- NETWORK ERROR ---
-screens.append(screen("Network Error", 2500, y5, [
-    rect(120, 220, 150, 150, {"r":0.933,"g":0.18,"b":0.275,"a":0.10}, 75, "Ambient"),
-    rect(145, 250, 100, 100, {"r":0.2,"g":0.05,"b":0.08}, 50, "Circle BG"),
-    text(145, 280, "📶", 36, C_PRIMARY_LIGHT, "Regular", "Icon", w=100, align="CENTER"),
-    
-    text(24, 390, "Connection Lost", 24, C_TEXT_PRI, "Bold", "Title", w=342, align="CENTER"),
-    text(24, 425, "Check your internet and try again.", 14, C_TEXT_SEC, "Regular", "Sub", w=342, align="CENTER"),
-    
-    button(75, 490, 240, 54, "Reconnect", C_PRIMARY, C_WHITE, 15, R_LG, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-]))
-
-# --- VERIFICATION PENDING ---
-screens.append(screen("Verification Pending", 3000, y5, [
-    rect(120, 220, 150, 150, C_GREEN_GLOW, 75, "Ambient"),
-    image_node(145, 250, 100, 100, verification_img, 50, "Verify Img"),
-    
-    text(24, 390, "Validation In Progress", 24, C_TEXT_PRI, "Bold", "Title", w=342, align="CENTER"),
-    text(24, 425, "Our compliance team is verifying\nyour documents (ETA 12 min).", 14, C_TEXT_SEC, "Regular", "Sub", w=342, align="CENTER"),
-    
-    button(75, 490, 240, 54, "Refresh Status", C_PRIMARY, C_WHITE, 15, R_LG, "CTA", shadow=True, shadow_color=C_PRIMARY_GLOW),
-]))
-
-# --- MAINTENANCE ---
-screens.append(screen("Maintenance", 3500, y5, [
-    rect(120, 220, 150, 150, C_ACCENT_GLOW, 75, "Ambient"),
-    rect(145, 250, 100, 100, C_CARD, 50, "Circle BG", stroke=C_BORDER, stroke_width=1),
-    text(145, 280, "⚙️", 36, C_WHITE, "Regular", "Icon", w=100, align="CENTER"),
-    
-    text(24, 390, "Optimizing Platform", 24, C_TEXT_PRI, "Bold", "Title", w=342, align="CENTER"),
-    text(24, 425, "Spott is undergoing upgrades.\nWe\\'ll be back shortly.", 14, C_TEXT_SEC, "Regular", "Sub", w=342, align="CENTER"),
-]))
-
-
-# ============================================================
-# JS COMPILATION ENGINE
-# ============================================================
-
-def format_js(obj, indent=2):
-    ind = " " * indent
-    if isinstance(obj, dict):
-        if len(obj) == 3 and "r" in obj and "g" in obj and "b" in obj:
-            return f"{{ r: {obj['r']}, g: {obj['g']}, b: {obj['b']} }}"
-        if len(obj) == 4 and "r" in obj and "g" in obj and "b" in obj and "a" in obj:
-            return f"{{ r: {obj['r']}, g: {obj['g']}, b: {obj['b']}, a: {obj['a']} }}"
-        if len(obj) == 2 and "family" in obj and "style" in obj:
-            return f"{{ family: '{obj['family']}', style: '{obj['style']}' }}"
-            
-        items = []
-        for k, v in obj.items():
-            items.append(f"{ind}  {k}: {format_js(v, indent + 2)}")
-        return "{\n" + ",\n".join(items) + "\n" + ind + "}"
-    elif isinstance(obj, list):
-        if not obj:
-            return "[]"
-        items = [format_js(x, indent + 2) for x in obj]
-        return "[\n" + ",\n".join(f"{ind}  {item}" if not item.startswith(" ") else item for item in items) + "\n" + ind + "]"
-    elif isinstance(obj, str):
-        escaped = obj.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r")
-        return f"'{escaped}'"
-    elif isinstance(obj, bool):
-        return "true" if obj else "false"
-    elif isinstance(obj, (int, float)):
-        return str(obj)
-    elif obj is None:
-        return "null"
-    return str(obj)
-
-print("Compiling premium JS...")
-js_screens_str = "const screens = " + format_js(screens, 0) + ";\n"
-
-js_rest = """
-const fontRequests = [
-  { family: 'Inter', style: 'Regular' },
-  { family: 'Inter', style: 'Medium' },
-  { family: 'Inter', style: 'Semi Bold' },
-  { family: 'Inter', style: 'Bold' }
-];
-
-function base64ToBytes(base64) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  const lookup = new Uint8Array(256);
-  for (let i = 0; i < chars.length; i++) {
-    lookup[chars.charCodeAt(i)] = i;
+    tlY += 52;
   }
-  let bufferLength = base64.length * 0.75;
-  if (base64[base64.length - 1] === '=') {
-    bufferLength--;
-    if (base64[base64.length - 2] === '=') bufferLength--;
-  }
-  const arrayBuffer = new ArrayBuffer(bufferLength);
-  const bytes = new Uint8Array(arrayBuffer);
-  let p = 0;
-  for (let i = 0; i < base64.length; i += 4) {
-    const e1 = lookup[base64.charCodeAt(i)];
-    const e2 = lookup[base64.charCodeAt(i + 1)];
-    const e3 = lookup[base64.charCodeAt(i + 2)];
-    const e4 = lookup[base64.charCodeAt(i + 3)];
-    bytes[p++] = (e1 << 2) | (e2 >> 4);
-    if (p < bufferLength) bytes[p++] = ((e2 & 15) << 4) | (e3 >> 2);
-    if (p < bufferLength) bytes[p++] = ((e3 & 3) << 6) | (e4 & 63);
-  }
-  return bytes;
+
+  // Traveler info card at bottom
+  const travCard = await makeAutoFrame('Traveler Info', W-48, 80, 'HORIZONTAL');
+  applyGlass(travCard, R.xl);
+  travCard.x=24; travCard.y=H-110;
+  travCard.counterAxisAlignItems='CENTER'; travCard.itemSpacing=14;
+  travCard.paddingLeft=16; travCard.paddingRight=16; travCard.paddingTop=14; travCard.paddingBottom=14;
+
+  const travImg = makeRect('Traveler', 52, 52, makeImageFill('car_clock'), R.pill);
+  travCard.appendChild(travImg);
+  const travInfo = await makeAutoFrame('Traveler Details', W-48-52-14-80-14, 54, 'VERTICAL');
+  travInfo.fills=noFill(); travInfo.itemSpacing=4;
+  travInfo.appendChild(await makeText('Your Traveler', 10, 'Bold', T.textMed, 0.7));
+  travInfo.appendChild(await makeText('Arjun Kulkarni', 15, 'Bold', T.textHi));
+  travInfo.appendChild(await makeText('★ 4.9  •  147 trips', 11, 'Medium', T.amber, 0.9));
+  travCard.appendChild(travInfo);
+  const callBtn = await makePrimaryBtn('Call', 72, 44);
+  callBtn.cornerRadius=R.lg;
+  travCard.appendChild(callBtn);
+  sc.appendChild(travCard);
+
+  return sc;
 }
 
-function rgba(color) {
-  const c = color || { r: 0, g: 0, b: 0 };
-  return { r: c.r || 0, g: c.g || 0, b: c.b || 0 };
+// ── Screen 8: SAFETY CENTER ───────────────────
+async function buildSafetyCenter(x, y) {
+  const sc = await makeFrame('Screen / Safety Center', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  const title = await makeText('Safety Center', 28, 'Black', T.textHi);
+  title.x=24; title.y=64; sc.appendChild(title);
+  const sub = await makeText('Your safety is our top priority', 14, 'Medium', T.textMed, 0.7);
+  sub.x=24; sub.y=100; sc.appendChild(sub);
+
+  // SOS Emergency Card (Red-glow variant)
+  const sosCard = await makeAutoFrame('SOS Emergency', W-48, 100, 'HORIZONTAL');
+  sosCard.cornerRadius=R.xl;
+  sosCard.fills = [...solid(T.priDark, 0.8), ...solid(T.pri, 0.15)];
+  sosCard.strokes = solid(T.pri, 0.5); sosCard.strokeWeight=1.5; sosCard.strokeAlign='INSIDE';
+  sosCard.effects = [bgBlur(20), shadowLayer(T.priGlow,12,28,0,1), shadowLayer({r:0,g:0,b:0},4,12,0,0.4)];
+  sosCard.x=24; sosCard.y=134;
+  sosCard.counterAxisAlignItems='CENTER'; sosCard.itemSpacing=0;
+  sosCard.paddingLeft=20; sosCard.paddingRight=20; sosCard.paddingTop=16; sosCard.paddingBottom=16;
+  sosCard.primaryAxisAlignItems='SPACE_BETWEEN';
+
+  const sosLeft = await makeAutoFrame('SOS Left', 200, 68, 'VERTICAL');
+  sosLeft.fills=noFill(); sosLeft.itemSpacing=4;
+  sosLeft.appendChild(await makeText('🚨  Emergency SOS', 17, 'Black', T.textHi));
+  sosLeft.appendChild(await makeText('Alerts contacts & shares location', 12, 'Medium', T.priLight, 0.9));
+  sosCard.appendChild(sosLeft);
+
+  const sosBtn = await makeAutoFrame('SOS Button', 90, 44, 'HORIZONTAL');
+  sosBtn.cornerRadius=R.lg; sosBtn.fills=solid(T.pri);
+  sosBtn.primaryAxisAlignItems='CENTER'; sosBtn.counterAxisAlignItems='CENTER';
+  sosBtn.effects=[shadowLayer(T.priGlow,6,14,0,1)];
+  sosBtn.appendChild(await makeText('HOLD SOS', 11, 'Black', T.textHi));
+  sosCard.appendChild(sosBtn);
+  sc.appendChild(sosCard);
+
+  // Info cards
+  const infoCards = [
+    {icon:'👥', title:'Trusted Contacts',    desc:'3 contacts added',              y:250, color:T.acc,   glow:T.accGlow},
+    {icon:'📍', title:'Live Trip Sharing',   desc:'Share link with anyone',        y:336, color:T.green, glow:T.greenGlow},
+    {icon:'🛡',  title:'Trip Verification',  desc:'All travelers ID verified',     y:422, color:T.green, glow:T.greenGlow},
+    {icon:'⚠',  title:'Report an Issue',     desc:'Raise concern about a trip',    y:508, color:T.amber, glow:{r:T.amber.r,g:T.amber.g,b:T.amber.b,a:0.18}},
+  ];
+
+  for (const c of infoCards) {
+    const card = await makeAutoFrame(`Safety: ${c.title}`, W-48, 78, 'HORIZONTAL');
+    applyGlass(card, R.xl, c.glow);
+    card.x=24; card.y=c.y;
+    card.counterAxisAlignItems='CENTER'; card.itemSpacing=16;
+    card.paddingLeft=20; card.paddingRight=20; card.paddingTop=14; card.paddingBottom=14;
+
+    const iconFrame = await makeAutoFrame('Icon', 48, 48, 'HORIZONTAL');
+    iconFrame.cornerRadius=R.lg; iconFrame.fills=solid(c.color,0.12);
+    iconFrame.primaryAxisAlignItems='CENTER'; iconFrame.counterAxisAlignItems='CENTER';
+    iconFrame.appendChild(await makeText(c.icon, 22, 'Regular', c.color));
+
+    const info2 = await makeAutoFrame('Info', W-48-48-16-20-20-24, 48, 'VERTICAL');
+    info2.fills=noFill(); info2.itemSpacing=4;
+    info2.appendChild(await makeText(c.title, 15, 'Bold', T.textHi));
+    info2.appendChild(await makeText(c.desc, 12, 'Medium', T.textMed, 0.8));
+
+    card.appendChild(iconFrame); card.appendChild(info2);
+    card.appendChild(await makeText('→', 18, 'Bold', c.color, 0.7));
+    sc.appendChild(card);
+  }
+
+  // Safety Image
+  const safetyHeroImg = makeRect('Safety Hero', W-48, 80, makeImageFill('safety'), R.xl);
+  safetyHeroImg.x=24; safetyHeroImg.y=604; sc.appendChild(safetyHeroImg);
+
+  await makeFloatingNav(sc, 4);
+  return sc;
 }
 
-function createFill(color) {
-  const c = color || { r: 0, g: 0, b: 0 };
-  return {
-    type: 'SOLID',
-    color: { r: c.r || 0, g: c.g || 0, b: c.b || 0 },
-    opacity: c.a !== undefined ? c.a : 1.0
-  };
+// ── Screen 9: PROFILE ─────────────────────────
+async function buildProfile(x, y) {
+  const sc = await makeFrame('Screen / Profile', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  // Profile hero
+  const heroRect = await makeAutoFrame('Profile Hero', W, 210, 'VERTICAL');
+  heroRect.fills = gradD(T.bgMid, T.bgBase);
+  heroRect.x=0; heroRect.y=0;
+  heroRect.primaryAxisAlignItems='CENTER'; heroRect.counterAxisAlignItems='CENTER'; heroRect.itemSpacing=0;
+
+  const avatarBg = figma.createEllipse();
+  avatarBg.name='Avatar'; avatarBg.resize(80,80);
+  avatarBg.x=(W-80)/2; avatarBg.y=64;
+  avatarBg.fills = solid(T.pri, 0.3);
+  avatarBg.strokes = solid(T.pri, 0.7); avatarBg.strokeWeight=2;
+  sc.appendChild(avatarBg);
+
+  const avatarInitial = await makeText('R', 32, 'Black', T.textHi);
+  avatarInitial.x=(W-18)/2; avatarInitial.y=82; avatarInitial.textAlignHorizontal='CENTER';
+  sc.appendChild(avatarInitial);
+
+  const pName = await makeText('Ritesh Mahatme', 22, 'Black', T.textHi, 1,'CENTER');
+  pName.x=W/2; pName.y=154; pName.textAlignHorizontal='CENTER';
+  sc.appendChild(pName);
+
+  const pPhone = await makeText('+91 98765 43210', 13, 'Medium', T.textMed, 0.7, 'CENTER');
+  pPhone.x=W/2; pPhone.y=182; pPhone.textAlignHorizontal='CENTER';
+  sc.appendChild(pPhone);
+
+  sc.appendChild(heroRect);
+
+  // Verification card
+  const vCard = await makeAutoFrame('Verification', W-48, 100, 'VERTICAL');
+  applySuccessCard(vCard, R.xl);
+  vCard.x=24; vCard.y=222;
+  vCard.paddingLeft=20; vCard.paddingRight=20; vCard.paddingTop=16; vCard.paddingBottom=16; vCard.itemSpacing=10;
+
+  vCard.appendChild(await makeText('Verification Status', 13, 'Bold', T.green, 0.8));
+  await makeVerificationRow(vCard);
+  sc.appendChild(vCard);
+
+  // Stats row
+  const statY2 = 338;
+  const sGap = 14;
+  const sW = Math.floor((W-48-sGap*2)/3);
+  const pStats = [
+    {val:'147', label:'Trips'},
+    {val:'4.9', label:'Rating'},
+    {val:'₹0',  label:'Pending'},
+  ];
+  for (let i=0;i<pStats.length;i++) {
+    const sCard = await makeAutoFrame(`Stat: ${pStats[i].label}`, sW, 76, 'VERTICAL');
+    applyGlass(sCard, R.lg);
+    sCard.x=24+i*(sW+sGap); sCard.y=statY2;
+    sCard.primaryAxisAlignItems='CENTER'; sCard.counterAxisAlignItems='CENTER'; sCard.itemSpacing=4;
+    sCard.appendChild(await makeText(pStats[i].val, 22, 'Black', T.textHi));
+    sCard.appendChild(await makeText(pStats[i].label, 11, 'Medium', T.textMed, 0.7));
+    sc.appendChild(sCard);
+  }
+
+  // Settings list
+  const settingsY = 430;
+  const settingsItems = [
+    {icon:'🚗', label:'My Vehicle',      desc:'Honda Activa 6G'},
+    {icon:'🛡',  label:'Safety Settings', desc:'Contacts & SOS'},
+    {icon:'💳', label:'Payment',         desc:'UPI: user@upi'},
+    {icon:'⚙', label:'App Settings',    desc:'Notifications, Theme'},
+    {icon:'❓', label:'Help & Support',  desc:'FAQs & Chat'},
+  ];
+  for (let i=0;i<settingsItems.length;i++) {
+    const item = settingsItems[i];
+    const row = await makeAutoFrame(`Setting: ${item.label}`, W-48, 64, 'HORIZONTAL');
+    applyGlass(row, R.lg);
+    row.x=24; row.y=settingsY+i*78;
+    row.counterAxisAlignItems='CENTER'; row.itemSpacing=16;
+    row.paddingLeft=16; row.paddingRight=16; row.paddingTop=12; row.paddingBottom=12;
+
+    const iconF = await makeAutoFrame('Icon', 40, 40, 'HORIZONTAL');
+    iconF.cornerRadius=R.sm; iconF.fills=solid(T.bgCard,0.8);
+    iconF.primaryAxisAlignItems='CENTER'; iconF.counterAxisAlignItems='CENTER';
+    iconF.appendChild(await makeText(item.icon, 18, 'Regular', T.textHi));
+
+    const rowInfo = await makeAutoFrame('Row Info', W-48-40-16-24-32, 44, 'VERTICAL');
+    rowInfo.fills=noFill(); rowInfo.itemSpacing=2;
+    rowInfo.appendChild(await makeText(item.label, 14, 'Bold', T.textHi));
+    rowInfo.appendChild(await makeText(item.desc, 11, 'Medium', T.textMed, 0.7));
+
+    row.appendChild(iconF); row.appendChild(rowInfo);
+    row.appendChild(await makeText('›', 20, 'Bold', T.textMed, 0.5));
+    sc.appendChild(row);
+  }
+
+  await makeFloatingNav(sc, 4);
+  return sc;
 }
 
-function createGradientFill(stops, direction) {
-  // direction: 'vertical', 'horizontal', 'diagonal'
-  let transform;
-  if (direction === 'horizontal') {
-    transform = [[1, 0, 0], [0, 1, 0.5]];
-  } else if (direction === 'diagonal') {
-    transform = [[0.7071, 0.7071, 0], [-0.7071, 0.7071, 0.5]];
-  } else {
-    // vertical (default)
-    transform = [[0, 1, 0], [-1, 0, 1]];
+// ── Screen 10: VERIFICATION PENDING ──────────
+async function buildVerificationPending(x, y) {
+  const sc = await makeFrame('Screen / Verification Pending', W, H);
+  sc.x=x; sc.y=y; sc.fills=solid(T.bgBase);
+
+  await makeStatusBar(sc);
+
+  const heroImg = makeRect('Verification Illustration', W-96, W-96, makeImageFill('verification'), R.xxl);
+  heroImg.x=48; heroImg.y=100; sc.appendChild(heroImg);
+
+  const t1 = await makeText('Verification\nIn Progress', 34, 'Black', T.textHi, 1, 'CENTER');
+  t1.x=W/2; t1.y=420; t1.textAlignHorizontal='CENTER'; sc.appendChild(t1);
+
+  const t2 = await makeText('We are reviewing your documents.\nUsually takes 2-4 hours.', 15, 'Medium', T.textMed, 0.75, 'CENTER');
+  t2.x=W/2; t2.y=494; t2.textAlignHorizontal='CENTER'; sc.appendChild(t2);
+
+  // Progress steps
+  const steps = [
+    {label:'Identity Submitted',  done:true},
+    {label:'License Under Review',done:false},
+    {label:'Vehicle RC Pending',  done:false},
+  ];
+  let stY=560;
+  for (const s of steps) {
+    const stepRow = figma.createFrame();
+    stepRow.layoutMode='HORIZONTAL'; stepRow.primaryAxisSizingMode='AUTO'; stepRow.counterAxisSizingMode='AUTO';
+    stepRow.itemSpacing=12; stepRow.fills=noFill(); stepRow.x=(W-220)/2; stepRow.y=stY;
+
+    const dot = figma.createEllipse();
+    dot.resize(12,12); dot.fills=solid(s.done?T.green:T.textMute);
+    if (s.done) dot.effects=[shadowLayer(T.greenGlow,0,8,2,1)];
+    stepRow.appendChild(dot);
+    stepRow.appendChild(await makeText(s.label, 13, s.done?'Bold':'Medium', s.done?T.green:T.textLow));
+    sc.appendChild(stepRow);
+    stY+=36;
   }
-  
-  const gradientStops = stops.map(s => ({
-    position: s.position,
-    color: {
-      r: s.color.r || 0,
-      g: s.color.g || 0,
-      b: s.color.b || 0,
-      a: s.color.a !== undefined ? s.color.a : 1.0
-    }
-  }));
-  
-  return {
-    type: 'GRADIENT_LINEAR',
-    gradientTransform: transform,
-    gradientStops: gradientStops
-  };
+
+  const cta2 = await makeGhostBtn('Check Status', W-48, 52);
+  cta2.x=24; cta2.y=700; sc.appendChild(cta2);
+
+  return sc;
 }
 
-function applyTextStyles(node, item) {
-  node.fontName = item.font || { family: 'Inter', style: 'Regular' };
-  node.fontSize = item.fontSize || 14;
-  node.fills = [{ type: 'SOLID', color: rgba(item.color || item.textColor) }];
-  node.textAlignHorizontal = item.align || 'LEFT';
-  node.textAlignVertical = 'TOP';
-  node.textAutoResize = 'WIDTH_AND_HEIGHT';
-  
-  if (item.letterSpacing !== undefined && item.letterSpacing !== null) {
-    node.letterSpacing = { value: item.letterSpacing, unit: 'PIXELS' };
-  } else {
-    node.letterSpacing = { value: 0, unit: 'PIXELS' };
-  }
-  
-  if (item.lineHeight !== undefined && item.lineHeight !== null) {
-    node.lineHeight = { value: item.lineHeight, unit: 'PIXELS' };
-  } else {
-    node.lineHeight = { value: node.fontSize * 1.35, unit: 'PIXELS' };
-  }
-}
-
-function createText(item) {
-  const node = figma.createText();
-  node.characters = item.text;
-  applyTextStyles(node, item);
-  node.x = item.x;
-  node.y = item.y;
-  if (item.name) node.name = item.name;
-  if (item.width) {
-    node.textAutoResize = 'HEIGHT';
-    node.resize(item.width, node.height);
-  }
-  return node;
-}
-
-function createRectangle(item) {
-  const node = figma.createRectangle();
-  node.resize(item.width, item.height);
-  node.x = item.x;
-  node.y = item.y;
-  
-  // Fill logic: base64 image > multi-stop gradient > two-color gradient > solid
-  if (item.base64) {
-    const bytes = base64ToBytes(item.base64);
-    const image = figma.createImage(bytes);
-    node.fills = [{ type: 'IMAGE', imageHash: image.hash, scaleMode: 'FILL' }];
-  } else if (item.gradientStops) {
-    node.fills = [createGradientFill(item.gradientStops, item.gradientDirection || 'vertical')];
-  } else if (item.color1 && item.color2) {
-    node.fills = [{
-      type: 'GRADIENT_LINEAR',
-      gradientTransform: [[0.7071, 0.7071, 0], [-0.7071, 0.7071, 0.5]],
-      gradientStops: [
-        { position: 0, color: { r: item.color1.r, g: item.color1.g, b: item.color1.b, a: 1 } },
-        { position: 1, color: { r: item.color2.r, g: item.color2.g, b: item.color2.b, a: 1 } }
-      ]
-    }];
-  } else {
-    node.fills = [createFill(item.fill)];
-  }
-  
-  if (item.cornerRadius !== undefined) node.cornerRadius = item.cornerRadius;
-  if (item.opacity !== undefined) node.opacity = item.opacity;
-  
-  // Strokes
-  if (item.stroke) {
-    node.strokes = [{
-      type: 'SOLID',
-      color: { r: item.stroke.r || 0, g: item.stroke.g || 0, b: item.stroke.b || 0 },
-      opacity: item.stroke.a !== undefined ? item.stroke.a : 1.0
-    }];
-    node.strokeWeight = item.strokeWidth || 1;
-    node.strokeAlign = 'INSIDE';
-  }
-  
-  // Effects: blur + shadow with custom colors
-  const effects = [];
-  if (item.hasBlur) {
-    effects.push({
-      type: 'BACKGROUND_BLUR',
-      radius: 24,
-      visible: true
-    });
-  }
-  if (item.hasShadow) {
-    const sc = item.shadowColor || { r: 0, g: 0, b: 0, a: 0.35 };
-    const sr = item.shadowRadius || 24;
-    const so = item.shadowOffset || { x: 0, y: 8 };
-    effects.push({
-      type: 'DROP_SHADOW',
-      color: { r: sc.r || 0, g: sc.g || 0, b: sc.b || 0, a: sc.a !== undefined ? sc.a : 0.35 },
-      offset: so,
-      radius: sr,
-      visible: true,
-      blendMode: 'NORMAL'
-    });
-  }
-  if (effects.length > 0) node.effects = effects;
-  
-  if (item.name) node.name = item.name;
-  return node;
-}
-
-function createButton(item) {
-  const bg = figma.createRectangle();
-  bg.resize(item.width, item.height);
-  bg.x = 0;
-  bg.y = 0;
-  bg.fills = [createFill(item.fill)];
-  bg.cornerRadius = item.cornerRadius !== undefined ? item.cornerRadius : 16;
-  
-  // Button shadow
-  if (item.hasShadow && item.shadowColor) {
-    const sc = item.shadowColor;
-    bg.effects = [{
-      type: 'DROP_SHADOW',
-      color: { r: sc.r || 0, g: sc.g || 0, b: sc.b || 0, a: sc.a !== undefined ? sc.a : 0.3 },
-      offset: { x: 0, y: 4 },
-      radius: 16,
-      visible: true,
-      blendMode: 'NORMAL'
-    }];
-  }
-
-  const children = [bg];
-  if (item.text) {
-    const label = figma.createText();
-    label.characters = item.text;
-    label.fontName = item.font || { family: 'Inter', style: 'Bold' };
-    label.fontSize = item.fontSize || 15;
-    label.textAlignHorizontal = 'CENTER';
-    label.textAlignVertical = 'CENTER';
-    label.textAutoResize = 'WIDTH_AND_HEIGHT';
-    label.fills = [{ type: 'SOLID', color: rgba(item.textColor || { r: 1, g: 1, b: 1 }) }];
-    label.resize(item.width, item.height);
-    label.x = 0;
-    label.y = (item.height - label.height) / 2;
-    children.push(label);
-  }
-
-  const group = figma.group(children, figma.currentPage);
-  group.x = item.x;
-  group.y = item.y;
-  group.name = item.name || 'Button';
-  return group;
-}
-
-function createChip(item) {
-  const bg = figma.createRectangle();
-  bg.resize(item.width, item.height);
-  bg.x = 0;
-  bg.y = 0;
-  bg.fills = [createFill(item.fill)];
-  bg.cornerRadius = item.cornerRadius !== undefined ? item.cornerRadius : 100;
-  
-  if (item.stroke) {
-    bg.strokes = [{
-      type: 'SOLID',
-      color: { r: item.stroke.r || 0, g: item.stroke.g || 0, b: item.stroke.b || 0 },
-      opacity: item.stroke.a !== undefined ? item.stroke.a : 1.0
-    }];
-    bg.strokeWeight = 1;
-    bg.strokeAlign = 'INSIDE';
-  }
-
-  const children = [bg];
-  if (item.text) {
-    const label = figma.createText();
-    label.characters = item.text;
-    label.fontName = item.font || { family: 'Inter', style: 'Medium' };
-    label.fontSize = item.fontSize || 12;
-    label.textAlignHorizontal = 'CENTER';
-    label.textAlignVertical = 'CENTER';
-    label.textAutoResize = 'WIDTH_AND_HEIGHT';
-    label.fills = [{ type: 'SOLID', color: rgba(item.textColor || { r: 1, g: 1, b: 1 }) }];
-    label.resize(item.width, item.height);
-    label.x = 0;
-    label.y = (item.height - label.height) / 2;
-    children.push(label);
-  }
-
-  const group = figma.group(children, figma.currentPage);
-  group.x = item.x;
-  group.y = item.y;
-  group.name = item.name || 'Chip';
-  return group;
-}
-
-function createFrame(item) {
-  const frame = figma.createFrame();
-  frame.name = item.name;
-  frame.resize(item.width, item.height);
-  frame.x = item.x;
-  frame.y = item.y;
-  frame.fills = [createFill(item.fill)];
-  frame.clipsContent = true;
-  frame.layoutMode = 'NONE';
-  item.children.forEach(child => {
-    let node;
-    if (child.type === 'text') node = createText(child);
-    else if (child.type === 'rect') node = createRectangle(child);
-    else if (child.type === 'button') node = createButton(child);
-    else if (child.type === 'chip') node = createChip(child);
-    if (node) frame.appendChild(node);
-  });
-  return frame;
-}
-
+// ─────────────────────────────────────────────────
+// 8. MAIN EXECUTION
+// ─────────────────────────────────────────────────
 async function main() {
-  for (const font of fontRequests) {
-    await figma.loadFontAsync(font);
-  }
+  await figma.loadFontAsync({family:'Inter', style:'Regular'});
+  await figma.loadFontAsync({family:'Inter', style:'Medium'});
+  await figma.loadFontAsync({family:'Inter', style:'Bold'});
+  await figma.loadFontAsync({family:'Inter', style:'Black'});
 
-  const createdFrames = screens.map(createFrame);
-  createdFrames.forEach(frame => figma.currentPage.appendChild(frame));
+  const GAP = 80;
+  const ROW_H = H + 120;
 
-  figma.viewport.scrollAndZoomIntoView(createdFrames);
-  figma.closePlugin('✨ Spott Premium UI generated successfully!');
+  const screens = [];
+
+  // Row 0: Auth & Onboarding
+  screens.push(await buildSplash(0, 0));
+  screens.push(await buildRoleSelector(W+GAP, 0));
+
+  // Row 1: Passenger flow
+  screens.push(await buildPassengerHome(0, ROW_H));
+  screens.push(await buildSearchResults(W+GAP, ROW_H));
+
+  // Row 2: Traveler + Parcel
+  screens.push(await buildTravelerDashboard(0, ROW_H*2));
+  screens.push(await buildParcelBooking(W+GAP, ROW_H*2));
+  screens.push(await buildParcelTracking((W+GAP)*2, ROW_H*2));
+
+  // Row 3: Safety + Profile + Verification
+  screens.push(await buildSafetyCenter(0, ROW_H*3));
+  screens.push(await buildProfile(W+GAP, ROW_H*3));
+  screens.push(await buildVerificationPending((W+GAP)*2, ROW_H*3));
+
+  screens.forEach(s => figma.currentPage.appendChild(s));
+  figma.viewport.scrollAndZoomIntoView(screens);
+  figma.closePlugin(`✨ Spott Premium UI — ${screens.length} screens generated.`);
 }
 
-main();
-"""
+main().catch(e => { console.error(e); figma.closePlugin('❌ Error: ' + e.message); });
+""".strip()
 
-full_code = js_screens_str + js_rest
+# ─────────────────────────────────────────────────────────────────────────────
+# INJECT ASSETS & WRITE
+# ─────────────────────────────────────────────────────────────────────────────
+assets_js = "{\n"
+for key, b64 in ASSETS.items():
+    assets_js += f'  "{key}": "{b64}",\n'
+assets_js += "}"
 
-with open(code_js_path, 'w', encoding='utf-8') as f:
-    f.write(full_code)
+final_js = JS_PLUGIN.replace("__ASSETS__", assets_js)
 
-print(f"Successfully compiled premium code.js at: {code_js_path}")
-print(f"Total screens: {len(screens)}")
+print("Writing code.js ...")
+with open(CODE_JS_PATH, "w", encoding="utf-8") as f:
+    f.write(final_js)
+
+size_kb = os.path.getsize(CODE_JS_PATH) / 1024
+print(f"[OK] code.js written ({size_kb:.0f} KB)")
+print("Done. Run the Figma plugin to generate the UI.")

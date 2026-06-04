@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/spott_models.dart';
 import '../controllers/ride_controller.dart';
+import '../core/theme/animations.dart';
 import '../screens/admin_review_screen.dart';
 import '../screens/cancel_ride_screen.dart';
 import '../screens/chat_screen.dart';
@@ -31,10 +32,21 @@ import '../screens/booking_success_screen.dart';
 import 'app_error_screen.dart';
 import 'spotter_overlay_shell.dart';
 import '../screens/main_navigation_shell.dart';
-import '../screens/rider_bottom_nav.dart';
+// Nav components are now integrated, no need to import rider_bottom_nav
 import '../screens/parcel_booking_screen.dart';
 import '../screens/parcel_tracking_screen.dart';
 import '../screens/parcel_complete_screen.dart';
+import '../screens/figma_plugin_sandbox_screen.dart';
+import '../screens/search_results_screen.dart';
+import '../screens/verification_pending_screen.dart';
+import '../screens/maintenance_screen.dart';
+import '../screens/no_results_screen.dart';
+import '../screens/network_error_screen.dart';
+import '../screens/trip_details_screen.dart';
+import '../screens/passenger_trips_screen.dart';
+import '../screens/parcel_history_screen.dart';
+import '../screens/traveler_trips_screen.dart';
+import '../screens/active_trip_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -87,6 +99,17 @@ class AppRoutes {
   static const String tripSearch = '/trip-search';
   static const String passengerRequests = '/passenger-requests';
   static const String bookingSuccess = '/booking-success';
+  static const String figmaPluginSandbox = '/figma-plugin-sandbox';
+  static const String searchResults = '/search-results';
+  static const String verificationPending = '/verification-pending';
+  static const String maintenance = '/maintenance';
+  static const String noResults = '/no-results';
+  static const String networkError = '/network-error';
+  static const String tripDetails = '/trip-details';
+  static const String passengerTrips = '/passenger-trips';
+  static const String parcelHistory = '/parcel-history';
+  static const String travelerTrips = '/traveler-trips';
+  static const String activeTrip = '/active-trip';
 
   static const List<String> allRoutes = [
     parcelBooking,
@@ -139,13 +162,31 @@ class AppRoutes {
     tripSearch,
     passengerRequests,
     bookingSuccess,
+    figmaPluginSandbox,
+    searchResults,
+    verificationPending,
+    maintenance,
+    noResults,
+    networkError,
+    tripDetails,
+    passengerTrips,
+    parcelHistory,
+    travelerTrips,
+    activeTrip,
   ];
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    return MaterialPageRoute<void>(
-      settings: settings,
-      builder: (_) => _screenFor(settings.name),
-    );
+    PageRouteBuilder buildRoute(Widget child) {
+      return PageRouteBuilder(
+        settings: settings,
+        pageBuilder: (context, animation, secondaryAnimation) => child,
+        transitionsBuilder: SpottPageTransitions.fadeSlideUp,
+        transitionDuration: SpottAnimations.medium,
+        reverseTransitionDuration: SpottAnimations.medium,
+      );
+    }
+
+    return buildRoute(_screenFor(settings.name));
   }
 
   static Widget _screenFor(String? routeName) {
@@ -163,7 +204,7 @@ class AppRoutes {
       case home:
         return const RoleGuard(
           allowedRoles: [UserRole.passenger, UserRole.parcelSender],
-          child: MainNavigationShell(initialTab: RiderBottomTab.home),
+          child: MainNavigationShell(initialTab: 0),
         );
       case pickup:
         return const RoleGuard(
@@ -220,7 +261,7 @@ class AppRoutes {
       case profile:
         return const RoleGuard(
           allowedRoles: [UserRole.passenger, UserRole.parcelSender],
-          child: MainNavigationShell(initialTab: RiderBottomTab.profile),
+          child: MainNavigationShell(initialTab: 4),
         );
       case chat:
         return const ChatScreen();
@@ -236,7 +277,7 @@ class AppRoutes {
       case activity:
         return const RoleGuard(
           allowedRoles: [UserRole.passenger, UserRole.parcelSender],
-          child: MainNavigationShell(initialTab: RiderBottomTab.activity),
+          child: MainNavigationShell(initialTab: 2),
         );
       case notifications:
         return const NotificationsScreen();
@@ -247,21 +288,33 @@ class AppRoutes {
       case services:
         return const RoleGuard(
           allowedRoles: [UserRole.passenger, UserRole.parcelSender],
-          child: MainNavigationShell(initialTab: RiderBottomTab.services),
+          child: MainNavigationShell(initialTab: 1),
         );
       case parking:
-        return const AppErrorScreen(title: 'Out of scope', message: 'Parking is out of scope for the Spott MVP.');
+        return const AppErrorScreen(
+          title: 'Out of scope',
+          message: 'Parking is out of scope for the Spott MVP.',
+        );
       case offers:
-        return const AppErrorScreen(title: 'Out of scope', message: 'Offers are out of scope for the Spott MVP.');
+        return const AppErrorScreen(
+          title: 'Out of scope',
+          message: 'Offers are out of scope for the Spott MVP.',
+        );
       case scheduleRide:
-        return const AppErrorScreen(title: 'Out of scope', message: 'Scheduled rides are out of scope for the Spott MVP.');
+        return const AppErrorScreen(
+          title: 'Out of scope',
+          message: 'Scheduled rides are out of scope for the Spott MVP.',
+        );
       case intercity:
         return const RoleGuard(
           allowedRoles: [UserRole.passenger],
           child: TripSearchScreen(),
         );
       case rentals:
-        return const AppErrorScreen(title: 'Out of scope', message: 'Rentals are out of scope for the Spott MVP.');
+        return const AppErrorScreen(
+          title: 'Out of scope',
+          message: 'Rentals are out of scope for the Spott MVP.',
+        );
       case settings:
         return const SettingsScreen();
       case dispute:
@@ -340,6 +393,46 @@ class AppRoutes {
           allowedRoles: [UserRole.passenger],
           child: BookingSuccessScreen(),
         );
+      case figmaPluginSandbox:
+        return const FigmaPluginSandboxScreen();
+      case searchResults:
+        return const RoleGuard(
+          allowedRoles: [UserRole.passenger],
+          child: SearchResultsScreen(),
+        );
+      case verificationPending:
+        return const VerificationPendingScreen();
+      case maintenance:
+        return const MaintenanceScreen();
+      case noResults:
+        return const NoResultsScreen();
+      case networkError:
+        return const NetworkErrorScreen();
+      case tripDetails:
+        return const RoleGuard(
+          allowedRoles: [UserRole.passenger],
+          child: TripDetailsScreen(),
+        );
+      case passengerTrips:
+        return const RoleGuard(
+          allowedRoles: [UserRole.passenger],
+          child: PassengerTripsScreen(),
+        );
+      case parcelHistory:
+        return const RoleGuard(
+          allowedRoles: [UserRole.parcelSender],
+          child: ParcelHistoryScreen(),
+        );
+      case travelerTrips:
+        return const RoleGuard(
+          allowedRoles: [UserRole.traveler],
+          child: TravelerTripsScreen(),
+        );
+      case activeTrip:
+        return const RoleGuard(
+          allowedRoles: [UserRole.traveler],
+          child: ActiveTripScreen(),
+        );
       default:
         return const AppErrorScreen(
           title: 'Page not found',
@@ -354,11 +447,7 @@ class RoleGuard extends StatelessWidget {
   final Widget child;
   final List<UserRole> allowedRoles;
 
-  const RoleGuard({
-    super.key,
-    required this.child,
-    required this.allowedRoles,
-  });
+  const RoleGuard({super.key, required this.child, required this.allowedRoles});
 
   @override
   Widget build(BuildContext context) {

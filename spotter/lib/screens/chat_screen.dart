@@ -47,10 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         for (final message in _sentMessages)
-          SpotterCard(
-            color: Helper.canvasSoft,
-            children: [Text(message)],
-          ),
+          SpotterCard(color: Helper.canvasSoft, children: [Text(message)]),
         WhiteTextField(
           controller: _messageController,
           labelText: 'Message',

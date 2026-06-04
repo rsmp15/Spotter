@@ -14,18 +14,9 @@ class AdminReviewScreen extends StatelessWidget {
       content: [
         SpotterCard(
           children: [
-            InfoRow(
-              label: 'Pending KYC',
-              value: '148',
-            ),
-            InfoRow(
-              label: 'Flagged rides',
-              value: '12',
-            ),
-            InfoRow(
-              label: 'Open issues',
-              value: '7',
-            ),
+            InfoRow(label: 'Pending KYC', value: '148'),
+            InfoRow(label: 'Flagged rides', value: '12'),
+            InfoRow(label: 'Open issues', value: '7'),
             InfoRow(label: 'High risk routes', value: '4'),
           ],
         ),
@@ -38,10 +29,7 @@ class AdminReviewScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             InfoRow(label: 'Evidence', value: '3 photos'),
-            InfoRow(
-              label: 'SLA',
-              value: '4 hours left',
-            ),
+            InfoRow(label: 'SLA', value: '4 hours left'),
           ],
         ),
       ],
