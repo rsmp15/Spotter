@@ -230,7 +230,7 @@ class SpotterCard extends StatelessWidget {
         border: Border.all(color: Helper.line(context), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -421,15 +421,15 @@ class StatusChip extends StatelessWidget {
 
     if (color == Helper.primary) {
       bgColor = isDark
-          ? Helper.primary.withOpacity(0.12)
-          : Helper.primary.withOpacity(0.08);
+          ? Helper.primary.withValues(alpha: 0.12)
+          : Helper.primary.withValues(alpha: 0.08);
       borderColor = isDark
-          ? Helper.primary.withOpacity(0.3)
-          : Helper.primary.withOpacity(0.15);
+          ? Helper.primary.withValues(alpha: 0.3)
+          : Helper.primary.withValues(alpha: 0.15);
       textColor = Helper.primary;
     } else {
-      bgColor = color.withOpacity(isDark ? 0.12 : 0.08);
-      borderColor = color.withOpacity(isDark ? 0.3 : 0.15);
+      bgColor = color.withValues(alpha: isDark ? 0.12 : 0.08);
+      borderColor = color.withValues(alpha: isDark ? 0.3 : 0.15);
       textColor = color;
     }
 

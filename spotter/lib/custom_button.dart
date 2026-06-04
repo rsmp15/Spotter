@@ -36,10 +36,10 @@ class CustomButton extends StatelessWidget {
               height: 56,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05), // T.glass
+                color: Colors.white.withValues(alpha: 0.05), // T.glass
                 borderRadius: BorderRadius.circular(999),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.14), // T.glassEdge
+                  color: Colors.white.withValues(alpha: 0.14), // T.glassEdge
                   width: 1.0,
                 ),
               ),
@@ -98,19 +98,22 @@ class CustomButton extends StatelessWidget {
           boxShadow: themeDark
               ? [
                   BoxShadow(
-                    color: Helper.primary.withOpacity(0.28), // T.priGlow
+                    color: Helper.primary.withValues(alpha: 0.28), // T.priGlow
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Helper.primary.withOpacity(0.15),
+                    color: Helper.primary.withValues(alpha: 0.15),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
                 ],
-          border: Border.all(color: Colors.white.withOpacity(0.15), width: 1.0),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.15),
+            width: 1.0,
+          ),
         ),
         child: Center(
           child: Text(

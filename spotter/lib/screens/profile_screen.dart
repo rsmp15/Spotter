@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../app/app_routes.dart';
 import '../core/components/spott_avatar.dart';
 import '../core/theme/colors.dart';
+import '../core/theme/radius.dart';
+import '../core/theme/spacing.dart';
+import '../core/theme/typography.dart';
+import '../core/theme/shadows.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -21,47 +24,47 @@ class ProfileScreen extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                16,
-                24,
-                16,
-                112,
-              ), // bottom padding to clear nav bar
+                SpottSpacing.pageHorizontal,
+                SpottSpacing.lg,
+                SpottSpacing.pageHorizontal,
+                SpottSpacing.pageBottom,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── 2. Reputation Grid ─────────────────────────────
-                  _buildReputationGrid(),
-                  const SizedBox(height: 24),
+                  // ── 2. Trust Score Panel ───────────────────────────
+                  _buildTrustScorePanel(),
+                  const SizedBox(height: SpottSpacing.lg),
 
-                  // ── 3. Trust & Verifications ───────────────────────
-                  _buildTrustCenter(context),
-                  const SizedBox(height: 24),
+                  // ── 3. Verification Center ─────────────────────────
+                  _buildVerificationCenter(context),
+                  const SizedBox(height: SpottSpacing.lg),
 
-                  // ── 4. Vehicles ────────────────────────────────────
+                  // ── 4. Reputation Metrics ──────────────────────────
+                  _buildReputationMetrics(),
+                  const SizedBox(height: SpottSpacing.lg),
+
+                  // ── 5. Vehicles Section ────────────────────────────
                   _buildVehiclesSection(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: SpottSpacing.lg),
 
-                  // ── 5. Achievements ────────────────────────────────
+                  // ── 6. Achievements ────────────────────────────────
                   _buildAchievementsSection(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: SpottSpacing.lg),
 
-                  // ── 6. Marketplace Stats ───────────────────────────
-                  _buildMarketplacePerformance(),
-                  const SizedBox(height: 24),
-
-                  // ── 7. Earnings Banner ─────────────────────────────
+                  // ── 7. Monthly Earnings ────────────────────────────
                   _buildEarningsBanner(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: SpottSpacing.lg),
 
                   // ── 8. Reviews & Feedback ──────────────────────────
                   _buildReviewsSection(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: SpottSpacing.lg),
 
                   // ── 9. Spott Premium ───────────────────────────────
                   _buildPremiumSection(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: SpottSpacing.lg),
 
-                  // ── 10. Account Settings ───────────────────────────
+                  // ── 10. Settings & Actions ─────────────────────────
                   _buildSettingsSection(context),
                 ],
               ),
@@ -72,18 +75,18 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  // ── Profile Hero (Airbnb style) ────────────────────────────────────
   Widget _buildProfileHero(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 270,
+      padding: const EdgeInsets.only(top: 48, bottom: 24),
       decoration: const BoxDecoration(
-        color: SpottColors.surface2,
+        color: SpottColors.surface1,
         border: Border(bottom: BorderSide(color: SpottColors.border)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 16),
           Stack(
             alignment: Alignment.center,
             children: [
@@ -91,28 +94,22 @@ class ProfileScreen extends StatelessWidget {
                 width: 104,
                 height: 104,
                 child: CircularProgressIndicator(
-                  value: 0.98,
+                  value: 0.92, // represents trust completeness
                   strokeWidth: 4.5,
                   color: SpottColors.success,
                   backgroundColor: SpottColors.border,
                 ),
               ),
               const SpottAvatar(
-                imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+                imageUrl:
+                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
                 radius: 44,
                 isVerified: true,
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'Arjun Sharma',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: SpottColors.textPrimary,
-            ),
-          ),
+          const SizedBox(height: SpottSpacing.md),
+          const Text('Arjun Sharma', style: SpottTextStyles.displayLarge),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +118,7 @@ class ProfileScreen extends StatelessWidget {
                 'Verified Traveler',
                 style: TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.bold,
                   color: SpottColors.success,
                 ),
               ),
@@ -130,73 +127,17 @@ class ProfileScreen extends StatelessWidget {
                 width: 4,
                 height: 4,
                 decoration: const BoxDecoration(
-                  color: SpottColors.textMuted,
+                  color: SpottColors.textSecondary,
                   shape: BoxShape.circle,
                 ),
               ),
               const SizedBox(width: 6),
               const Text(
-                'Top 10% Traveler',
+                'Top 10% Community Host',
                 style: TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: SpottColors.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.star_rounded,
-                color: SpottColors.warning,
-                size: 18,
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                '4.9',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: SpottColors.textPrimary,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                width: 4,
-                height: 4,
-                decoration: const BoxDecoration(
-                  color: SpottColors.textMuted,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Trust Level 4',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: SpottColors.textPrimary,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                width: 4,
-                height: 4,
-                decoration: const BoxDecoration(
-                  color: SpottColors.textMuted,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                '542 Trips Completed',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: SpottColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                  color: SpottColors.accentPurple,
                 ),
               ),
             ],
@@ -206,72 +147,197 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildReputationGrid() {
-    final metrics = [
-      _MetricData('4.9 ★', 'Rating', SpottColors.warning),
-      _MetricData('542', 'Trips', SpottColors.accentPurple),
-      _MetricData('98%', 'Response', SpottColors.success),
-      _MetricData('0.4%', 'Cancel Rate', SpottColors.danger),
-      _MetricData('98', 'Safety Score', SpottColors.info),
-      _MetricData('₹48K', 'Lifetime Earnings', SpottColors.success),
+  // ── Trust Score Panel (moat) ──────────────────────────────────────
+  Widget _buildTrustScorePanel() {
+    return Container(
+      padding: const EdgeInsets.all(SpottSpacing.lg),
+      decoration: BoxDecoration(
+        color: SpottColors.surface1,
+        borderRadius: BorderRadius.circular(SpottRadius.primaryCard), // 24px
+        border: Border.all(color: SpottColors.border),
+        boxShadow: SpottShadows.elevation1,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'TRUST SCORE',
+                  style: SpottTextStyles.overline.copyWith(
+                    color: SpottColors.success,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '92 / 100',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Built from verified ID, clean trip history, and response rate.',
+                  style: SpottTextStyles.caption.copyWith(
+                    color: SpottColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
+              color: SpottColors.successSoft,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.shield_rounded,
+              color: SpottColors.success,
+              size: 28,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Verification Center Checklist ─────────────────────────────────
+  Widget _buildVerificationCenter(BuildContext context) {
+    final verifications = [
+      _VerificationItem('Government ID Verified', true),
+      _VerificationItem('Mobile Number Verified', true),
+      _VerificationItem('Email Address Verified', true),
+      _VerificationItem('Background Check Passed', true),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Reputation Dashboard',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: SpottColors.textPrimary,
+        const Text('Verification Center', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
+        Container(
+          padding: const EdgeInsets.all(SpottSpacing.md),
+          decoration: BoxDecoration(
+            color: SpottColors.surface1,
+            borderRadius: BorderRadius.circular(
+              SpottRadius.primaryCard,
+            ), // 24px
+            border: Border.all(color: SpottColors.border),
+          ),
+          child: Column(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: verifications.length,
+                itemBuilder: (context, index) {
+                  final item = verifications[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle_rounded,
+                          color: SpottColors.success,
+                          size: 18,
+                        ),
+                        const SizedBox(width: SpottSpacing.md),
+                        Text(
+                          item.label,
+                          style: SpottTextStyles.body.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              const Divider(height: 24, color: SpottColors.border),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.kyc),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: SpottColors.surface2,
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: SpottColors.border),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        SpottRadius.button,
+                      ), // 18px
+                    ),
+                  ),
+                  child: const Text('Manage Verifications'),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  // ── Reputation Metrics Grid ────────────────────────────────────────
+  Widget _buildReputationMetrics() {
+    final metrics = [
+      _MetricData('92 Score', 'Trust Rating', SpottColors.success),
+      _MetricData('143', 'Trips Done', SpottColors.accentPurple),
+      _MetricData('98%', 'Response Rate', SpottColors.warning),
+      _MetricData('0.8%', 'Cancel Rate', SpottColors.danger),
+      _MetricData('96%', 'Punctuality', SpottColors.success),
+      _MetricData('₹48K', 'Total Saved', SpottColors.accentPurple),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Reputation Metrics', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
             childAspectRatio: 1.1,
           ),
           itemCount: metrics.length,
           itemBuilder: (context, index) {
             final metric = metrics[index];
             return Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               decoration: BoxDecoration(
                 color: SpottColors.surface1,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(
+                  SpottRadius.secondaryCard,
+                ), // 20px
                 border: Border.all(color: SpottColors.border),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     metric.value,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
+                    style: SpottTextStyles.titleSmall.copyWith(
                       color: metric.color,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     metric.label,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                    style: SpottTextStyles.caption.copyWith(
+                      fontSize: 10,
                       color: SpottColors.textSecondary,
                     ),
                   ),
@@ -284,111 +350,21 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTrustCenter(BuildContext context) {
-    final verifications = [
-      _VerificationItem('Mobile Verified', true),
-      _VerificationItem('Email Verified', true),
-      _VerificationItem('Govt ID Verified', true),
-      _VerificationItem('Vehicle Verified', true),
-      _VerificationItem('Background Checked', true),
-      _VerificationItem('Emergency Contact Added', true),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Trust & Verifications',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: SpottColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: SpottColors.surface1,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: SpottColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 3.5,
-                ),
-                itemCount: verifications.length,
-                itemBuilder: (context, index) {
-                  final item = verifications[index];
-                  return Row(
-                    children: [
-                      const Icon(
-                        Icons.check_circle_rounded,
-                        color: SpottColors.success,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          item.label,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: SpottColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
+  // ── Registered Vehicles Section ────────────────────────────────────
   Widget _buildVehiclesSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Registered Vehicles',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: SpottColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
+        const Text('Registered Vehicles', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
         Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(SpottSpacing.md),
           decoration: BoxDecoration(
             color: SpottColors.surface1,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(
+              SpottRadius.primaryCard,
+            ), // 24px
             border: Border.all(color: SpottColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -401,34 +377,27 @@ class ProfileScreen extends StatelessWidget {
                     height: 48,
                     decoration: BoxDecoration(
                       color: SpottColors.surface2,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: SpottColors.border),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
                       Icons.directions_car_rounded,
-                      color: SpottColors.primary,
-                      size: 24,
+                      color: SpottColors.accentPurple,
+                      size: 26,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: SpottSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Hyundai i20',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: SpottColors.textPrimary,
-                          ),
+                          'Hyundai i20 (AC)',
+                          style: SpottTextStyles.titleSmall,
                         ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'MH12AB1234 • 324 Trips Completed',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                        const SizedBox(height: 2),
+                        Text(
+                          'MH-12-PQ-9876 • MH Registered',
+                          style: SpottTextStyles.caption.copyWith(
                             color: SpottColors.textSecondary,
                           ),
                         ),
@@ -437,18 +406,18 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
+                      horizontal: 8,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
                       color: SpottColors.successSoft,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: const Text(
                       'VERIFIED',
                       style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
                         color: SpottColors.success,
                       ),
                     ),
@@ -456,16 +425,16 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              const Divider(height: 1, color: SpottColors.divider),
+              const Divider(height: 1, color: SpottColors.border),
               const SizedBox(height: 16),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _buildVehicleFeatureChip('AC'),
+                  _buildVehicleFeatureChip('AC Fitted'),
                   _buildVehicleFeatureChip('Pet Friendly'),
-                  _buildVehicleFeatureChip('Music'),
-                  _buildVehicleFeatureChip('4 Seats Available'),
+                  _buildVehicleFeatureChip('Music Allowed'),
+                  _buildVehicleFeatureChip('4 Seats Max'),
                 ],
               ),
             ],
@@ -477,235 +446,117 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildVehicleFeatureChip(String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: SpottColors.surface2,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SpottRadius.pill),
         border: Border.all(color: SpottColors.border),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+        style: SpottTextStyles.caption.copyWith(
           color: SpottColors.textSecondary,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
+  // ── Achievements Scroller ──────────────────────────────────────────
   Widget _buildAchievementsSection() {
     final achievements = [
       _Achievement(
         '🏆',
         'Top 10% Traveler',
-        'Top tier host on active routes',
+        'Highly active on primary highway routes.',
         SpottColors.primary,
       ),
       _Achievement(
         '🛡️',
         'Safety Defender',
-        'Maintained 95%+ Safety Score',
+        'Maintained 95%+ trust score.',
         SpottColors.success,
       ),
       _Achievement(
         '⏰',
-        'Always On Time',
-        '98%+ punctuality rate',
+        'Punctual Rider',
+        '98% departure times matching.',
         SpottColors.accentPurple,
       ),
       _Achievement(
-        '🚗',
-        '500+ Trips',
-        'Completed over 500 shared journeys',
+        '📦',
+        'Parcel Master',
+        'Delivered 50+ packages.',
         SpottColors.warning,
       ),
-      _Achievement(
-        '⭐',
-        '4.9+ Rating',
-        'Consistent positive feedback',
-        SpottColors.info,
-      ),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Achievements & Badges',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: SpottColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: [
-              for (final achievement in achievements) ...[
-                Container(
-                  width: 160,
-                  margin: const EdgeInsets.only(right: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: SpottColors.surface1,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: SpottColors.border),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        achievement.emoji,
-                        style: const TextStyle(fontSize: 28),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        achievement.title,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          color: SpottColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        achievement.description,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: SpottColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
+        const Text('Achievements & Badges', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
+        SizedBox(
+          height: 150,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: achievements.length,
+            itemBuilder: (context, index) {
+              final ach = achievements[index];
+              return Container(
+                width: 160,
+                margin: const EdgeInsets.only(right: SpottSpacing.md),
+                padding: const EdgeInsets.all(SpottSpacing.md),
+                decoration: BoxDecoration(
+                  color: SpottColors.surface1,
+                  borderRadius: BorderRadius.circular(
+                    SpottRadius.primaryCard,
+                  ), // 24px
+                  border: Border.all(color: SpottColors.border),
                 ),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMarketplacePerformance() {
-    final performanceMetrics = [
-      _PerformanceMetric(
-        '₹48,200',
-        'Earned Sharing Trips',
-        Icons.monetization_on_rounded,
-        SpottColors.success,
-      ),
-      _PerformanceMetric(
-        '₹12,800',
-        'Saved On Travel',
-        Icons.savings_rounded,
-        SpottColors.primary,
-      ),
-      _PerformanceMetric(
-        '1,124',
-        'Passengers Hosted',
-        Icons.people_rounded,
-        SpottColors.accentPurple,
-      ),
-      _PerformanceMetric(
-        '98%',
-        'Positive Reviews',
-        Icons.thumb_up_rounded,
-        SpottColors.info,
-      ),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Marketplace Performance',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: SpottColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.5,
-          ),
-          itemCount: performanceMetrics.length,
-          itemBuilder: (context, index) {
-            final metric = performanceMetrics[index];
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: SpottColors.surface1,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: SpottColors.border),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Icon(metric.icon, color: metric.color, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        metric.value,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: SpottColors.textPrimary,
-                        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(ach.emoji, style: const TextStyle(fontSize: 24)),
+                    const Spacer(),
+                    Text(
+                      ach.title,
+                      style: SpottTextStyles.titleSmall.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    metric.label,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: SpottColors.textSecondary,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                    const SizedBox(height: 2),
+                    Text(
+                      ach.description,
+                      style: SpottTextStyles.caption.copyWith(
+                        color: SpottColors.textSecondary,
+                        fontSize: 10,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
   }
 
+  // ── Monthly Earnings ────────────────────────────────────────────────
   Widget _buildEarningsBanner() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(SpottSpacing.lg),
       decoration: BoxDecoration(
         color: SpottColors.successSoft,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(SpottRadius.primaryCard), // 24px
         border: Border.all(color: SpottColors.success.withValues(alpha: 0.2)),
       ),
       child: Row(
@@ -715,30 +566,26 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'THIS MONTH',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
+                  style: SpottTextStyles.overline.copyWith(
                     color: SpottColors.success,
-                    letterSpacing: 1.2,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 const Text(
-                  '₹6,850 Earned',
+                  '₹6,850 Saved',
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.bold,
                     color: SpottColors.success,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
-                  'Recovering Fuel Costs',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                  'Recovering fuel costs via co-travelers.',
+                  style: SpottTextStyles.caption.copyWith(
                     color: SpottColors.success.withValues(alpha: 0.8),
                   ),
                 ),
@@ -754,16 +601,16 @@ class ProfileScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             ),
             child: const Row(
               children: [
                 Text(
-                  'View Earnings',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                  'Details',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(width: 4),
-                Icon(Icons.arrow_forward_rounded, size: 14),
+                Icon(Icons.arrow_forward_rounded, size: 12),
               ],
             ),
           ),
@@ -772,44 +619,41 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  // ── Reviews List ───────────────────────────────────────────────────
   Widget _buildReviewsSection() {
     final reviews = [
-      _ReviewItem('Rohan', 'Very punctual and friendly.', 5),
-      _ReviewItem('Priya', 'Smooth journey.', 5),
+      _ReviewItem(
+        'Rohan K.',
+        'Very punctual, Hyundai vehicle was clean and air-conditioned. Highly recommended.',
+        5,
+      ),
+      _ReviewItem(
+        'Priya S.',
+        'Smooth package delivery, kept update coordinates via SOS toolkit. Friendly traveler.',
+        5,
+      ),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Recent Reviews',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: SpottColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
+        const Text('Community Reviews', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: reviews.length,
           itemBuilder: (context, index) {
-            final review = reviews[index];
+            final rev = reviews[index];
             return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: SpottSpacing.md),
+              padding: const EdgeInsets.all(SpottSpacing.md),
               decoration: BoxDecoration(
                 color: SpottColors.surface1,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(
+                  SpottRadius.primaryCard,
+                ), // 24px
                 border: Border.all(color: SpottColors.border),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -818,16 +662,14 @@ class ProfileScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        review.author,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: SpottColors.textPrimary,
+                        rev.author,
+                        style: SpottTextStyles.titleSmall.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Row(
                         children: List.generate(
-                          review.stars,
+                          rev.stars,
                           (i) => const Icon(
                             Icons.star_rounded,
                             color: SpottColors.warning,
@@ -839,12 +681,8 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    review.comment,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: SpottColors.textSecondary,
-                    ),
+                    rev.comment,
+                    style: SpottTextStyles.body.copyWith(fontSize: 13),
                   ),
                 ],
               ),
@@ -855,23 +693,18 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  // ── Spott Premium Promotion ────────────────────────────────────────
   Widget _buildPremiumSection() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(SpottSpacing.lg),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4F46E5).withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(SpottRadius.primaryCard), // 24px
+        boxShadow: SpottShadows.elevation3,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -882,47 +715,42 @@ class ProfileScreen extends StatelessWidget {
               const Text(
                 'SPOTT PREMIUM',
                 style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
                   color: Colors.white70,
                   letterSpacing: 1.2,
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(SpottRadius.pill),
                 ),
                 child: const Text(
                   'UPGRADE',
                   style: TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           const Text(
             'Maximize Your Share Economy',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
+            style: SpottTextStyles.titleSmall,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Premium Trust Badge • High route visibility • Lower matching fees.',
+            style: SpottTextStyles.caption.copyWith(
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
-          const SizedBox(height: 12),
-          _buildPremiumFeature('Priority Visibility'),
-          _buildPremiumFeature('Premium Badge'),
-          _buildPremiumFeature('Advanced Analytics'),
-          _buildPremiumFeature('Lower Service Fees'),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -932,13 +760,15 @@ class ProfileScreen extends StatelessWidget {
                 foregroundColor: const Color(0xFF4F46E5),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(
+                    SpottRadius.button,
+                  ), // 18px
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 12),
               ),
               child: const Text(
                 'Get Spott Premium',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -947,78 +777,43 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPremiumFeature(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.check_circle_rounded,
-            color: Colors.white70,
-            size: 16,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
+  // ── Settings List ──────────────────────────────────────────────────
   Widget _buildSettingsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Settings & Actions',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: SpottColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        _buildSettingsGroup(context, 'Account', [
+        const Text('Settings & Actions', style: SpottTextStyles.headline),
+        const SizedBox(height: SpottSpacing.md),
+        _buildSettingsGroup(context, 'Account Settings', [
           _SettingItem(Icons.person_outline_rounded, 'Personal Info', () {}),
-          _SettingItem(Icons.directions_car_filled_outlined, 'Vehicles', () {}),
-          _SettingItem(Icons.description_outlined, 'Documents', () {}),
-        ]),
-        const SizedBox(height: 16),
-        _buildSettingsGroup(context, 'Safety', [
           _SettingItem(
-            Icons.shield_outlined,
-            'Verification',
+            Icons.directions_car_filled_outlined,
+            'Vehicle Setup',
+            () => Navigator.pushNamed(context, AppRoutes.vehicleManagement),
+          ),
+          _SettingItem(
+            Icons.description_outlined,
+            'Verify Documents',
             () => Navigator.pushNamed(context, AppRoutes.kyc),
           ),
-          _SettingItem(
-            Icons.contact_phone_outlined,
-            'Emergency Contacts',
-            () {},
-          ),
         ]),
-        const SizedBox(height: 16),
+        const SizedBox(height: SpottSpacing.md),
         _buildSettingsGroup(context, 'Preferences', [
           _SettingItem(
             Icons.notifications_none_rounded,
-            'Notifications',
+            'Notification Prefs',
             () {},
           ),
           _SettingItem(
             Icons.palette_outlined,
-            'Theme',
+            'Display Theme',
             () => Navigator.pushNamed(context, AppRoutes.settings),
           ),
-        ]),
-        const SizedBox(height: 16),
-        _buildSettingsGroup(context, 'Support', [
-          _SettingItem(Icons.help_outline_rounded, 'Help Center', () {}),
-          _SettingItem(Icons.bug_report_outlined, 'Report Issue', () {}),
+          _SettingItem(
+            Icons.help_outline_rounded,
+            'Help & Resolutions Center',
+            () => Navigator.pushNamed(context, AppRoutes.support),
+          ),
         ]),
       ],
     );
@@ -1036,26 +831,21 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8, bottom: 8),
           child: Text(
             title.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
               color: SpottColors.textSecondary,
-              letterSpacing: 1.0,
+              letterSpacing: 0.8,
             ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
             color: SpottColors.surface1,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(
+              SpottRadius.primaryCard,
+            ), // 24px
             border: Border.all(color: SpottColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
           ),
           child: Column(
             children: [
@@ -1065,7 +855,8 @@ class ProfileScreen extends StatelessWidget {
                   title: items[i].title,
                   onTap: items[i].onTap,
                 ),
-                if (i < items.length - 1) _buildDivider(),
+                if (i < items.length - 1)
+                  const Divider(height: 1, color: SpottColors.border),
               ],
             ],
           ),
@@ -1094,15 +885,15 @@ class ProfileScreen extends StatelessWidget {
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: SpottColors.textPrimary,
+                  color: Colors.white,
                 ),
               ),
             ),
             const Icon(
               Icons.chevron_right_rounded,
-              color: SpottColors.textMuted,
+              color: SpottColors.textSecondary,
               size: 20,
             ),
           ],
@@ -1110,10 +901,14 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildDivider() {
-    return Container(height: 1, color: SpottColors.border);
-  }
+// ── Models helpers ──────────────────────────────────────────────────
+class _VerificationItem {
+  final String label;
+  final bool isVerified;
+
+  const _VerificationItem(this.label, this.isVerified);
 }
 
 class _MetricData {
@@ -1122,22 +917,6 @@ class _MetricData {
   final Color color;
 
   const _MetricData(this.value, this.label, this.color);
-}
-
-class _VerificationItem {
-  final String label;
-  final bool isVerified;
-
-  const _VerificationItem(this.label, this.isVerified);
-}
-
-class _PerformanceMetric {
-  final String value;
-  final String label;
-  final IconData icon;
-  final Color color;
-
-  const _PerformanceMetric(this.value, this.label, this.icon, this.color);
 }
 
 class _ReviewItem {

@@ -74,4 +74,59 @@ class SpottGradients {
     ],
     stops: [0.0, 0.5, 1.0],
   );
+
+  // ── Bento Card Gradients (each card has its own personality) ─────────
+  /// Find Ride — deep red scene
+  static const LinearGradient bentoRide = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFE60023), Color(0xFF7F0015)],
+  );
+
+  /// Offer Trip — deep green scene
+  static const LinearGradient bentoTrip = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF10B981), Color(0xFF065F46)],
+  );
+
+  /// Send Parcel — deep amber scene
+  static const LinearGradient bentoParcel = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFF59E0B), Color(0xFF92400E)],
+  );
+
+  /// Nearby — deep indigo scene
+  static const LinearGradient bentoNearby = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF6366F1), Color(0xFF312E81)],
+  );
+
+  // ── Banner Gradients ────────────────────────────────────────────────
+  /// Parcel campaign banner — amber warmth
+  static const LinearGradient parcelBanner = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFF59E0B), Color(0xFFB45309)],
+  );
+
+  /// Become Traveler banner — indigo emotion
+  static const LinearGradient travelerBanner = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF6366F1), Color(0xFF4338CA)],
+  );
+
+  // ── Image Overlay Gradient ──────────────────────────────────────────
+  /// Dark fade overlay for featured trip card images
+  static const LinearGradient imageOverlay = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Colors.transparent,
+      Color(0xDD111318),
+    ],
+  );
 }

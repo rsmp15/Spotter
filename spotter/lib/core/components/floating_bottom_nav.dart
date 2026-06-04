@@ -4,8 +4,7 @@ import '../../models/spott_models.dart';
 import '../theme/colors.dart';
 import '../theme/radius.dart';
 import '../theme/spacing.dart';
-import '../theme/animations.dart';
-import 'glass_container.dart';
+import '../theme/shadows.dart';
 
 class FloatingBottomNav extends StatelessWidget {
   final UserRole role;
@@ -22,7 +21,6 @@ class FloatingBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = role == UserRole.passenger ? _passengerTabs : _travelerTabs;
-    // Force active item color to Coral Red (#EE334A) as per directive
     const activeColor = SpottColors.primary;
     const inactiveColor = SpottColors.textTertiary;
 
@@ -32,10 +30,19 @@ class FloatingBottomNav extends StatelessWidget {
         right: SpottSpacing.md,
         bottom: SpottSpacing.md,
       ),
-      child: GlassContainer(
-        borderRadius: SpottRadius.xl,
-        height: 68,
-        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.xs),
+      child: Container(
+        height: 82,
+        decoration: BoxDecoration(
+          color: SpottColors.backgroundElevated,
+          borderRadius: BorderRadius.circular(SpottRadius.nav), // 30
+          border: Border(
+            top: BorderSide(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1,
+            ),
+          ),
+          boxShadow: SpottShadows.navFloat,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(items.length, (index) {
@@ -49,25 +56,64 @@ class FloatingBottomNav extends StatelessWidget {
               },
               behavior: HitTestBehavior.opaque,
               child: SizedBox(
-                width: 60,
-                height: 60,
+                width: 64,
+                height: 72,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      item.icon,
-                      size: 22,
-                      color: isSelected ? activeColor : inactiveColor,
+                    // ── Icon with optional red glow halo ──
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOutCubic,
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isSelected
+                            ? const Color(0x33E60023)
+                            : Colors.transparent,
+                        boxShadow: isSelected
+                            ? SpottShadows.navGlowRed
+                            : null,
+                      ),
+                      child: Center(
+                        child: Icon(
+                          item.icon,
+                          size: 22,
+                          color: isSelected ? activeColor : inactiveColor,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       item.label,
                       style: TextStyle(
                         fontSize: 10,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
                         color: isSelected ? activeColor : inactiveColor,
                         fontFamily: 'Inter',
+                      ),
+                    ),
+                    // Active indicator dot
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOutCubic,
+                      margin: const EdgeInsets.only(top: 3),
+                      width: isSelected ? 4 : 0,
+                      height: isSelected ? 4 : 0,
+                      decoration: BoxDecoration(
+                        color: activeColor,
+                        shape: BoxShape.circle,
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: activeColor.withValues(alpha: 0.4),
+                                  blurRadius: 6,
+                                ),
+                              ]
+                            : null,
                       ),
                     ),
                   ],

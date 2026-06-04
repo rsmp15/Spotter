@@ -1,56 +1,56 @@
 import 'package:flutter/material.dart';
+import 'core/theme/colors.dart';
 
 class Helper {
-  // Standard ink & soft colors - forced Light theme
-  static const Color ink = Color(0xFF111827);
-  static const Color muted = Color(0xFF6B7280);
-  static const Color softText = Color(0xFF9CA3AF);
-  static const Color backgroundColor = Color(0xFFF8F9FC);
-  static const Color darkBackground = Color(0xFFF8F9FC); 
-  static const Color cardColor = Color(0xFFFFFFFF);
-  static const Color lineColor = Color(0xFFE6E8F0);
- 
   // Spott Design System v2 Premium tokens
-  static const Color primary = Color(0xFFEE334A); // Primary Action
-  static const Color accent = Color(0xFF2563EB); // Route Accent Blue
-  static const Color success = Color(0xFF22C55E); 
-  static const Color warning = Color(0xFFF59E0B); 
-  static const Color danger = Color(0xFFEF4444); 
-  static const Color mapFill = Color(0xFFFFFFFF);
+  static const Color ink = SpottColors.textPrimary;
+  static const Color muted = SpottColors.textSecondary;
+  static const Color softText = SpottColors.textSecondary;
+  static const Color backgroundColor = SpottColors.background;
+  static const Color darkBackground = Color(0xFF09090B); 
+  static const Color cardColor = SpottColors.surface1;
+  static const Color lineColor = SpottColors.border;
  
-  // Figma internal background levels
-  static const Color bgMid = Color(0xFFFFFFFF); 
-  static const Color bgSurf = Color(0xFFF5F6FA); 
-  static const Color bgCard = Color(0xFFFFFFFF); 
+  static const Color primary = Color(0xFFE60023); // Pinterest Red Primary Action
+  static const Color accent = Color(0xFF6366F1); // Indigo Community Accent
+  static const Color success = SpottColors.success; 
+  static const Color warning = SpottColors.warning; 
+  static const Color danger = Color(0xFFEF4444); 
+  static const Color mapFill = SpottColors.surface1;
+ 
+  // Internal background levels
+  static const Color bgMid = SpottColors.surface2; 
+  static const Color bgSurf = SpottColors.surface2; 
+  static const Color bgCard = SpottColors.surface1; 
  
   // Premium text shades
-  static const Color textHi = Color(0xFF111827); 
-  static const Color textMed = Color(0xFF6B7280); 
-  static const Color textLow = Color(0xFF9CA3AF); 
-  static const Color textMute = Color(0xFF9CA3AF); 
+  static const Color textHi = SpottColors.textPrimary; 
+  static const Color textMed = SpottColors.textSecondary; 
+  static const Color textLow = SpottColors.textTertiary; 
+  static const Color textMute = SpottColors.textMuted; 
  
-  // Transparent/Glass layers (now flattened to solid white/light grey surfaces)
-  static const Color glass = Color(0xFFFFFFFF); 
-  static const Color glassHi = Color(0x0D000000); 
-  static const Color glassEdge = Color(0xFFE6E8F0); 
+  // Transparent/Glass layers
+  static const Color glass = SpottColors.glassSurface; 
+  static const Color glassHi = SpottColors.glassHigh; 
+  static const Color glassEdge = SpottColors.border; 
  
-  static const Color canvasSoft = Color(0xFFF5F6FA);
-  static const Color canvasSofter = Color(0xFFFFFFFF);
-  static const Color blackElevated = Color(0xFFFFFFFF);
-  static const Color hairline = Color(0xFFE6E8F0);
+  static const Color canvasSoft = SpottColors.surface2;
+  static const Color canvasSofter = SpottColors.surface1;
+  static const Color blackElevated = SpottColors.surface1;
+  static const Color hairline = SpottColors.border;
  
   static const BorderRadiusGeometry cardRadius = BorderRadius.all(
-    Radius.circular(16), // 16px corner radii
+    Radius.circular(24), // 24px corner radii as requested
   );
  
   static const List<BoxShadow> premiumShadows = [
-    BoxShadow(color: Color(0x0A000000), blurRadius: 12, offset: Offset(0, 4)),
+    BoxShadow(color: Color(0x66000000), blurRadius: 16, offset: Offset(0, 4)),
   ];
 
-  static const TextStyle titleStyle = TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.w600,
-    color: Color(0xFF111827),
+  static TextStyle get titleStyle => TextStyle(
+    fontSize: 26,
+    fontWeight: FontWeight.bold,
+    color: SpottColors.textPrimary,
     fontFamily: 'Inter',
   );
 
@@ -67,14 +67,16 @@ class Helper {
 
   static Color canvasSofterColor(BuildContext context) => bgMid;
 
-  static ThemeData get theme => buildTheme(isDarkMode: false);
+  static ThemeData get theme => buildTheme(isDarkMode: true);
 
   static ThemeData buildTheme({required bool isDarkMode}) {
+    SpottColors.updateTheme(isDarkMode);
+
     final primaryColor = primary;
-    const bg = backgroundColor;
-    const cardBgColor = cardColor;
-    const lineBorder = lineColor;
-    const textColor = textHi;
+    final bg = backgroundColor;
+    final cardBgColor = cardColor;
+    final lineBorder = lineColor;
+    final textColor = textHi;
 
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primary,
@@ -82,21 +84,22 @@ class Helper {
       secondary: accent,
       surface: cardBgColor,
       error: danger,
-      brightness: Brightness.light,
+      brightness: isDarkMode ? Brightness.dark : Brightness.light,
     );
 
     return ThemeData(
       colorScheme: colorScheme,
+      brightness: isDarkMode ? Brightness.dark : Brightness.light,
       scaffoldBackgroundColor: bg,
       useMaterial3: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: bg,
         foregroundColor: textColor,
         elevation: 0,
         centerTitle: false,
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         color: cardBgColor,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -109,9 +112,7 @@ class Helper {
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(56),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              999,
-            ), // Fully pill-shaped buttons
+            borderRadius: BorderRadius.circular(18), // 18px radius buttons
           ),
           backgroundColor: primary,
           foregroundColor: Colors.white,
@@ -127,31 +128,31 @@ class Helper {
           foregroundColor: primary,
         ),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
+      inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: bgSurf,
-        contentPadding: EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderRadius: const BorderRadius.all(Radius.circular(18)),
           borderSide: BorderSide(color: lineBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderRadius: const BorderRadius.all(Radius.circular(18)),
           borderSide: BorderSide(color: lineBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderRadius: const BorderRadius.all(Radius.circular(18)),
           borderSide: BorderSide(color: primary, width: 1.5),
         ),
       ),
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         headlineSmall: TextStyle(
           color: textColor,
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontSize: 26,
+          fontWeight: FontWeight.bold,
           letterSpacing: -0.5,
           fontFamily: 'Inter',
         ),
@@ -163,8 +164,8 @@ class Helper {
           fontFamily: 'Inter',
         ),
         bodyMedium: TextStyle(
-          color: textColor,
-          fontSize: 15,
+          color: textMed,
+          fontSize: 14,
           height: 1.35,
           fontFamily: 'Inter',
         ),

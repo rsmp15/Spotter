@@ -2,45 +2,45 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 
 class SpottShadows {
-  // ── Glow variants (now flattened to subtle dark shadows for Light Theme) ──
+  // ── Glow variants (subtle colorful drops for premium visual interest) ──
   static final List<BoxShadow> glowPrimary = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.06),
-      blurRadius: 12,
+      color: SpottColors.primary.withValues(alpha: 0.15),
+      blurRadius: 16,
       offset: const Offset(0, 4),
     ),
   ];
 
   static final List<BoxShadow> glowPurple = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.06),
-      blurRadius: 12,
+      color: SpottColors.accentPurple.withValues(alpha: 0.15),
+      blurRadius: 16,
       offset: const Offset(0, 4),
     ),
   ];
 
   static final List<BoxShadow> glowSuccess = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.04),
-      blurRadius: 8,
+      color: SpottColors.success.withValues(alpha: 0.1),
+      blurRadius: 12,
       offset: const Offset(0, 2),
     ),
   ];
 
   static final List<BoxShadow> glowWarning = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.04),
-      blurRadius: 8,
+      color: SpottColors.warning.withValues(alpha: 0.1),
+      blurRadius: 12,
       offset: const Offset(0, 2),
     ),
   ];
 
-  // ── Elevation levels (layered depth hierarchy) ──────────────────────
+  // ── Elevation levels (layered depth hierarchy for dark mode) ──────────
   /// Subtle lift — cards at rest
   static final List<BoxShadow> elevation1 = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.04),
-      blurRadius: 6,
+      color: Colors.black.withValues(alpha: 0.4),
+      blurRadius: 8,
       offset: const Offset(0, 2),
     ),
   ];
@@ -48,8 +48,8 @@ class SpottShadows {
   /// Medium lift — cards on hover/active state
   static final List<BoxShadow> elevation2 = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.06),
-      blurRadius: 12,
+      color: Colors.black.withValues(alpha: 0.5),
+      blurRadius: 16,
       offset: const Offset(0, 4),
     ),
   ];
@@ -57,8 +57,8 @@ class SpottShadows {
   /// High lift — floating panels, popovers
   static final List<BoxShadow> elevation3 = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.08),
-      blurRadius: 20,
+      color: Colors.black.withValues(alpha: 0.6),
+      blurRadius: 24,
       offset: const Offset(0, 8),
     ),
   ];
@@ -66,12 +66,40 @@ class SpottShadows {
   /// Maximum lift — modals, bottom sheets
   static final List<BoxShadow> elevation4 = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.12),
-      blurRadius: 32,
+      color: Colors.black.withValues(alpha: 0.7),
+      blurRadius: 36,
       offset: const Offset(0, 16),
     ),
   ];
 
   // ── Legacy alias ────────────────────────────────────────────────────
   static final List<BoxShadow> elevationSm = elevation1;
+
+  // ── Scene Glows (premium depth layers) ──────────────────────────────
+  /// Red halo behind selected nav icon
+  static final List<BoxShadow> navGlowRed = [
+    BoxShadow(
+      color: const Color(0x33E60023),
+      blurRadius: 24,
+      spreadRadius: 4,
+    ),
+  ];
+
+  /// Diffuse ambient glow for hero search scene
+  static final List<BoxShadow> heroGlow = [
+    BoxShadow(
+      color: SpottColors.primary.withValues(alpha: 0.08),
+      blurRadius: 60,
+      spreadRadius: 20,
+    ),
+  ];
+
+  /// Nav bar floating shadow
+  static final List<BoxShadow> navFloat = [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.45),
+      blurRadius: 40,
+      offset: const Offset(0, -10),
+    ),
+  ];
 }

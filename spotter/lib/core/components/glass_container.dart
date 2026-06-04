@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
 import '../theme/radius.dart';
 import '../theme/shadows.dart';
 
@@ -18,8 +17,8 @@ class GlassContainer extends StatelessWidget {
   const GlassContainer({
     super.key,
     required this.child,
-    this.blurSigma = 8.0,
-    this.borderRadius = SpottRadius.card,
+    this.blurSigma = 16.0,
+    this.borderRadius = SpottRadius.xl,
     this.padding,
     this.margin,
     this.width,
@@ -35,19 +34,37 @@ class GlassContainer extends StatelessWidget {
       height: height,
       margin: margin,
       decoration: BoxDecoration(
-        color: gradient == null ? SpottColors.surface3 : null,
-        gradient: gradient,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(borderRadius),
-        border: hasBorder
-            ? Border.all(color: SpottColors.border, width: 1.0)
-            : null,
-        boxShadow: SpottShadows.elevation1,
+        boxShadow: SpottShadows.elevation2,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
-        child: Padding(
-          padding: padding ?? EdgeInsets.zero,
-          child: child,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+          child: Container(
+            padding: padding ?? EdgeInsets.zero,
+            decoration: BoxDecoration(
+              gradient:
+                  gradient ??
+                  LinearGradient(
+                    colors: [
+                      Colors.white.withValues(alpha: 0.07),
+                      Colors.white.withValues(alpha: 0.02),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+              borderRadius: BorderRadius.circular(borderRadius),
+              border: hasBorder
+                  ? Border.all(
+                      color: Colors.white.withValues(alpha: 0.12),
+                      width: 1.0,
+                    )
+                  : null,
+            ),
+            child: child,
+          ),
         ),
       ),
     );

@@ -54,7 +54,7 @@ class FigmaPluginSandboxScreen extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
+                    ? Colors.white.withValues(alpha: 0.08)
                     : Colors.grey[200],
                 borderRadius: BorderRadius.circular(2),
               ),
@@ -118,7 +118,7 @@ class FigmaPluginSandboxScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: Helper.primary.withOpacity(0.3),
+                          color: Helper.primary.withValues(alpha: 0.3),
                           blurRadius: 8,
                         ),
                       ],
@@ -166,7 +166,7 @@ class FigmaPluginSandboxScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Helper.success.withOpacity(0.12),
+                    color: Helper.success.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -483,7 +483,7 @@ class FigmaPluginSandboxScreen extends StatelessWidget {
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         shape: BoxShape.circle,
         border: Border.all(color: color, width: 1.5),
       ),
