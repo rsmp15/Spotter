@@ -176,7 +176,7 @@ class ProfileScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: SpottColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -251,7 +251,7 @@ class ProfileScreen extends StatelessWidget {
                         Text(
                           item.label,
                           style: SpottTextStyles.body.copyWith(
-                            color: Colors.white,
+                            color: SpottColors.textPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -266,13 +266,14 @@ class ProfileScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.kyc),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: SpottColors.surface2,
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: SpottColors.border),
+                    backgroundColor: Colors.white,
+                    foregroundColor: SpottColors.primary,
+                    side: const BorderSide(color: SpottColors.primary),
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
                         SpottRadius.button,
-                      ), // 18px
+                      ), // 16px
                     ),
                   ),
                   child: const Text('Manage Verifications'),
@@ -887,7 +888,7 @@ class ProfileScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: SpottColors.textPrimary,
                 ),
               ),
             ),

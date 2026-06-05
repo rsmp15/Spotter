@@ -253,11 +253,9 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
     required bool completed,
     bool isLast = false,
   }) {
-    Color accentColor;
     Widget dotIndicator;
 
     if (completed) {
-      accentColor = SpottColors.success;
       dotIndicator = Container(
         width: 22,
         height: 22,
@@ -271,7 +269,6 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
         ),
       );
     } else if (active) {
-      accentColor = SpottColors.primary;
       dotIndicator = Container(
         width: 22,
         height: 22,
@@ -289,7 +286,6 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
         ),
       );
     } else {
-      accentColor = SpottColors.border;
       dotIndicator = Container(
         width: 22,
         height: 22,

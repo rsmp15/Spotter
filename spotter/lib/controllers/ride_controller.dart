@@ -39,7 +39,7 @@ class RideController extends ChangeNotifier {
   String? loadErrorMessage;
   String shareLink = MockRideRepository.seedData.shareLink;
   RecoverableActionState actionState = RecoverableActionState.idle;
-  bool isDarkMode = true;
+  bool isDarkMode = false;
   int activeTabIndex = 0;
 
   // Parcel delivery states

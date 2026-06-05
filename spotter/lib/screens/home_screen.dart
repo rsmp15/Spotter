@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../models/spott_models.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/shadows.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/gradients.dart';
-import '../core/components/spott_avatar.dart';
-import '../core/components/spott_appli_card.dart';
-import '../core/components/animated_entrance.dart';
-import '../core/components/scene_decorations.dart';
+import '../core/theme/redbus_theme.dart';
+import '../core/components/redbus_sections.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,18 +14,53 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _originController = TextEditingController(
-    text: 'Pune',
-  );
-  final TextEditingController _destinationController = TextEditingController(
-    text: 'Mumbai',
-  );
+  String _from = 'Pune';
+  String _to = 'Mumbai';
+  DateTime _selectedDate = DateTime.now();
+  int _passengers = 1;
 
-  @override
-  void dispose() {
-    _originController.dispose();
-    _destinationController.dispose();
-    super.dispose();
+  void _swapCities() {
+    HapticFeedback.lightImpact();
+    setState(() {
+      final temp = _from;
+      _from = _to;
+      _to = temp;
+    });
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: RBColors.primary,
+            onPrimary: Colors.white,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) setState(() => _selectedDate = picked);
+  }
+
+  String get _formattedDate {
+    final now = DateTime.now();
+    final diff = _selectedDate
+        .difference(DateTime(now.year, now.month, now.day))
+        .inDays;
+    if (diff == 0) return 'Today';
+    if (diff == 1) return 'Tomorrow';
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return '${days[_selectedDate.weekday - 1]}, '
+        '${_selectedDate.day} ${months[_selectedDate.month - 1]}';
   }
 
   @override
@@ -45,826 +73,692 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pushReplacementNamed(context, AppRoutes.driverHome);
       });
       return const Scaffold(
-        backgroundColor: SpottColors.background,
+        backgroundColor: RBColors.background,
         body: Center(
-          child: CircularProgressIndicator(color: SpottColors.primary),
+          child: CircularProgressIndicator(color: RBColors.primary),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: SpottColors.background,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.only(
-            left: SpottSpacing.pageHorizontal,
-            right: SpottSpacing.pageHorizontal,
-            top: SpottSpacing.pageTop,
-            bottom: SpottSpacing.pageBottom,
+      backgroundColor: RBColors.background,
+      body: Column(
+        children: [
+          _buildRedHeader(context),
+          Expanded(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                // 1. Search Section (Hero style brand gradient)
+                SliverToBoxAdapter(
+                  child: _buildSearchSection(context),
+                ),
+                
+                // Transition Wave
+                const SliverToBoxAdapter(
+                  child: RBWaveSeparator(
+                    topColor: RBColors.primary,
+                    bottomColor: Colors.white,
+                  ),
+                ),
+
+                // 2. Suggestions / Services Section (White Background)
+                SliverToBoxAdapter(
+                  child: RBSectionContainer(
+                    style: RBSectionStyle.white,
+                    child: _buildSuggestionsGrid(context),
+                  ),
+                ),
+
+                // Spacing 48px
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 48),
+                ),
+
+                // 3. Offers & Deals Section (Rewards light red background)
+                SliverToBoxAdapter(
+                  child: RBSectionContainer(
+                    style: RBSectionStyle.rewards,
+                    topRadius: 32,
+                    bottomRadius: 32,
+                    child: _buildOffersSection(),
+                  ),
+                ),
+
+                // Spacing 48px
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 48),
+                ),
+
+                // 4. Popular Routes Section (White Background)
+                SliverToBoxAdapter(
+                  child: RBSectionContainer(
+                    style: RBSectionStyle.white,
+                    child: _buildPopularRoutesSection(context),
+                  ),
+                ),
+
+                // Spacing 48px
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 48),
+                ),
+
+                // 5. Marketplace / Parcel Banner (neutral background, curved container)
+                SliverToBoxAdapter(
+                  child: RBSectionContainer(
+                    style: RBSectionStyle.marketplace,
+                    topRadius: 24,
+                    bottomRadius: 24,
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(20),
+                    child: _buildParcelBanner(context),
+                  ),
+                ),
+
+                // Spacing 48px
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 48),
+                ),
+
+                // 6. Community / Become a Traveler Banner (curved container)
+                SliverToBoxAdapter(
+                  child: RBSectionContainer(
+                    style: RBSectionStyle.community,
+                    topRadius: 24,
+                    bottomRadius: 24,
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(20),
+                    child: _buildTravelerBanner(context),
+                  ),
+                ),
+
+                // Spacing 48px
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 48),
+                ),
+
+                // 7. Why choose Spotter (floating container)
+                SliverToBoxAdapter(
+                  child: _buildWhySpotterSection(),
+                ),
+
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 120),
+                ),
+              ],
+            ),
           ),
-          children: [
-            _buildHeroScene(context),
-            const SizedBox(height: SpottSpacing.xl),
-            _buildBentoGrid(context),
-            const SizedBox(height: SpottSpacing.xl),
-            _buildTrendingJourneys(context),
-            const SizedBox(height: SpottSpacing.xl),
-            _buildNearbyTravelers(context),
-            const SizedBox(height: SpottSpacing.xl),
-            _buildPopularRoutes(),
-            const SizedBox(height: SpottSpacing.xl),
-            _buildParcelBanner(context),
-            const SizedBox(height: SpottSpacing.xl),
-            _buildTravelerBanner(context),
-            const SizedBox(height: SpottSpacing.xl),
-            _buildSafetyCenter(context),
-          ],
+        ],
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // RED HEADER — redBus style
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildRedHeader(BuildContext context) {
+    return Container(
+      color: RBColors.primary,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: Row(
+            children: [
+              // Logo mark
+              Container(
+                width: 32,
+                height: 32,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.directions_car_rounded,
+                  color: RBColors.primary,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                'spotter',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined,
+                    color: Colors.white, size: 22),
+                onPressed: () =>
+                    Navigator.pushNamed(context, AppRoutes.notifications),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                child: const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.white24,
+                  child: Icon(Icons.person_rounded,
+                      color: Colors.white, size: 18),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ════════════════════════════════════════════════════════════════════
-  // SCENE 1: Hero Search — The Destination Scene
-  // ════════════════════════════════════════════════════════════════════
-  Widget _buildHeroScene(BuildContext context) {
+  // ══════════════════════════════════════════════════════════════════
+  // BRAND HERO SEARCH SECTION
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildSearchSection(BuildContext context) {
+    return RBSectionContainer(
+      style: RBSectionStyle.brandHero,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.tripSearch),
+            child: const Text(
+              'Where to?',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: -0.8,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildSearchCard(context),
+        ],
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // SEARCH CARD — redBus exact FROM/TO style
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildSearchCard(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(SpottRadius.hero), // 30
-        border: Border.all(color: SpottColors.border, width: 1.0),
-        boxShadow: SpottShadows.elevation2,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(RBRadius.xl),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(SpottRadius.hero),
-        child: Stack(
-          children: [
-            // Layer 1: Large blurred red glow (top-right)
-            Positioned(
-              top: -40,
-              right: -40,
-              child: Container(
-                width: 200,
-                height: 200,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [Color(0x26E60023), Colors.transparent],
-                  ),
-                ),
+      child: Column(
+        children: [
+          // Mode tabs
+          Container(
+            decoration: const BoxDecoration(
+              color: RBColors.primarySoft,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(RBRadius.xl),
+                topRight: Radius.circular(RBRadius.xl),
               ),
             ),
-            // Layer 2: Indigo ambient glow (bottom-left)
-            Positioned(
-              bottom: -30,
-              left: -30,
-              child: Container(
-                width: 160,
-                height: 160,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [Color(0x1A6366F1), Colors.transparent],
-                  ),
-                ),
-              ),
-            ),
-            // Layer 3: Route pattern illustration
-            Positioned.fill(
-              child: CustomPaint(painter: RoutePatternPainter()),
-            ),
-            // Layer 4: Floating ambient dots
-            Positioned.fill(
-              child: CustomPaint(painter: FloatingDotsPainter()),
-            ),
-            // Layer 5: Content
-            Padding(
-              padding: const EdgeInsets.all(SpottSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── Header Row ──────────────────────────────────
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.verified_user_rounded,
-                                color: SpottColors.success,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Arjun Sharma • Trust Score 92',
-                                style: SpottTextStyles.caption.copyWith(
-                                  color: SpottColors.success,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          const Text(
-                            'Where are you\ngoing today?',
-                            style: SpottTextStyles.displayLarge,
-                          ),
-                        ],
-                      ),
-                      GestureDetector(
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.profile),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: SpottColors.border,
-                              width: 2.0,
-                            ),
-                          ),
-                          child: const SpottAvatar(
-                            imageUrl:
-                                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-                            radius: 28,
-                            isVerified: true,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: SpottSpacing.lg),
-
-                  // ── Route Input ─────────────────────────────────
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          const Icon(
-                            Icons.radio_button_unchecked,
-                            color: SpottColors.accentPurple,
-                            size: 18,
-                          ),
-                          Container(
-                            width: 1.5,
-                            height: 40,
-                            color: SpottColors.border,
-                          ),
-                          const Icon(
-                            Icons.location_on_rounded,
-                            color: SpottColors.primary,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: SpottSpacing.md),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            TextField(
-                              controller: _originController,
-                              decoration: const InputDecoration(
-                                hintText: 'Current Location',
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                isDense: true,
-                                contentPadding:
-                                    EdgeInsets.symmetric(vertical: 6),
-                              ),
-                              style: SpottTextStyles.titleSmall.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const Divider(
-                              height: 16,
-                              color: SpottColors.border,
-                            ),
-                            TextField(
-                              controller: _destinationController,
-                              decoration: const InputDecoration(
-                                hintText: 'Destination',
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                isDense: true,
-                                contentPadding:
-                                    EdgeInsets.symmetric(vertical: 6),
-                              ),
-                              style: SpottTextStyles.titleSmall.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: SpottSpacing.sm),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: SpottColors.surface2,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: SpottColors.border),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.swap_vert_rounded,
-                            color: SpottColors.accentPurple,
-                          ),
-                          onPressed: _swapLocations,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: SpottSpacing.md),
-                  const Divider(height: 1, color: SpottColors.border),
-                  const SizedBox(height: SpottSpacing.md),
-
-                  // ── Date + Passenger ────────────────────────────
-                  Row(
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {},
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.calendar_today_rounded,
-                                color: SpottColors.textSecondary,
-                                size: 16,
-                              ),
-                              const SizedBox(width: SpottSpacing.sm),
-                              Text(
-                                'Today',
-                                style: SpottTextStyles.body.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 1,
-                        height: 20,
-                        color: SpottColors.border,
-                      ),
-                      const SizedBox(width: SpottSpacing.md),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {},
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.person_outline_rounded,
-                                color: SpottColors.textSecondary,
-                                size: 18,
-                              ),
-                              const SizedBox(width: SpottSpacing.sm),
-                              Text(
-                                '1 Passenger',
-                                style: SpottTextStyles.body.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: SpottSpacing.md),
-
-                  // ── Search CTA with glow ────────────────────────
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(SpottRadius.button),
-                      boxShadow: SpottShadows.glowPrimary,
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.tripSearch);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: SpottColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: SpottSpacing.md,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(SpottRadius.button),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        'Search Trips',
-                        style: SpottTextStyles.label.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _swapLocations() {
-    setState(() {
-      final temp = _originController.text;
-      _originController.text = _destinationController.text;
-      _destinationController.text = temp;
-    });
-  }
-
-  // ════════════════════════════════════════════════════════════════════
-  // SCENE 2: Bento Action Grid — 4 Unique Personalities
-  // ════════════════════════════════════════════════════════════════════
-  Widget _buildBentoGrid(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Explore Services', style: SpottTextStyles.headline),
-        const SizedBox(height: SpottSpacing.md),
-        Row(
-          children: [
-            Expanded(
-              child: AnimatedEntrance(
-                delay: 0,
-                child: _BentoSceneCard(
-                  title: 'Find Ride',
-                  stat: '1,240 Active',
+            child: Row(
+              children: [
+                _ModeTab(
+                  label: 'Find Ride',
                   icon: Icons.directions_car_rounded,
-                  decorationIcon: Icons.directions_car_filled_rounded,
-                  gradient: SpottGradients.bentoRide,
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.tripSearch),
+                  isActive: true,
+                  isFirst: true,
+                  onTap: () {},
                 ),
-              ),
-            ),
-            const SizedBox(width: SpottSpacing.md),
-            Expanded(
-              child: AnimatedEntrance(
-                delay: 1,
-                child: _BentoSceneCard(
-                  title: 'Send Parcel',
-                  stat: '300 Today',
+                _ModeTab(
+                  label: 'Send Parcel',
                   icon: Icons.inventory_2_rounded,
-                  decorationIcon: Icons.local_shipping_rounded,
-                  gradient: SpottGradients.bentoParcel,
+                  isActive: false,
+                  isFirst: false,
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.parcelBooking),
                 ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: SpottSpacing.md),
-        Row(
-          children: [
-            Expanded(
-              child: AnimatedEntrance(
-                delay: 2,
-                child: _BentoSceneCard(
-                  title: 'Offer Trip',
-                  stat: 'Earn ₹800 Avg',
+                _ModeTab(
+                  label: 'Offer Trip',
                   icon: Icons.add_road_rounded,
-                  decorationIcon: Icons.monetization_on_rounded,
-                  gradient: SpottGradients.bentoTrip,
+                  isActive: false,
+                  isFirst: false,
+                  isLast: true,
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.createTrip),
                 ),
-              ),
+              ],
             ),
-            const SizedBox(width: SpottSpacing.md),
-            Expanded(
-              child: AnimatedEntrance(
-                delay: 3,
-                child: _BentoSceneCard(
-                  title: 'Nearby',
-                  stat: '42 Nearby',
-                  icon: Icons.people_outline_rounded,
-                  decorationIcon: Icons.location_on_rounded,
-                  gradient: SpottGradients.bentoNearby,
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.activity),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // ════════════════════════════════════════════════════════════════════
-  // SCENE 3: Trending Journeys — Appli-Level Image Cards
-  // ════════════════════════════════════════════════════════════════════
-  Widget _buildTrendingJourneys(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Trending Journeys', style: SpottTextStyles.headline),
-            GestureDetector(
-              onTap: () => Navigator.pushNamed(context, AppRoutes.tripSearch),
-              child: Text(
-                'See All',
-                style: SpottTextStyles.caption.copyWith(
-                  color: SpottColors.accentPurple,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: SpottSpacing.md),
-        SizedBox(
-          height: 380,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            children: [
-              AnimatedEntrance(
-                delay: 0,
-                child: SpottAppliCard(
-                  route: 'Pune → Mumbai',
-                  price: '₹450',
-                  trustScore: 92,
-                  travelerName: 'Arjun Sharma',
-                  travelerAvatarUrl:
-                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
-                  tripsCompleted: 143,
-                  responseRate: '98%',
-                  vehicleInfo: 'Hyundai i20 (AC)',
-                  seatsLeft: '3 seats left',
-                  travelersCount: '12 travelers today',
-                  savings: '₹800 vs Bus',
-                  imageBannerUrl:
-                      'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=600',
-                  onShowInterest: () {},
-                  onViewDetails: () {
-                    Navigator.pushNamed(context, AppRoutes.tripDetails);
-                  },
-                ),
-              ),
-              const SizedBox(width: SpottSpacing.md),
-              AnimatedEntrance(
-                delay: 1,
-                child: SpottAppliCard(
-                  route: 'Pune → Bangalore',
-                  price: '₹1,400',
-                  trustScore: 96,
-                  travelerName: 'Sneha Patil',
-                  travelerAvatarUrl:
-                      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150',
-                  tripsCompleted: 286,
-                  responseRate: '99%',
-                  vehicleInfo: 'Honda City (AC)',
-                  seatsLeft: '2 seats left',
-                  travelersCount: '8 travelers today',
-                  savings: '₹1,400 saving',
-                  imageBannerUrl:
-                      'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&q=80&w=600',
-                  onShowInterest: () {},
-                  onViewDetails: () {
-                    Navigator.pushNamed(context, AppRoutes.tripDetails);
-                  },
-                ),
-              ),
-            ],
           ),
-        ),
-      ],
-    );
-  }
 
-  // ════════════════════════════════════════════════════════════════════
-  // SCENE 4: Popular Routes — Route Visualization Cards
-  // ════════════════════════════════════════════════════════════════════
-  Widget _buildPopularRoutes() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Popular Shared Routes', style: SpottTextStyles.headline),
-        const SizedBox(height: SpottSpacing.md),
-        SizedBox(
-          height: 185,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            children: [
-              AnimatedEntrance(
-                delay: 0,
-                child: _RouteVisualizationCard(
-                  origin: 'Pune',
-                  destination: 'Kolhapur',
-                  travelers: '34 travelers',
-                  savings: 'Save ₹350',
-                ),
-              ),
-              const SizedBox(width: SpottSpacing.md),
-              AnimatedEntrance(
-                delay: 1,
-                child: _RouteVisualizationCard(
-                  origin: 'Mumbai',
-                  destination: 'Nashik',
-                  travelers: '18 travelers',
-                  savings: 'Save ₹280',
-                ),
-              ),
-              const SizedBox(width: SpottSpacing.md),
-              AnimatedEntrance(
-                delay: 2,
-                child: _RouteVisualizationCard(
-                  origin: 'Pune',
-                  destination: 'Goa',
-                  travelers: '22 travelers',
-                  savings: 'Save ₹500',
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ════════════════════════════════════════════════════════════════════
-  // SCENE 5: Nearby Travelers — Premium Profile Cards
-  // ════════════════════════════════════════════════════════════════════
-  Widget _buildNearbyTravelers(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Nearby Verified Travelers',
-          style: SpottTextStyles.headline,
-        ),
-        const SizedBox(height: SpottSpacing.md),
-        SizedBox(
-          height: 290,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            children: [
-              AnimatedEntrance(
-                delay: 0,
-                child: _NearbyProfileCard(
-                  name: 'Vikram Joshi',
-                  avatarUrl:
-                      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150',
-                  rating: '4.9',
-                  vehicle: 'Skoda Slavia',
-                  responseRate: '96%',
-                  status: 'Heading to Kolhapur at 5 PM',
-                  govVerified: true,
-                  carVerified: true,
-                ),
-              ),
-              const SizedBox(width: SpottSpacing.md),
-              AnimatedEntrance(
-                delay: 1,
-                child: _NearbyProfileCard(
-                  name: 'Meera Rao',
-                  avatarUrl:
-                      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150',
-                  rating: '4.8',
-                  vehicle: 'Suzuki Swift',
-                  responseRate: '98%',
-                  status: 'Heading to Mumbai at 7:30 PM',
-                  govVerified: true,
-                  carVerified: true,
-                ),
-              ),
-              const SizedBox(width: SpottSpacing.md),
-              AnimatedEntrance(
-                delay: 2,
-                child: _NearbyProfileCard(
-                  name: 'Arjun Sharma',
-                  avatarUrl:
-                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
-                  rating: '4.9',
-                  vehicle: 'Hyundai i20',
-                  responseRate: '98%',
-                  status: 'Heading to Bangalore at 6 AM',
-                  govVerified: true,
-                  carVerified: false,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ════════════════════════════════════════════════════════════════════
-  // SCENE 6: Parcel Banner — Ad Campaign Style
-  // ════════════════════════════════════════════════════════════════════
-  Widget _buildParcelBanner(BuildContext context) {
-    return ShimmerSweep(
-      child: Container(
-        padding: const EdgeInsets.all(SpottSpacing.lg),
-        decoration: BoxDecoration(
-          gradient: SpottGradients.parcelBanner,
-          borderRadius: BorderRadius.circular(SpottRadius.banner),
-        ),
-        child: Stack(
-          children: [
-            // Parcel route decoration
-            Positioned.fill(
-              child: CustomPaint(painter: ParcelRoutePainter()),
-            ),
-            // Package icon silhouette
-            Positioned(
-              right: -10,
-              bottom: -10,
-              child: Icon(
-                Icons.inventory_2_rounded,
-                size: 100,
-                color: Colors.white.withValues(alpha: 0.1),
-              ),
-            ),
-            // Content
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               children: [
+                // FROM / TO box
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: RBColors.divider),
+                    borderRadius: BorderRadius.circular(RBRadius.lg),
                   ),
-                  child: Text(
-                    'PARCEL DELIVERY',
-                    style: SpottTextStyles.overline.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      letterSpacing: 1.5,
-                    ),
+                  child: Column(
+                    children: [
+                      _CityRow(
+                        icon: Icons.radio_button_checked_rounded,
+                        iconColor: RBColors.green,
+                        label: 'From',
+                        city: _from,
+                        onTap: () => _showCityPicker(context, isFrom: true),
+                      ),
+                      // Divider + swap button
+                      Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          const Divider(height: 1, color: RBColors.divider),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 14),
+                            child: GestureDetector(
+                                onTap: _swapCities,
+                                child: Container(
+                                  width: 34,
+                                  height: 34,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        color: RBColors.primary, width: 1.5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: RBColors.primary
+                                            .withValues(alpha: 0.15),
+                                        blurRadius: 8,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.swap_vert_rounded,
+                                    color: RBColors.primary,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
+                          ),
+                        ],
+                      ),
+                      _CityRow(
+                        icon: Icons.location_on_rounded,
+                        iconColor: RBColors.primary,
+                        label: 'To',
+                        city: _to,
+                        onTap: () => _showCityPicker(context, isFrom: false),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: SpottSpacing.md),
-                Text(
-                  'Send Parcels from ₹99',
-                  style: SpottTextStyles.title.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Fast peer-to-peer dispatch via verified travelers.',
-                  style: SpottTextStyles.body.copyWith(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: SpottSpacing.md),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.parcelBooking);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFFB45309),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
+
+                const SizedBox(height: 12),
+
+                // Date + Passengers
+                Row(
+                  children: [
+                    Expanded(
+                      child: _InputBox(
+                        icon: Icons.calendar_today_rounded,
+                        label: 'Date',
+                        value: _formattedDate,
+                        onTap: _pickDate,
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(SpottRadius.button),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _InputBox(
+                        icon: Icons.person_outline_rounded,
+                        label: 'Passengers',
+                        value: '$_passengers Seat${_passengers > 1 ? 's' : ''}',
+                        onTap: () {
+                          setState(() {
+                            _passengers = _passengers >= 4 ? 1 : _passengers + 1;
+                          });
+                        },
+                      ),
                     ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Send Parcel Now',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ],
+                ),
+
+                const SizedBox(height: 14),
+
+                // Search button
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.pushNamed(context, AppRoutes.tripSearch);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: RBColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(RBRadius.lg),
+                      ),
+                    ),
+                    child: const Text(
+                      'SEARCH RIDES',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  // ════════════════════════════════════════════════════════════════════
-  // SCENE 7: Become Traveler — Emotional + Diagonal Split
-  // ════════════════════════════════════════════════════════════════════
-  Widget _buildTravelerBanner(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(SpottSpacing.lg),
-      decoration: BoxDecoration(
-        gradient: SpottGradients.travelerBanner,
-        borderRadius: BorderRadius.circular(SpottRadius.banner),
-      ),
-      child: Stack(
-        children: [
-          // Diagonal split decoration
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(SpottRadius.banner),
-              child: ClipPath(
-                clipper: DiagonalSplitClipper(),
-                child: Container(
-                  color: Colors.white.withValues(alpha: 0.06),
+  // ══════════════════════════════════════════════════════════════════
+  // OFFERS SECTION
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildOffersSection() {
+    return RBCarouselSection(
+      title: 'Offers & Deals',
+      subtitle: 'Get best deals and discounts',
+      items: [
+        _OfferCard(
+          color: const Color(0xFFE53935),
+          title: 'Flat 20% OFF',
+          subtitle: 'Use code: SPOTT20',
+          icon: Icons.local_offer_rounded,
+        ),
+        _OfferCard(
+          color: const Color(0xFF1976D2),
+          title: 'First Ride Free',
+          subtitle: 'New users only',
+          icon: Icons.card_giftcard_rounded,
+        ),
+        _OfferCard(
+          color: const Color(0xFF388E3C),
+          title: 'Refer & Earn',
+          subtitle: '₹100 per referral',
+          icon: Icons.share_rounded,
+        ),
+      ],
+      itemHeight: 110,
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // POPULAR ROUTES
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildPopularRoutesSection(BuildContext context) {
+    const routes = [
+      ('Pune', 'Mumbai', '₹450', '3h'),
+      ('Mumbai', 'Pune', '₹450', '3h'),
+      ('Pune', 'Nashik', '₹380', '4h'),
+      ('Pune', 'Goa', '₹1200', '9h'),
+      ('Mumbai', 'Surat', '₹600', '5h'),
+    ];
+
+    return RBCarouselSection(
+      title: 'Popular Routes',
+      subtitle: 'Top traveled routes near you',
+      itemHeight: 76,
+      items: routes.map((r) {
+        return GestureDetector(
+          onTap: () => Navigator.pushNamed(context, AppRoutes.tripSearch),
+          child: Container(
+            width: 160,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(RBRadius.lg),
+              border: Border.all(color: RBColors.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Text(r.$1,
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: RBColors.textDark)),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Icon(Icons.arrow_forward_rounded,
+                          size: 11, color: RBColors.textLight),
+                    ),
+                    Text(r.$2,
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: RBColors.textDark)),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    Text(r.$3,
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: RBColors.primary)),
+                    const Text(' · ',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: RBColors.textLight)),
+                    Text(r.$4,
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 11,
+                            color: RBColors.textLight)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // SUGGESTIONS GRID (named Suggestions for tests compatibility)
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildSuggestionsGrid(BuildContext context) {
+    final services = [
+      (Icons.directions_car_rounded, 'Ride Share',
+          RBColors.primary, AppRoutes.tripSearch),
+      (Icons.inventory_2_rounded, 'Send Parcel',
+          const Color(0xFF7B1FA2), AppRoutes.parcelBooking),
+      (Icons.add_road_rounded, 'Offer Trip',
+          const Color(0xFF1565C0), AppRoutes.createTrip),
+      (Icons.route_rounded, 'Activity',
+          const Color(0xFF2E7D32), AppRoutes.activity),
+      (Icons.safety_check_rounded, 'Safety',
+          const Color(0xFFF57C00), AppRoutes.safetyToolkit),
+      (Icons.support_agent_rounded, 'Support',
+          const Color(0xFF00838F), AppRoutes.support),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const RBSectionHeader(
+          title: 'Suggestions',
+          subtitle: 'Quick actions and co-travel services',
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 1.05,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+          ),
+          itemCount: services.length,
+          itemBuilder: (context, i) {
+            final s = services[i];
+            return GestureDetector(
+              onTap: () => Navigator.pushNamed(context, s.$4),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(RBRadius.lg),
+                  border: Border.all(color: RBColors.divider),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: s.$3.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(s.$1, color: s.$3, size: 21),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      s.$2,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: RBColors.textDark,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
-          // Car silhouette
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // PARCEL BANNER
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildParcelBanner(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.parcelBooking),
+      child: Stack(
+        children: [
           Positioned(
-            right: 16,
-            bottom: 8,
+            right: -10,
+            bottom: -10,
             child: Icon(
-              Icons.directions_car_rounded,
-              size: 80,
-              color: Colors.white.withValues(alpha: 0.1),
+              Icons.inventory_2_rounded,
+              size: 90,
+              color: const Color(0xFF6A1B9A).withValues(alpha: 0.08),
             ),
           ),
-          // Content
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Recover Fuel Costs',
-                style: SpottTextStyles.title.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6A1B9A).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'PARCEL DELIVERY',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF6A1B9A),
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Send Parcels from ₹99',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: RBColors.textDark,
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                'Drivers earn ₹800 avg per trip. Offer seats or deliver parcels.',
-                style: SpottTextStyles.body.copyWith(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 13,
+              const Text(
+                'Fast peer-to-peer dispatch via verified travelers.',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  color: RBColors.textMedium,
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.createTrip);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF4338CA),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(SpottRadius.button),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Offer a Ride',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, AppRoutes.parcelBooking),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6A1B9A),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 18, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '₹800/trip',
-                        style: SpottTextStyles.label.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'avg earning',
-                        style: SpottTextStyles.caption.copyWith(
-                          color: Colors.white.withValues(alpha: 0.6),
-                        ),
-                      ),
-                    ],
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Send Parcel Now',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
                   ),
-                ],
+                ),
               ),
             ],
           ),
@@ -873,102 +767,187 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ════════════════════════════════════════════════════════════════════
-  // SCENE 8: Safety Center — Trust Module
-  // ════════════════════════════════════════════════════════════════════
-  Widget _buildSafetyCenter(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(SpottSpacing.lg),
-      decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(SpottRadius.primaryCard),
-        border: Border.all(color: SpottColors.border),
-      ),
-      child: Stack(
+  // ══════════════════════════════════════════════════════════════════
+  // BECOME A TRAVELER BANNER
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildTravelerBanner(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.createTrip),
+      child: Row(
         children: [
-          // Shield watermark
-          Positioned(
-            right: -20,
-            top: -20,
-            child: ShieldWatermark(size: 160, opacity: 0.04),
-          ),
-          // Content
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      color: SpottColors.successSoft,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.shield_rounded,
-                      color: SpottColors.success,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: SpottSpacing.md),
-                  const Text(
-                    'Safety & Trust Center',
-                    style: SpottTextStyles.title,
-                  ),
-                ],
-              ),
-              const SizedBox(height: SpottSpacing.lg),
-              _buildTrustItem('Verified IDs for all travelers', 0),
-              _buildTrustItem('Live GPS coordinate sharing', 1),
-              _buildTrustItem('Emergency SOS with 1-tap', 2),
-              _buildTrustItem('Community-protected network', 3),
-              const SizedBox(height: SpottSpacing.lg),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.safetyToolkit);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: SpottColors.textPrimary,
-                    side: const BorderSide(color: SpottColors.border),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(SpottRadius.button),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: Text(
-                    'Learn More',
-                    style: SpottTextStyles.label.copyWith(fontSize: 13),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Become a Traveler',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF0D47A1),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                const Text(
+                  'Earn ₹800 avg per trip. Offer empty seats.',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: RBColors.textMedium,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () =>
+                      Navigator.pushNamed(context, AppRoutes.createTrip),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D47A1),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 9),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Start Earning',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.directions_car_rounded,
+            size: 70,
+            color: Colors.blueGrey,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTrustItem(String label, int index) {
-    return AnimatedEntrance(
-      delay: index,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.check_circle_rounded,
-              color: SpottColors.success,
-              size: 18,
+  // ══════════════════════════════════════════════════════════════════
+  // WHY SPOTTER SECTION
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildWhySpotterSection() {
+    return RBSectionContainer(
+      style: RBSectionStyle.floating,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Why choose Spotter?',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: RBColors.textDark,
             ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: SpottTextStyles.body.copyWith(
-                color: SpottColors.textPrimary,
+          ),
+          const SizedBox(height: 12),
+          const _WhyRow(
+              icon: Icons.verified_user_rounded,
+              title: 'Verified Travelers',
+              subtitle: 'Every driver is ID & vehicle verified'),
+          const _WhyRow(
+              icon: Icons.savings_rounded,
+              title: 'Save upto 60%',
+              subtitle: 'Vs solo cab or bus'),
+          const _WhyRow(
+              icon: Icons.bolt_rounded,
+              title: 'Instant Booking',
+              subtitle: 'Confirm in seconds'),
+          const _WhyRow(
+              icon: Icons.headset_mic_rounded,
+              title: '24/7 Support',
+              subtitle: 'Help when you need it'),
+        ],
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // CITY PICKER BOTTOM SHEET
+  // ══════════════════════════════════════════════════════════════════
+  void _showCityPicker(BuildContext context, {required bool isFrom}) {
+    const cities = [
+      'Pune', 'Mumbai', 'Nashik', 'Aurangabad', 'Kolhapur',
+      'Nagpur', 'Solapur', 'Goa', 'Bangalore', 'Hyderabad',
+      'Delhi', 'Ahmedabad', 'Surat', 'Chennai', 'Jaipur',
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        height: MediaQuery.of(context).size.height * 0.65,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: RBColors.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Text(
+                isFrom ? 'Select Origin City' : 'Select Destination City',
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: RBColors.textDark,
+                ),
+              ),
+            ),
+            const Divider(height: 1, color: RBColors.divider),
+            Expanded(
+              child: ListView.separated(
+                itemCount: cities.length,
+                separatorBuilder: (_, __) => const Divider(
+                  height: 1,
+                  indent: 14,
+                  color: RBColors.divider,
+                ),
+                itemBuilder: (_, i) => ListTile(
+                  leading: const Icon(Icons.location_city_rounded,
+                      color: RBColors.textLight, size: 20),
+                  title: Text(
+                    cities[i],
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: RBColors.textDark,
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      if (isFrom) {
+                        _from = cities[i];
+                      } else {
+                        _to = cities[i];
+                      }
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
               ),
             ),
           ],
@@ -978,74 +957,59 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// BENTO SCENE CARD — Each card has its own visual personality
-// ══════════════════════════════════════════════════════════════════════
-class _BentoSceneCard extends StatelessWidget {
-  final String title;
-  final String stat;
+// ════════════════════════════════════════════════════════════════════
+// PRIVATE HELPER WIDGETS
+// ════════════════════════════════════════════════════════════════════
+
+class _ModeTab extends StatelessWidget {
+  final String label;
   final IconData icon;
-  final IconData decorationIcon;
-  final LinearGradient gradient;
+  final bool isActive;
+  final bool isFirst;
+  final bool isLast;
   final VoidCallback onTap;
 
-  const _BentoSceneCard({
-    required this.title,
-    required this.stat,
+  const _ModeTab({
+    required this.label,
     required this.icon,
-    required this.decorationIcon,
-    required this.gradient,
+    required this.isActive,
+    required this.isFirst,
+    this.isLast = false,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 120,
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(SpottRadius.primaryCard),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(SpottRadius.primaryCard),
-          child: Stack(
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isActive ? RBColors.primary : Colors.transparent,
+            borderRadius: BorderRadius.only(
+              topLeft: isFirst
+                  ? const Radius.circular(RBRadius.xl)
+                  : Radius.zero,
+              topRight: isLast
+                  ? const Radius.circular(RBRadius.xl)
+                  : Radius.zero,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Decorative silhouette (bottom-right, huge, very low opacity)
-              Positioned(
-                right: -10,
-                bottom: -10,
-                child: Icon(
-                  decorationIcon,
-                  size: 80,
-                  color: Colors.white.withValues(alpha: 0.08),
-                ),
-              ),
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(SpottSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(icon, color: Colors.white, size: 24),
-                    const Spacer(),
-                    Text(
-                      title,
-                      style: SpottTextStyles.titleSmall.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      stat,
-                      style: SpottTextStyles.caption.copyWith(
-                        color: Colors.white.withValues(alpha: 0.7),
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
+              Icon(icon,
+                  size: 14,
+                  color: isActive ? Colors.white : RBColors.textMedium),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: isActive ? Colors.white : RBColors.textMedium,
                 ),
               ),
             ],
@@ -1056,108 +1020,114 @@ class _BentoSceneCard extends StatelessWidget {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// ROUTE VISUALIZATION CARD — Route with ○ → ● visualization
-// ══════════════════════════════════════════════════════════════════════
-class _RouteVisualizationCard extends StatelessWidget {
-  final String origin;
-  final String destination;
-  final String travelers;
-  final String savings;
+class _CityRow extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String city;
+  final VoidCallback onTap;
 
-  const _RouteVisualizationCard({
-    required this.origin,
-    required this.destination,
-    required this.travelers,
-    required this.savings,
+  const _CityRow({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.city,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      height: 185,
-      decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(SpottRadius.primaryCard),
-        border: Border.all(color: SpottColors.border),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(SpottRadius.primaryCard),
-        child: Stack(
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
           children: [
-            // Highway texture
-            Positioned.fill(
-              child: CustomPaint(painter: HighwayLinePainter()),
-            ),
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(SpottSpacing.md),
+            Icon(icon, color: iconColor, size: 19),
+            const SizedBox(width: 12),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    origin,
-                    style: SpottTextStyles.titleSmall.copyWith(
-                      fontWeight: FontWeight.bold,
+                    label,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      color: RBColors.textLight,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  // Route visualization
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: SpottColors.accentPurple,
-                          ),
-                        ),
-                        Container(
-                          width: 2,
-                          height: 28,
-                          color: SpottColors.border,
-                        ),
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: SpottColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 2),
                   Text(
-                    destination,
-                    style: SpottTextStyles.titleSmall.copyWith(
-                      fontWeight: FontWeight.bold,
+                    city,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: RBColors.textDark,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        travelers,
-                        style: SpottTextStyles.caption.copyWith(
-                          fontSize: 11,
-                        ),
-                      ),
-                      Text(
-                        savings,
-                        style: SpottTextStyles.caption.copyWith(
-                          color: SpottColors.success,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
+                ],
+              ),
+            ),
+            const Icon(Icons.keyboard_arrow_down_rounded,
+                color: RBColors.textLight, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InputBox extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  const _InputBox({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(RBRadius.lg),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        decoration: BoxDecoration(
+          border: Border.all(color: RBColors.divider),
+          borderRadius: BorderRadius.circular(RBRadius.lg),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: RBColors.primary, size: 16),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                      style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 10,
+                          color: RBColors.textLight)),
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: RBColors.textDark,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -1169,199 +1139,113 @@ class _RouteVisualizationCard extends StatelessWidget {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════
-// NEARBY PROFILE CARD — Premium traveler profile with green glow avatar
-// ══════════════════════════════════════════════════════════════════════
-class _NearbyProfileCard extends StatelessWidget {
-  final String name;
-  final String avatarUrl;
-  final String rating;
-  final String vehicle;
-  final String responseRate;
-  final String status;
-  final bool govVerified;
-  final bool carVerified;
+class _OfferCard extends StatelessWidget {
+  final Color color;
+  final String title;
+  final String subtitle;
+  final IconData icon;
 
-  const _NearbyProfileCard({
-    required this.name,
-    required this.avatarUrl,
-    required this.rating,
-    required this.vehicle,
-    required this.responseRate,
-    required this.status,
-    required this.govVerified,
-    required this.carVerified,
+  const _OfferCard({
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 220,
-      padding: const EdgeInsets.all(SpottSpacing.md),
+      width: 165,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(SpottRadius.primaryCard),
-        border: Border.all(color: SpottColors.border),
+        gradient: LinearGradient(
+          colors: [color, color.withValues(alpha: 0.75)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(RBRadius.lg),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Avatar row with rating
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Icon(icon, color: Colors.white.withValues(alpha: 0.9), size: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Avatar with green glow ring
-              Container(
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x3310B981),
-                      blurRadius: 12,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: SpottAvatar(
-                  imageUrl: avatarUrl,
-                  radius: 24,
-                  isVerified: true,
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
                 ),
               ),
-              // Rating badge
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: SpottColors.warningSoft,
-                  borderRadius: BorderRadius.circular(SpottRadius.xs),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.star_rounded,
-                      size: 12,
-                      color: SpottColors.warning,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      rating,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: SpottColors.warning,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 10,
+                  color: Colors.white.withValues(alpha: 0.85),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            name,
-            style: SpottTextStyles.titleSmall.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            vehicle,
-            style: SpottTextStyles.caption.copyWith(
-              color: SpottColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          // Verification badges
-          Row(
-            children: [
-              if (govVerified) _buildVerifyChip('Govt ✓'),
-              if (govVerified && carVerified) const SizedBox(width: 6),
-              if (carVerified) _buildVerifyChip('Car ✓'),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '$responseRate Response',
-            style: SpottTextStyles.caption.copyWith(
-              color: SpottColors.success,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 6),
-          // Status
-          Row(
-            children: [
-              Container(
-                width: 6,
-                height: 6,
-                decoration: const BoxDecoration(
-                  color: SpottColors.accentPurple,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  status,
-                  style: SpottTextStyles.caption.copyWith(
-                    color: SpottColors.accentPurple,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 10,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          // Ghost button
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                foregroundColor: SpottColors.textPrimary,
-                side: const BorderSide(color: SpottColors.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(SpottRadius.button),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-              ),
-              child: Text(
-                'View Profile',
-                style: SpottTextStyles.label.copyWith(fontSize: 12),
-              ),
-            ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildVerifyChip(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: SpottColors.successSoft,
-        borderRadius: BorderRadius.circular(SpottRadius.xs),
-        border: Border.all(
-          color: SpottColors.success.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-          color: SpottColors.success,
-          fontFamily: 'Inter',
-        ),
+class _WhyRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _WhyRow(
+      {required this.icon, required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: RBColors.primary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: RBColors.primary, size: 17),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: RBColors.textDark)),
+                Text(subtitle,
+                    style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11,
+                        color: RBColors.textLight)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

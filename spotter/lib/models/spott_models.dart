@@ -1,7 +1,7 @@
-/// Spott MVP domain models – aligned with DATABASE_SCHEMA.md.
-///
-/// These models are additive; the legacy [ride_models.dart] classes remain
-/// available for screens that have not yet migrated.
+// Spott MVP domain models – aligned with DATABASE_SCHEMA.md.
+//
+// These models are additive; the legacy [ride_models.dart] classes remain
+// available for screens that have not yet migrated.
 
 // ---------------------------------------------------------------------------
 // Enums

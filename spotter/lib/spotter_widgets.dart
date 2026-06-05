@@ -135,14 +135,23 @@ class SpotterScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 22),
                   Expanded(
-                    child: ListView(
-                      padding: EdgeInsets.only(
-                        bottom: 12 + MediaQuery.viewPaddingOf(context).bottom,
-                      ),
-                      children: [
-                        ...content,
-                        if (bottom != null) const SizedBox(height: 20),
-                        if (bottom != null) bottom,
+                    child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      slivers: [
+                        SliverPadding(
+                          padding: EdgeInsets.only(
+                            bottom: 12 + MediaQuery.viewPaddingOf(context).bottom,
+                          ),
+                          sliver: SliverList(
+                            delegate: SliverChildListDelegate([
+                              ...content,
+                              if (bottom != null) ...[
+                                const SizedBox(height: 20),
+                                bottom,
+                              ],
+                            ]),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -170,11 +179,11 @@ class _SpottIconButton extends StatelessWidget {
       child: Material(
         color: Helper.cardBg(context),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: Helper.line(context)),
         ),
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           onTap: onPressed,
           child: Icon(icon, color: Helper.inkColor(context), size: 21),
         ),
@@ -217,7 +226,7 @@ class SpotterCard extends StatelessWidget {
       resolvedColor = color;
     }
 
-    final borderRadius = BorderRadius.circular(16);
+    final borderRadius = BorderRadius.circular(20); // 20px card corner radius
 
     Widget cardContent;
 
@@ -226,13 +235,13 @@ class SpotterCard extends StatelessWidget {
       padding: padding,
       decoration: BoxDecoration(
         color: resolvedColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: borderRadius,
         border: Border.all(color: Helper.line(context), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
         ],
       ),

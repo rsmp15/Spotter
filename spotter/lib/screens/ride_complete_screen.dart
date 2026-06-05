@@ -20,7 +20,7 @@ class RideCompleteScreen extends StatelessWidget {
           child: CircleAvatar(
             radius: 84,
             backgroundColor: Helper.canvasSoft,
-            child: const Text(
+            child: Text(
               'DONE',
               style: TextStyle(
                 color: Helper.ink,

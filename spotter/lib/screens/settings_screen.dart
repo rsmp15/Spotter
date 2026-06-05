@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../app/app_routes.dart';
+
 import '../controllers/ride_controller.dart';
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
-import '../core/components/spott_buttons.dart';
+
 import '../core/theme/colors.dart';
 import '../core/theme/spacing.dart';
 import '../core/theme/typography.dart';
@@ -138,7 +138,7 @@ class SettingsScreen extends StatelessWidget {
                     onChanged: (val) {
                       ride.toggleDarkMode();
                     },
-                    activeColor: SpottColors.primary,
+                    activeThumbColor: SpottColors.primary,
                     activeTrackColor: SpottColors.primarySoft,
                     inactiveThumbColor: SpottColors.textSecondary,
                     inactiveTrackColor: SpottColors.surface3,

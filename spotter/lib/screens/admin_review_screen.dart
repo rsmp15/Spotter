@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../helper.dart';
+
 import '../spotter_widgets.dart';
 
 class AdminReviewScreen extends StatelessWidget {
@@ -20,7 +20,7 @@ class AdminReviewScreen extends StatelessWidget {
             InfoRow(label: 'High risk routes', value: '4'),
           ],
         ),
-        const SpotterCard(
+        SpotterCard(
           children: [
             StatusChip(label: 'Needs action'),
             SizedBox(height: 12),

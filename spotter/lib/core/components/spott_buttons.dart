@@ -118,7 +118,7 @@ class _SpottButtonState extends State<SpottButton>
         width: widget.isFullWidth ? double.infinity : null,
         height: _height,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(SpottRadius.pill),
+          borderRadius: BorderRadius.circular(SpottRadius.button),
           gradient: _gradient,
           boxShadow: isDisabled ? null : _shadow,
         ),
@@ -129,7 +129,7 @@ class _SpottButtonState extends State<SpottButton>
               HapticFeedback.lightImpact();
               widget.onPressed?.call();
             },
-            borderRadius: BorderRadius.circular(SpottRadius.pill),
+            borderRadius: BorderRadius.circular(SpottRadius.button),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: widget.isFullWidth ? 0 : SpottSpacing.xl),
               child: Center(
@@ -198,7 +198,7 @@ class _SpottButtonState extends State<SpottButton>
     return GlassContainer(
       height: _height,
       width: widget.isFullWidth ? double.infinity : null,
-      borderRadius: SpottRadius.pill,
+      borderRadius: SpottRadius.button,
       hasBorder: true,
       child: Material(
         color: Colors.transparent,
@@ -207,7 +207,7 @@ class _SpottButtonState extends State<SpottButton>
             HapticFeedback.lightImpact();
             widget.onPressed?.call();
           },
-          borderRadius: BorderRadius.circular(SpottRadius.pill),
+          borderRadius: BorderRadius.circular(SpottRadius.button),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: widget.isFullWidth ? 0 : SpottSpacing.xl),
             child: Center(
@@ -224,12 +224,16 @@ class _SpottButtonState extends State<SpottButton>
     final double fontSize =
         widget.size == SpottButtonSize.small ? 14.0 : 16.0;
 
+    final Color contentColor = widget.variant == SpottButtonVariant.ghost
+        ? SpottColors.textPrimary
+        : Colors.white;
+
     if (widget.isLoading) {
       return SizedBox(
         width: 24,
         height: 24,
         child: CircularProgressIndicator(
-          color: SpottColors.textPrimary,
+          color: contentColor,
           strokeWidth: 2.5,
           strokeCap: StrokeCap.round,
         ),
@@ -247,7 +251,7 @@ class _SpottButtonState extends State<SpottButton>
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.w700,
-              color: SpottColors.textPrimary,
+              color: contentColor,
               fontFamily: 'Inter',
             ),
           ),
@@ -260,7 +264,7 @@ class _SpottButtonState extends State<SpottButton>
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: FontWeight.w700,
-        color: SpottColors.textPrimary,
+        color: contentColor,
         fontFamily: 'Inter',
       ),
     );

@@ -1,11 +1,158 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import '../app/app_routes.dart';
-import '../spotter_widgets.dart';
-import '../core/theme/colors.dart';
-import '../core/components/marketplace_card.dart';
+void main() {
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+  );
+  runApp(const PremiumActivityApp());
+}
 
-enum _ActivityFilter { all, trips, parcels, parking }
+class PremiumActivityApp extends StatelessWidget {
+  const PremiumActivityApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Activity Dashboard',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        scaffoldBackgroundColor: AppColors.background,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          surface: AppColors.surface,
+          primary: AppColors.primary,
+        ),
+        fontFamily: 'Roboto', // Default flutter font, but styled to look premium
+      ),
+      home: const ActivityScreen(),
+    );
+  }
+}
+
+class AppColors {
+  // RedBus inspired primary - a sophisticated crimson/red
+  static const Color primary = Color(0xFFD84E55);
+  static const Color primarySoft = Color(0xFFFCEAEB);
+  
+  static const Color background = Color(0xFFF4F5F7);
+  static const Color surface = Colors.white;
+  static const Color surfaceElevated = Color(0xFFFAFAFA);
+  
+  static const Color textPrimary = Color(0xFF1A1D21);
+  static const Color textSecondary = Color(0xFF6B7280);
+  static const Color textMuted = Color(0xFF9CA3AF);
+  
+  static const Color border = Color(0xFFE5E7EB);
+  static const Color divider = Color(0xFFF3F4F6);
+  
+  // Status Colors
+  static const Color success = Color(0xFF10B981);
+  static const Color successSoft = Color(0xFFD1FAE5);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color warningSoft = Color(0xFFFEF3C7);
+  static const Color info = Color(0xFF3B82F6);
+  static const Color infoSoft = Color(0xFFDBEAFE);
+  
+  // Service Accents
+  static const Color tripsAccent = primary;
+  static const Color parcelsAccent = Color(0xFF8B5CF6);
+  static const Color parkingAccent = warning;
+}
+
+class AppRadius {
+  static const double card = 16.0;
+  static const double button = 12.0;
+  static const double badge = 8.0;
+}
+
+enum ActivityFilter { all, trips, parcels, parking }
+enum ActivityStatus { completed, upcoming, cancelled, inTransit }
+
+class ActivityItem {
+  final ActivityFilter type;
+  final String title;
+  final String id; // PNR or Tracking ID
+  final String startLocation;
+  final String endLocation;
+  final DateTime date;
+  final double amount;
+  final ActivityStatus status;
+  final String? driverName;
+  final String? vehicleInfo;
+
+  ActivityItem({
+    required this.type,
+    required this.title,
+    required this.id,
+    required this.startLocation,
+    required this.endLocation,
+    required this.date,
+    required this.amount,
+    required this.status,
+    this.driverName,
+    this.vehicleInfo,
+  });
+}
+
+final List<ActivityItem> _mockActivities = [
+  ActivityItem(
+    type: ActivityFilter.trips,
+    title: 'Spott Prime Sedan',
+    id: 'PNR: 884X29',
+    startLocation: 'Koregaon Park, Pune',
+    endLocation: 'Pune International Airport',
+    date: DateTime.now().subtract(const Duration(hours: 2)),
+    amount: 340.00,
+    status: ActivityStatus.completed,
+    driverName: 'Arjun Sharma',
+    vehicleInfo: 'MH 12 AB 1234',
+  ),
+  ActivityItem(
+    type: ActivityFilter.parcels,
+    title: 'Express Delivery',
+    id: 'TRK: SPT94832',
+    startLocation: 'Office (WTC)',
+    endLocation: 'Home (Kalyani Nagar)',
+    date: DateTime.now().subtract(const Duration(days: 1)),
+    amount: 92.50,
+    status: ActivityStatus.completed,
+    driverName: 'Rahul Patil',
+  ),
+  ActivityItem(
+    type: ActivityFilter.trips,
+    title: 'Spott Intercity Bus',
+    id: 'PNR: B55901',
+    startLocation: 'Swargate, Pune',
+    endLocation: 'Dadar, Mumbai',
+    date: DateTime.now().add(const Duration(days: 2)),
+    amount: 850.00,
+    status: ActivityStatus.upcoming,
+    vehicleInfo: 'Volvo Multi-Axle',
+  ),
+  ActivityItem(
+    type: ActivityFilter.parking,
+    title: 'Downtown Secure Parking',
+    id: 'TKT: PKG-221',
+    startLocation: 'Phoenix Mall Level 2',
+    endLocation: '3 Hours Duration',
+    date: DateTime.now().subtract(const Duration(days: 3)),
+    amount: 120.00,
+    status: ActivityStatus.completed,
+  ),
+  ActivityItem(
+    type: ActivityFilter.trips,
+    title: 'Spott Moto',
+    id: 'PNR: 112M8',
+    startLocation: 'Viman Nagar',
+    endLocation: 'Magarpatta City',
+    date: DateTime.now().subtract(const Duration(days: 5)),
+    amount: 85.00,
+    status: ActivityStatus.cancelled,
+    driverName: 'Karan Singh',
+  ),
+];
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
@@ -15,478 +162,514 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  _ActivityFilter _filter = _ActivityFilter.all;
-
-  static const _items = [
-    _ActivityItem(
-      type: _ActivityFilter.trips,
-      icon: Icons.directions_car_rounded,
-      title: 'Ride to Airport',
-      subtitle: 'Spott Prime',
-      driver: 'Arjun Sharma',
-      time: 'Yesterday • 8:45 AM',
-      amount: '₹340',
-      status: 'Completed',
-      dateGroup: 'TODAY',
-    ),
-    _ActivityItem(
-      type: _ActivityFilter.parcels,
-      icon: Icons.inventory_2_rounded,
-      title: 'Package Delivered',
-      subtitle: 'Tracking #SPT9483',
-      driver: 'Rahul Patil',
-      time: '2 hrs ago',
-      amount: '₹92',
-      status: 'Delivered',
-      dateGroup: 'TODAY',
-    ),
-    _ActivityItem(
-      type: _ActivityFilter.parking,
-      icon: Icons.local_parking_rounded,
-      title: 'Parking Session',
-      subtitle: '2h 15m Meter',
-      time: 'Today • 2:30 PM',
-      amount: '₹80',
-      status: 'Completed',
-      dateGroup: 'TODAY',
-    ),
-  ];
+  ActivityFilter _currentFilter = ActivityFilter.all;
 
   @override
   Widget build(BuildContext context) {
-    final visibleItems = _items
-        .where((item) => _filter == _ActivityFilter.all || item.type == _filter)
-        .toList();
+    final filteredItems = _mockActivities.where((item) {
+      if (_currentFilter == ActivityFilter.all) return true;
+      return item.type == _currentFilter;
+    }).toList();
 
-    return SpotterScreen(
-      title: 'Your activity',
-      subtitle: '18 Trips • ₹314 Saved This Month',
-      showBack: false,
-      showMenu: true,
-      content: [
-        // 1. Hero Summary Section
-        _buildHeroSummaryCard(),
-        const SizedBox(height: 24),
-
-        // 2. Statistics Bento Grid
-        _buildBentoGrid(),
-        const SizedBox(height: 24),
-
-        // 3. Better Filter Chips
-        _buildFilters(),
-        const SizedBox(height: 24),
-
-        // 4. Recent Activity List
-        if (visibleItems.isNotEmpty) ...[
-          const Text(
-            'Recent Activity',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: SpottColors.textPrimary,
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
+        slivers: [
+          _buildSliverAppBar(),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 24),
+                  _buildBentoStats(),
+                  const SizedBox(height: 32),
+                  _buildActionCards(),
+                  const SizedBox(height: 32),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: visibleItems.length,
-            itemBuilder: (context, index) {
-              final item = visibleItems[index];
-              final isLast = index == visibleItems.length - 1;
-              return IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Timeline Line Column
-                    Column(
-                      children: [
-                        const SizedBox(
-                          height: 30,
-                        ), // Align with first line of card text
-                        Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: _getAccentColor(item.type),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        Expanded(
-                          child: isLast
-                              ? const SizedBox.shrink()
-                              : Container(width: 2, color: SpottColors.border),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: _ActivityTile(item: item),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ] else
-          _buildEmptyState(),
-        const SizedBox(height: 24),
-
-        // 5. Monthly Insights Section
-        _buildMonthlyInsightsSection(),
-        const SizedBox(height: 24),
-
-        // 6. Download Statement CTA
-        _buildDownloadStatementCTA(),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildHeroSummaryCard() {
-    return MarketplaceCard(
-      onTap: () {},
-      borderRadius: 24,
-      padding: EdgeInsets.zero,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: SpottColors.surface1,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: SpottColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'THIS MONTH',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: SpottColors.textSecondary,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: SpottColors.successSoft,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.trending_up_rounded,
-                        color: SpottColors.success,
-                        size: 14,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        'Saved 12%',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: SpottColors.success,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '18 Activities',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: SpottColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Trips, Parcels & Parking',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: SpottColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '₹2,460 spent',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: SpottColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Divider(height: 1, color: SpottColors.divider),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'MONEY SAVED',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: SpottColors.textSecondary,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '₹314',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: SpottColors.success,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(height: 36, width: 1, color: SpottColors.border),
-                const SizedBox(width: 24),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'DISTANCE TRAVELED',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: SpottColors.textSecondary,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '248 KM',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: SpottColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBentoGrid() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _BentoCard(
-                value: '18',
-                label: 'Trips',
-                icon: Icons.directions_car_rounded,
-                iconColor: SpottColors.primary,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _BentoCard(
-                value: '5',
-                label: 'Parcels',
-                icon: Icons.inventory_2_rounded,
-                iconColor: SpottColors.accentPurple,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _BentoCard(
-                value: '₹314',
-                label: 'Savings',
-                icon: Icons.savings_rounded,
-                iconColor: SpottColors.success,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _BentoCard(
-                value: '248 KM',
-                label: 'Distance',
-                icon: Icons.map_rounded,
-                iconColor: SpottColors.warning,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFilters() {
-    final filters = <_ActivityFilter, String>{
-      _ActivityFilter.all: '🌍 All',
-      _ActivityFilter.trips: '🚗 Trips',
-      _ActivityFilter.parcels: '📦 Parcels',
-      _ActivityFilter.parking: '🅿 Parking',
-    };
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (final entry in filters.entries) ...[
-            ChoiceChip(
-              label: Text(entry.value),
-              selected: _filter == entry.key,
-              onSelected: (_) => setState(() => _filter = entry.key),
-              backgroundColor: SpottColors.surface2,
-              selectedColor: SpottColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-                side: BorderSide.none,
-              ),
-              labelStyle: TextStyle(
-                color: _filter == entry.key
-                    ? Colors.white
-                    : SpottColors.textSecondary,
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
+          _buildStickyHeader(),
+          _buildActivityList(filteredItems),
+          const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
     );
   }
 
-  Widget _buildMonthlyInsightsSection() {
+  Widget _buildSliverAppBar() {
+    return SliverAppBar(
+      expandedHeight: 120.0,
+      floating: true,
+      pinned: true,
+      elevation: 0,
+      backgroundColor: AppColors.surface,
+      surfaceTintColor: Colors.transparent,
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        title: const Text(
+          'My Bookings',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w800,
+            fontSize: 22,
+            letterSpacing: -0.5,
+          ),
+        ),
+        background: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.primarySoft, AppColors.surface],
+              stops: [0.0, 0.4],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search_rounded, color: AppColors.textPrimary),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Icon(Icons.help_outline_rounded, color: AppColors.textPrimary),
+          onPressed: () {},
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Widget _buildBentoStats() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Monthly Insights',
+          'Overview',
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: SpottColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
-        _PremiumCard(
-          child: Column(
-            children: [
-              _buildInsightRow(
-                icon: Icons.alt_route_rounded,
-                iconColor: SpottColors.accentPurple,
-                title: 'Most Used Route',
-                value: 'Pune → Mumbai',
+        Row(
+          children: [
+            Expanded(
+              child: _StatCard(
+                title: 'Total Trips',
+                value: '24',
+                icon: Icons.route_rounded,
+                color: AppColors.primary,
+                trend: '+3 this month',
               ),
-              const Divider(height: 24, color: SpottColors.divider),
-              _buildInsightRow(
-                icon: Icons.savings_outlined,
-                iconColor: SpottColors.success,
-                title: 'Saved Compared To Cab',
-                value: '₹1,280',
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _StatCard(
+                title: 'Amount Saved',
+                value: '₹840',
+                icon: Icons.savings_rounded,
+                color: AppColors.success,
+                trend: 'Top 10% saver',
               ),
-              const Divider(height: 24, color: SpottColors.divider),
-              _buildInsightRow(
-                icon: Icons.explore_outlined,
-                iconColor: SpottColors.warning,
-                title: 'Distance Traveled',
-                value: '248 km',
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
   }
 
-  Widget _buildInsightRow({
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String value,
-  }) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.08),
-            shape: BoxShape.circle,
+  Widget _buildActionCards() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySoft,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.receipt_long_rounded, color: AppColors.primary),
+                ),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Travel Statement',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Download PDF for May 2026',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.download_rounded, color: AppColors.textSecondary),
+              ],
+            ),
           ),
-          child: Icon(icon, color: iconColor, size: 20),
         ),
-        const SizedBox(width: 16),
+      ),
+    );
+  }
+
+  Widget _buildStickyHeader() {
+    return SliverPersistentHeader(
+      pinned: true,
+      delegate: _StickyFilterDelegate(
+        child: Container(
+          color: AppColors.background,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip(ActivityFilter.all, 'All Bookings', Icons.list_alt_rounded),
+                _buildFilterChip(ActivityFilter.trips, 'Trips', Icons.directions_car_rounded),
+                _buildFilterChip(ActivityFilter.parcels, 'Parcels', Icons.inventory_2_rounded),
+                _buildFilterChip(ActivityFilter.parking, 'Parking', Icons.local_parking_rounded),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(ActivityFilter filter, String label, IconData icon) {
+    final isSelected = _currentFilter == filter;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: FilterChip(
+        selected: isSelected,
+        showCheckmark: false,
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.white : AppColors.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : AppColors.textPrimary,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.surface,
+        selectedColor: AppColors.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+          side: BorderSide(
+            color: isSelected ? AppColors.primary : AppColors.border,
+            width: 1,
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        onSelected: (_) {
+          setState(() => _currentFilter = filter);
+        },
+      ),
+    );
+  }
+
+  Widget _buildActivityList(List<ActivityItem> items) {
+    if (items.isEmpty) {
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.search_off_rounded, size: 64, color: AppColors.border),
+                const SizedBox(height: 16),
+                const Text(
+                  'No bookings found',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Try changing your filters',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: _TicketCard(item: items[index]),
+            );
+          },
+          childCount: items.length,
+        ),
+      ),
+    );
+  }
+}
+
+class _TicketCard extends StatelessWidget {
+  final ActivityItem item;
+
+  const _TicketCard({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Top Section: Type & Status
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: _getTypeColor(item.type).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        _getTypeIcon(item.type),
+                        size: 20,
+                        color: _getTypeColor(item.type),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          item.id,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                _StatusBadge(status: item.status),
+              ],
+            ),
+          ),
+          
+          // Dashed Divider (Ticket effect)
+          _buildDashedDivider(),
+          
+          // Middle Section: Route & Time
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildRouteVisual(),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _formatDate(item.date),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          _formatTime(item.date),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '₹${item.amount.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const Text(
+                          'Paid',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          
+          // Bottom Section: Actions
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(top: BorderSide(color: AppColors.border)),
+              color: AppColors.surfaceElevated,
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(AppRadius.card)),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: Row(
+              children: [
+                if (item.status == ActivityStatus.upcoming) ...[
+                  Expanded(child: _buildActionButton('Track', Icons.location_on_outlined, AppColors.primary)),
+                  Expanded(child: _buildActionButton('E-Ticket', Icons.qr_code_rounded, AppColors.textPrimary)),
+                ] else ...[
+                  Expanded(child: _buildActionButton('Support', Icons.headset_mic_outlined, AppColors.textPrimary)),
+                  Expanded(child: _buildActionButton('Rebook', Icons.refresh_rounded, AppColors.primary)),
+                ],
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRouteVisual() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Dots and Line
+        Column(
+          children: [
+            const SizedBox(height: 4),
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.textMuted, width: 2),
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+            ),
+            Container(
+              width: 2,
+              height: 24,
+              color: AppColors.border,
+            ),
+            Container(
+              width: 10,
+              height: 10,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(width: 12),
+        // Text
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                item.startLocation,
                 style: const TextStyle(
-                  fontSize: 12,
-                  color: SpottColors.textSecondary,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 14),
               Text(
-                value,
+                item.endLocation,
                 style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: SpottColors.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -495,361 +678,144 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  Widget _buildDownloadStatementCTA() {
-    return MarketplaceCard(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Statement download started')),
-        );
-      },
-      borderRadius: 24,
-      padding: EdgeInsets.zero,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: SpottColors.surface1,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: SpottColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                color: SpottColors.primarySoft,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.download_rounded,
-                color: SpottColors.primary,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Download Statement',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: SpottColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'May 2026 PDF',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: SpottColors.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: SpottColors.textMuted,
-            ),
-          ],
-        ),
+  Widget _buildDashedDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final boxWidth = constraints.constrainWidth();
+          const dashWidth = 5.0;
+          const dashHeight = 1.5;
+          final dashCount = (boxWidth / (2 * dashWidth)).floor();
+          return Flex(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            direction: Axis.horizontal,
+            children: List.generate(dashCount, (_) {
+              return const SizedBox(
+                width: dashWidth,
+                height: dashHeight,
+                child: DecoratedBox(decoration: BoxDecoration(color: AppColors.border)),
+              );
+            }),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 40),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: SpottColors.surface2,
-              shape: BoxShape.circle,
-            ),
-            child: const Text('🧳', style: TextStyle(fontSize: 40)),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'No Trips Yet',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: SpottColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Book your first ride or\nsend your first parcel.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: SpottColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.home),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: SpottColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 0,
-            ),
-            child: const Text(
-              'Explore Services',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(height: 40),
-        ],
+  Widget _buildActionButton(String label, IconData icon, Color color) {
+    return TextButton.icon(
+      onPressed: () {},
+      style: TextButton.styleFrom(
+        foregroundColor: color,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
+      ),
+      icon: Icon(icon, size: 18),
+      label: Text(
+        label,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
       ),
     );
   }
 
-  Color _getAccentColor(_ActivityFilter type) {
+  IconData _getTypeIcon(ActivityFilter type) {
     switch (type) {
-      case _ActivityFilter.trips:
-        return SpottColors.primary;
-      case _ActivityFilter.parcels:
-        return SpottColors.accentPurple;
-      case _ActivityFilter.parking:
-        return SpottColors.warning;
-      case _ActivityFilter.all:
-        return SpottColors.textPrimary;
+      case ActivityFilter.trips: return Icons.directions_bus_rounded; // Changed to Bus for RedBus feel
+      case ActivityFilter.parcels: return Icons.local_shipping_rounded;
+      case ActivityFilter.parking: return Icons.local_parking_rounded;
+      default: return Icons.receipt_rounded;
     }
+  }
+
+  Color _getTypeColor(ActivityFilter type) {
+    switch (type) {
+      case ActivityFilter.trips: return AppColors.primary;
+      case ActivityFilter.parcels: return AppColors.parcelsAccent;
+      case ActivityFilter.parking: return AppColors.parkingAccent;
+      default: return AppColors.textPrimary;
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  String _formatTime(DateTime date) {
+    final hour = date.hour == 0 ? 12 : (date.hour > 12 ? date.hour - 12 : date.hour);
+    final period = date.hour >= 12 ? 'PM' : 'AM';
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '$hour:$minute $period';
   }
 }
 
-class _ActivityTile extends StatelessWidget {
-  final _ActivityItem item;
+class _StatusBadge extends StatelessWidget {
+  final ActivityStatus status;
 
-  const _ActivityTile({required this.item});
+  const _StatusBadge({required this.status});
 
   @override
   Widget build(BuildContext context) {
-    // Emojis based on type
-    String typeEmoji = '';
-    if (item.type == _ActivityFilter.trips) {
-      typeEmoji = '🚗 ';
-    } else if (item.type == _ActivityFilter.parcels) {
-      typeEmoji = '📦 ';
-    } else if (item.type == _ActivityFilter.parking) {
-      typeEmoji = '🅿 ';
+    Color bgColor;
+    Color textColor;
+    String text;
+
+    switch (status) {
+      case ActivityStatus.completed:
+        bgColor = AppColors.successSoft;
+        textColor = AppColors.success;
+        text = 'COMPLETED';
+        break;
+      case ActivityStatus.upcoming:
+        bgColor = AppColors.infoSoft;
+        textColor = AppColors.info;
+        text = 'UPCOMING';
+        break;
+      case ActivityStatus.cancelled:
+        bgColor = AppColors.warningSoft;
+        textColor = AppColors.warning;
+        text = 'CANCELLED';
+        break;
+      case ActivityStatus.inTransit:
+        bgColor = AppColors.primarySoft;
+        textColor = AppColors.primary;
+        text = 'IN TRANSIT';
+        break;
     }
 
-    return _PremiumCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '$typeEmoji${item.title}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: SpottColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item.time,
-                      style: const TextStyle(
-                        color: SpottColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                item.amount,
-                style: const TextStyle(
-                  color: SpottColors.textPrimary,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (item.subtitle.isNotEmpty) ...[
-            Text(
-              item.subtitle,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: SpottColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-          ],
-          if (item.driver != null) ...[
-            Text(
-              item.type == _ActivityFilter.parcels
-                  ? 'Delivered by: ${item.driver}'
-                  : 'Driver: ${item.driver}',
-              style: const TextStyle(
-                fontSize: 12,
-                color: SpottColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: _getStatusBgColor(item.status),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  item.status,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: _getStatusTextColor(item.status),
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: SpottColors.border),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'View Receipt',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: SpottColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: SpottColors.border),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Share',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: SpottColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(AppRadius.badge),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          color: textColor,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }
-
-  Color _getStatusBgColor(String status) {
-    if (status == 'Completed' || status == 'Delivered') {
-      return SpottColors.successSoft;
-    }
-    return SpottColors.primarySoft;
-  }
-
-  Color _getStatusTextColor(String status) {
-    if (status == 'Completed' || status == 'Delivered') {
-      return SpottColors.success;
-    }
-    return SpottColors.primary;
-  }
 }
 
-class _ActivityItem {
-  final _ActivityFilter type;
-  final IconData icon;
+class _StatCard extends StatelessWidget {
   final String title;
-  final String subtitle;
-  final String? driver;
-  final String time;
-  final String amount;
-  final String status;
-  final String dateGroup;
-
-  const _ActivityItem({
-    required this.type,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.driver,
-    required this.time,
-    required this.amount,
-    required this.status,
-    required this.dateGroup,
-  });
-}
-
-class _BentoCard extends StatelessWidget {
   final String value;
-  final String label;
   final IconData icon;
-  final Color iconColor;
+  final Color color;
+  final String trend;
 
-  const _BentoCard({
+  const _StatCard({
+    required this.title,
     required this.value,
-    required this.label,
     required this.icon,
-    required this.iconColor,
+    required this.color,
+    required this.trend,
   });
 
   @override
@@ -857,37 +823,46 @@ class _BentoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: SpottColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: iconColor, size: 24),
-          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: 16),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 24,
               fontWeight: FontWeight.w800,
-              color: SpottColors.textPrimary,
+              color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 4),
           Text(
-            label,
+            title,
             style: const TextStyle(
-              fontSize: 12,
-              color: SpottColors.textSecondary,
+              fontSize: 13,
               fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            trend,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: color,
             ),
           ),
         ],
@@ -896,28 +871,32 @@ class _BentoCard extends StatelessWidget {
   }
 }
 
-class _PremiumCard extends StatelessWidget {
+// Delegate to allow the filter header to stick to the top during scroll
+class _StickyFilterDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
 
-  const _PremiumCard({required this.child});
+  _StickyFilterDelegate({required this.child});
 
   @override
-  Widget build(BuildContext context) {
+  double get minExtent => 60.0;
+  @override
+  double get maxExtent => 60.0;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      height: maxExtent,
+      alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: SpottColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        color: AppColors.background,
+        boxShadow: overlapsContent
+            ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]
+            : null,
       ),
       child: child,
     );
   }
+
+  @override
+  bool shouldRebuild(_StickyFilterDelegate oldDelegate) => true;
 }

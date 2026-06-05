@@ -21,7 +21,7 @@ class LiveTrackingScreen extends StatefulWidget {
 class _LiveTrackingScreenState extends State<LiveTrackingScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulseController;
-  int _currentStep = 1; // 0=Pending, 1=Pickup, 2=EnRoute, 3=Arrived
+  final int _currentStep = 1; // 0=Pending, 1=Pickup, 2=EnRoute, 3=Arrived
 
   @override
   void initState() {

@@ -272,7 +272,7 @@ class UrbanSettingsScreen extends StatelessWidget {
                   onChanged: (val) {
                     ride.toggleDarkMode();
                   },
-                  activeColor: isDark ? Colors.black : Colors.white,
+                  activeThumbColor: isDark ? Colors.black : Colors.white,
                   activeTrackColor: isDark ? Colors.white : Colors.black,
                   inactiveThumbColor: Colors.black,
                   inactiveTrackColor: const Color(0xFFEFEFEF),

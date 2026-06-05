@@ -3,11 +3,12 @@ import 'package:flutter/services.dart';
 
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
+import '../spotter_widgets.dart';
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_avatar.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/components/status_chip.dart';
+
 import '../core/theme/colors.dart';
 import '../core/theme/spacing.dart';
 import '../core/theme/typography.dart';
@@ -45,6 +46,19 @@ class _RatingScreenState extends State<RatingScreen> {
             const SizedBox(height: SpottSpacing.sm),
             Text('Help keep Spott reliable.', style: SpottTextStyles.body),
             const SizedBox(height: SpottSpacing.xl),
+            RecoveryBanner(
+              state: ride.actionState,
+              onRetry: () {
+                ride.submitRating(rating: rating, tip: tip);
+              },
+            ),
+            RideContextCard(
+              route: ride.routeLabel,
+              fare: ride.fareLabel,
+              driver: driver?.name ?? 'Amit Sharma',
+              status: ride.status.name,
+            ),
+            const SizedBox(height: SpottSpacing.md),
 
             GlassCard(
               padding: const EdgeInsets.all(SpottSpacing.cardInner),

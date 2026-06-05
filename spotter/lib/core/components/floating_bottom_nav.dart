@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/spott_models.dart';
-import '../theme/colors.dart';
-import '../theme/radius.dart';
-import '../theme/spacing.dart';
-import '../theme/shadows.dart';
+import '../theme/redbus_theme.dart';
 
 class FloatingBottomNav extends StatelessWidget {
   final UserRole role;
@@ -21,116 +18,88 @@ class FloatingBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = role == UserRole.passenger ? _passengerTabs : _travelerTabs;
-    const activeColor = SpottColors.primary;
-    const inactiveColor = SpottColors.textTertiary;
 
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: SpottSpacing.md,
-        right: SpottSpacing.md,
-        bottom: SpottSpacing.md,
-      ),
-      child: Container(
-        height: 82,
-        decoration: BoxDecoration(
-          color: SpottColors.backgroundElevated,
-          borderRadius: BorderRadius.circular(SpottRadius.nav), // 30
-          border: Border(
-            top: BorderSide(
-              color: Colors.white.withValues(alpha: 0.05),
-              width: 1,
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 16,
+            offset: const Offset(0, -2),
           ),
-          boxShadow: SpottShadows.navFloat,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(items.length, (index) {
-            final isSelected = currentIndex == index;
-            final item = items[index];
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(items.length, (index) {
+              final isSelected = currentIndex == index;
+              final item = items[index];
 
-            return GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                onTap(index);
-              },
-              behavior: HitTestBehavior.opaque,
-              child: SizedBox(
-                width: 64,
-                height: 72,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // ── Icon with optional red glow halo ──
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOutCubic,
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isSelected
-                            ? const Color(0x33E60023)
-                            : Colors.transparent,
-                        boxShadow: isSelected
-                            ? SpottShadows.navGlowRed
-                            : null,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          item.icon,
-                          size: 22,
-                          color: isSelected ? activeColor : inactiveColor,
+              return GestureDetector(
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  onTap(index);
+                },
+                behavior: HitTestBehavior.opaque,
+                child: SizedBox(
+                  width: 64,
+                  height: 64,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Active indicator bar at top
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        height: 3,
+                        width: isSelected ? 28 : 0,
+                        margin: const EdgeInsets.only(bottom: 4),
+                        decoration: BoxDecoration(
+                          color: RBColors.primary,
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item.label,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w500,
-                        color: isSelected ? activeColor : inactiveColor,
-                        fontFamily: 'Inter',
+                      Icon(
+                        item.icon,
+                        size: 22,
+                        color: isSelected
+                            ? RBColors.primary
+                            : RBColors.textLight,
                       ),
-                    ),
-                    // Active indicator dot
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOutCubic,
-                      margin: const EdgeInsets.only(top: 3),
-                      width: isSelected ? 4 : 0,
-                      height: isSelected ? 4 : 0,
-                      decoration: BoxDecoration(
-                        color: activeColor,
-                        shape: BoxShape.circle,
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: activeColor.withValues(alpha: 0.4),
-                                  blurRadius: 6,
-                                ),
-                              ]
-                            : null,
+                      const SizedBox(height: 3),
+                      Text(
+                        item.label,
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 10,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? RBColors.primary
+                              : RBColors.textLight,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+          ),
         ),
       ),
     );
   }
 
   static const List<_NavItem> _passengerTabs = [
-    _NavItem(icon: Icons.home_rounded, label: 'Home'),
-    _NavItem(icon: Icons.search_rounded, label: 'Search'),
+    _NavItem(icon: Icons.home_outlined, label: 'Home'),
+    _NavItem(icon: Icons.grid_view_rounded, label: 'Services'),
     _NavItem(icon: Icons.route_rounded, label: 'Trips'),
-    _NavItem(icon: Icons.shield_rounded, label: 'Safety'),
+    _NavItem(icon: Icons.shield_outlined, label: 'Safety'),
     _NavItem(icon: Icons.person_rounded, label: 'Profile'),
   ];
 
@@ -146,6 +115,5 @@ class FloatingBottomNav extends StatelessWidget {
 class _NavItem {
   final IconData icon;
   final String label;
-
   const _NavItem({required this.icon, required this.label});
 }

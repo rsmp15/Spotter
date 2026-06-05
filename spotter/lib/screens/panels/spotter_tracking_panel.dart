@@ -6,6 +6,7 @@ import '../../helper.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
 import '../../core/theme/colors.dart';
+import '../../core/theme/redbus_theme.dart';
 
 class SpotterTrackingPanel extends StatelessWidget {
   const SpotterTrackingPanel({super.key});
@@ -163,6 +164,36 @@ class SpotterTrackingPanel extends StatelessWidget {
                   isDark: isDark,
                 ),
                 const SizedBox(height: 12),
+                
+                // Prominent Safety Toolkit & SOS button
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: RBColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.safetyToolkit);
+                    },
+                    icon: const Icon(Icons.shield_rounded, size: 18),
+                    label: const Text(
+                      'Safety Toolkit & SOS',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
                 // Quick actions grid
                 Row(
                   children: [

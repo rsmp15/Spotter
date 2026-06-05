@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app/app_routes.dart';
-import '../helper.dart';
+
 import '../spotter_widgets.dart';
 
 class JobDetailScreen extends StatelessWidget {

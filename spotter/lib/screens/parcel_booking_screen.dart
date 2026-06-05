@@ -64,9 +64,11 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
         children: [
           Form(
             key: _formKey,
-            child: ListView(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(SpottSpacing.lg),
-              children: [
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Text('Same-day delivery via verified travelers on their route.', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
                 const SizedBox(height: SpottSpacing.xl),
 
@@ -363,6 +365,7 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
               ],
             ),
           ),
+        ),
           Positioned(
             bottom: 0,
             left: 0,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:spotter/helper.dart';
+import 'core/theme/colors.dart';
 
 class WhiteTextField extends StatelessWidget {
   final String labelText;
@@ -28,7 +29,6 @@ class WhiteTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
       width: double.infinity,
       height: maxLines == 1 ? 66 : null,
@@ -71,20 +71,20 @@ class WhiteTextField extends StatelessWidget {
           ),
 
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: SpottColors.border, width: 1.0),
           ),
-
+ 
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: SpottColors.border, width: 1.0),
           ),
-
+ 
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(
-              color: isDark ? Colors.white : Helper.ink,
-              width: 2.0,
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: SpottColors.primary,
+              width: 1.5,
             ),
           ),
         ),

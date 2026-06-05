@@ -352,6 +352,32 @@ class _SpotterOverlayShellState extends State<SpotterOverlayShell>
             ),
           ],
 
+          // Top-right Safety/SOS button (only accessible when user is in ride mode / travelling)
+          if (ride.status == TripStatus.driverAssigned ||
+              ride.status == TripStatus.arriving ||
+              ride.status == TripStatus.inProgress ||
+              routeName == '/tracking' ||
+              routeName == '/ride-otp' ||
+              routeName == '/active-trip')
+            Positioned(
+              top: MediaQuery.paddingOf(context).top + 16,
+              right: (routeName == '/home' || routeName == '/') ? 16 : 80,
+              child: CircleAvatar(
+                radius: 22,
+                backgroundColor: const Color(0xFFE60023),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.shield_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.safetyToolkit);
+                  },
+                ),
+              ),
+            ),
+
           // 5. Floating Side Action Buttons on Home (Theme Toggle + Locate Me)
           if (!isFullScreenPanel)
             Positioned(
@@ -466,7 +492,7 @@ class _HomeMenuDrawer extends StatelessWidget {
                 'Ritesh Mahatme',
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
-              subtitle: const Text('Passenger account'),
+              subtitle: Text('Passenger account'),
             ),
             const Divider(),
             const _DrawerLink(

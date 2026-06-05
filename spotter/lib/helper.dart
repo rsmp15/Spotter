@@ -11,8 +11,8 @@ class Helper {
   static const Color cardColor = SpottColors.surface1;
   static const Color lineColor = SpottColors.border;
  
-  static const Color primary = Color(0xFFE60023); // Pinterest Red Primary Action
-  static const Color accent = Color(0xFF6366F1); // Indigo Community Accent
+  static const Color primary = Color(0xFFD84E55); // RedBus Red
+  static const Color accent = Color(0xFFB73D45); // RedBus Dark Red
   static const Color success = SpottColors.success; 
   static const Color warning = SpottColors.warning; 
   static const Color danger = Color(0xFFEF4444); 
@@ -40,11 +40,11 @@ class Helper {
   static const Color hairline = SpottColors.border;
  
   static const BorderRadiusGeometry cardRadius = BorderRadius.all(
-    Radius.circular(24), // 24px corner radii as requested
+    Radius.circular(20), // 20px card corner radii as requested
   );
- 
+  
   static const List<BoxShadow> premiumShadows = [
-    BoxShadow(color: Color(0x66000000), blurRadius: 16, offset: Offset(0, 4)),
+    BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2)),
   ];
 
   static TextStyle get titleStyle => TextStyle(
@@ -67,10 +67,11 @@ class Helper {
 
   static Color canvasSofterColor(BuildContext context) => bgMid;
 
-  static ThemeData get theme => buildTheme(isDarkMode: true);
+  static ThemeData get theme => buildTheme(isDarkMode: false); // Default to light theme
 
   static ThemeData buildTheme({required bool isDarkMode}) {
-    SpottColors.updateTheme(isDarkMode);
+    // Force RedBus Light Premium style
+    SpottColors.updateTheme(false);
 
     final primaryColor = primary;
     final bg = backgroundColor;
@@ -84,12 +85,12 @@ class Helper {
       secondary: accent,
       surface: cardBgColor,
       error: danger,
-      brightness: isDarkMode ? Brightness.dark : Brightness.light,
+      brightness: Brightness.light,
     );
 
     return ThemeData(
       colorScheme: colorScheme,
-      brightness: isDarkMode ? Brightness.dark : Brightness.light,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: bg,
       useMaterial3: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -112,7 +113,7 @@ class Helper {
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(56),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18), // 18px radius buttons
+            borderRadius: BorderRadius.circular(16), // 16px radius buttons
           ),
           backgroundColor: primary,
           foregroundColor: Colors.white,
@@ -136,15 +137,15 @@ class Helper {
           vertical: 16,
         ),
         border: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(18)),
+          borderRadius: const BorderRadius.all(Radius.circular(16)), // 16px inputs
           borderSide: BorderSide(color: lineBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(18)),
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: lineBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(18)),
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: primary, width: 1.5),
         ),
       ),

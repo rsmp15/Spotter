@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../helper.dart';
 import '../spotter_widgets.dart';
-import '../custom_button.dart';
+
 
 class FigmaPluginSandboxScreen extends StatelessWidget {
   const FigmaPluginSandboxScreen({super.key});

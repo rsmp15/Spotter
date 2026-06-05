@@ -25,8 +25,12 @@ class _DisputeCaseScreenState extends State<DisputeCaseScreen> {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
+    final rideLinkParts = ride.shareLink.split('/');
+    final rideReference = (rideLinkParts.isNotEmpty && rideLinkParts.last.isNotEmpty)
+        ? rideLinkParts.last
+        : 'SPT2049';
     final supportCase = SupportCase.forRide(
-      rideReference: ride.shareLink.split('/').last,
+      rideReference: rideReference,
       role: UserRole.rider,
       category: SupportCaseCategory.safety,
       description: 'Safety concern',

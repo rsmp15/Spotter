@@ -1,7 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../theme/colors.dart';
 import '../theme/radius.dart';
-import '../theme/shadows.dart';
 
 class GlassContainer extends StatelessWidget {
   final Widget child;
@@ -17,8 +16,8 @@ class GlassContainer extends StatelessWidget {
   const GlassContainer({
     super.key,
     required this.child,
-    this.blurSigma = 16.0,
-    this.borderRadius = SpottRadius.xl,
+    this.blurSigma = 0.0,
+    this.borderRadius = SpottRadius.card,
     this.padding,
     this.margin,
     this.width,
@@ -33,40 +32,25 @@ class GlassContainer extends StatelessWidget {
       width: width,
       height: height,
       margin: margin,
+      padding: padding ?? EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        color: SpottColors.surface1, // Solid white surface
         borderRadius: BorderRadius.circular(borderRadius),
-        boxShadow: SpottShadows.elevation2,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-          child: Container(
-            padding: padding ?? EdgeInsets.zero,
-            decoration: BoxDecoration(
-              gradient:
-                  gradient ??
-                  LinearGradient(
-                    colors: [
-                      Colors.white.withValues(alpha: 0.07),
-                      Colors.white.withValues(alpha: 0.02),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-              borderRadius: BorderRadius.circular(borderRadius),
-              border: hasBorder
-                  ? Border.all(
-                      color: Colors.white.withValues(alpha: 0.12),
-                      width: 1.0,
-                    )
-                  : null,
-            ),
-            child: child,
+        border: hasBorder
+            ? Border.all(
+                color: SpottColors.border,
+                width: 1.0,
+              )
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
-        ),
+        ],
       ),
+      child: child,
     );
   }
 }

@@ -10,6 +10,8 @@ import '../core/theme/spacing.dart';
 import '../core/theme/typography.dart';
 import '../core/theme/radius.dart';
 import '../core/theme/shadows.dart';
+import '../core/theme/redbus_theme.dart';
+import '../core/components/redbus_sections.dart';
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
@@ -41,37 +43,86 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     }
 
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: RBColors.background,
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.only(
-            left: SpottSpacing.lg,
-            right: SpottSpacing.lg,
-            top: SpottSpacing.lg,
-            bottom: SpottSpacing.pageBottom,
-          ),
-          children: [
-            _buildHeader(),
-            const SizedBox(height: SpottSpacing.xl),
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Header Section
+            SliverToBoxAdapter(
+              child: RBSectionContainer(
+                style: RBSectionStyle.brandHero,
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                child: _buildHeader(),
+              ),
+            ),
+
+            // Wave Separator
+            SliverToBoxAdapter(
+              child: RBWaveSeparator(
+                topColor: RBColors.primary,
+                bottomColor: RBColors.background,
+                height: 24,
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             if (_isTravelActive && _destination != null) ...[
-              _buildDestinationFilterCard(context),
-              const SizedBox(height: SpottSpacing.md),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _buildDestinationFilterCard(context),
+                ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
             ],
 
-            _buildEarningsCard(),
-            const SizedBox(height: SpottSpacing.xl),
+            // Earnings Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _buildEarningsCard(),
+              ),
+            ),
 
-            if (!_isTravelActive)
-              _buildStartTravelCard(context)
-            else
-              _buildAcceptingRequestsCard(),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-            const SizedBox(height: SpottSpacing.xl),
+            // Start Travel or Accepting Requests Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: !_isTravelActive
+                    ? _buildStartTravelCard(context)
+                    : _buildAcceptingRequestsCard(),
+              ),
+            ),
 
-            const Text('Trip requests nearby', style: SpottTextStyles.headline),
-            const SizedBox(height: SpottSpacing.md),
-            _buildTripRequestsCard(),
+            // Spacing 48px
+            const SliverToBoxAdapter(child: SizedBox(height: 48)),
+
+            // Trip Requests nearby Section
+            SliverToBoxAdapter(
+              child: RBSectionContainer(
+                style: RBSectionStyle.marketplace,
+                topRadius: 28,
+                bottomRadius: 28,
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const RBSectionHeader(
+                      title: 'Trip requests nearby',
+                      subtitle: 'Active requests matching your route',
+                    ),
+                    const SizedBox(height: 8),
+                    _buildTripRequestsCard(),
+                  ],
+                ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 48)),
           ],
         ),
       ),
@@ -85,14 +136,27 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'TRAVELER',
-              style: SpottTextStyles.overline.copyWith(
-                color: SpottColors.accentPurple,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: Colors.white70,
+                letterSpacing: 1.5,
               ),
             ),
             const SizedBox(height: 4),
-            Text('Arjun', style: SpottTextStyles.headline.copyWith(fontSize: 26)),
+            Text(
+              'Arjun',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+                letterSpacing: -0.5,
+              ),
+            ),
           ],
         ),
         GestureDetector(
@@ -109,38 +173,49 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   Widget _buildDestinationFilterCard(BuildContext context) {
-    return _PremiumCard(
+    return RBSectionContainer(
+      style: RBSectionStyle.rewards,
+      topRadius: 16,
+      bottomRadius: 16,
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(SpottSpacing.sm),
+            padding: const EdgeInsets.all(8),
             decoration: const BoxDecoration(
-              color: SpottColors.accentPurpleSoft,
+              color: RBColors.primarySoft,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.directions_rounded, color: SpottColors.accentPurple, size: 20),
+            child: const Icon(Icons.directions_rounded, color: RBColors.primary, size: 20),
           ),
-          const SizedBox(width: SpottSpacing.md),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Destination Filter Active',
-                  style: SpottTextStyles.label.copyWith(
-                    color: SpottColors.accentPurple,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: RBColors.primary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Accepting requests toward $_destination',
-                  style: SpottTextStyles.caption,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: RBColors.textMedium,
+                  ),
                 ),
               ],
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close_rounded, size: 20, color: SpottColors.textTertiary),
+            icon: const Icon(Icons.close_rounded, size: 20, color: RBColors.textLight),
             onPressed: () {
               setState(() {
                 _isTravelActive = false;
@@ -154,7 +229,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   Widget _buildEarningsCard() {
-    return _PremiumCard(
+    return RBSectionContainer(
+      style: RBSectionStyle.white,
+      showBorder: true,
+      topRadius: 16,
+      bottomRadius: 16,
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -164,38 +244,54 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Earnings this week', style: SpottTextStyles.caption),
+                  const Text(
+                    'Earnings this week',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: RBColors.textMedium,
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   Text(
                     '₹${_todayEarnings + 7210}',
-                    style: SpottTextStyles.displayLarge.copyWith(fontSize: 32),
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: RBColors.textDark,
+                      letterSpacing: -0.5,
+                    ),
                   ),
                 ],
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: SpottSpacing.sm + 2,
-                  vertical: SpottSpacing.xs + 2,
+                  horizontal: 10,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: SpottColors.accentPurpleSoft,
-                  borderRadius: BorderRadius.circular(SpottRadius.md),
+                  color: RBColors.primarySoft,
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'Today: ₹$_todayEarnings',
-                  style: SpottTextStyles.caption.copyWith(
-                    color: SpottColors.accentPurple,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
+                    color: RBColors.primary,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: SpottSpacing.lg),
+          const SizedBox(height: 16),
           _buildEarningsBar(),
-          const SizedBox(height: SpottSpacing.lg),
-          const Divider(height: 1, color: SpottColors.border),
-          const SizedBox(height: SpottSpacing.md),
+          const SizedBox(height: 16),
+          const Divider(height: 1, color: RBColors.divider),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -203,19 +299,19 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 icon: Icons.check_circle_rounded,
                 value: '$_completedTripsToday',
                 label: 'Trips',
-                color: SpottColors.success,
+                color: RBColors.green,
               ),
               _buildStatPill(
                 icon: Icons.timer_rounded,
                 value: '5h 12m',
                 label: 'Online',
-                color: SpottColors.info,
+                color: RBColors.blue,
               ),
               _buildStatPill(
                 icon: Icons.star_rounded,
                 value: '4.95',
                 label: 'Rating',
-                color: SpottColors.warning,
+                color: RBColors.gold,
               ),
             ],
           ),
@@ -240,17 +336,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               width: 28,
               height: 48 * values[i],
               decoration: BoxDecoration(
-                color: isToday ? SpottColors.accentPurple : SpottColors.border,
-                borderRadius: BorderRadius.circular(SpottRadius.xs),
+                color: isToday ? RBColors.primary : RBColors.divider,
+                borderRadius: BorderRadius.circular(4),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               days[i],
-              style: SpottTextStyles.caption.copyWith(
+              style: TextStyle(
+                fontFamily: 'Inter',
                 fontSize: 10,
                 fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
-                color: isToday ? SpottColors.accentPurple : SpottColors.textSecondary,
+                color: isToday ? RBColors.primary : RBColors.textMedium,
               ),
             ),
           ],
@@ -274,39 +371,79 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             const SizedBox(width: 4),
             Text(
               value,
-              style: SpottTextStyles.label.copyWith(fontSize: 15),
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: RBColors.textDark,
+              ),
             ),
           ],
         ),
         const SizedBox(height: 4),
-        Text(label, style: SpottTextStyles.caption),
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 11,
+            color: RBColors.textLight,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildStartTravelCard(BuildContext context) {
-    return _PremiumCard(
-      child: Row(
+    return RBSectionContainer(
+      style: RBSectionStyle.white,
+      showBorder: true,
+      topRadius: 16,
+      bottomRadius: 16,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Set destination travel', style: SpottTextStyles.titleSmall),
-                SizedBox(height: 4),
-                Text(
-                  'Accept seat requests matching your way.',
-                  style: SpottTextStyles.caption,
-                ),
-              ],
+          const Text(
+            'Earn on your trip',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: RBColors.textDark,
             ),
           ),
-          const SizedBox(width: SpottSpacing.md),
-          SpottButton.secondary(
-            label: 'Start',
-            onPressed: () => _openLocationPicker(context),
-            size: SpottButtonSize.small,
-            isFullWidth: false,
+          const SizedBox(height: 6),
+          const Text(
+            'Accept seat requests matching your way and save on travel costs.',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              color: RBColors.textMedium,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () => _openLocationPicker(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: RBColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                'Start Travel',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -316,36 +453,64 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   Widget _buildAcceptingRequestsCard() {
     return Column(
       children: [
-        SpottButton.secondary(
-          label: 'ACCEPTING REQUESTS',
-          onPressed: () {
-            setState(() => _isRideStarted = true);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Trip started heading toward $_destination!'),
-                backgroundColor: SpottColors.success,
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () {
+              setState(() => _isRideStarted = true);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Trip started heading toward $_destination!'),
+                  backgroundColor: RBColors.seatAvailable,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: RBColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-            );
-          },
+              elevation: 0,
+            ),
+            child: const Text(
+              'ACCEPTING REQUESTS',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
         ),
-        const SizedBox(height: SpottSpacing.sm),
+        const SizedBox(height: 8),
         Text(
           'Ready to travel to $_destination',
-          style: SpottTextStyles.caption,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 12,
+            color: RBColors.textMedium,
+          ),
         ),
       ],
     );
   }
 
   Widget _buildTripRequestsCard() {
-    return _PremiumCard(
+    return RBSectionContainer(
+      style: RBSectionStyle.white,
+      topRadius: 16,
+      bottomRadius: 16,
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _buildInfoRow('Best cost share', '₹650', SpottColors.success),
-          const Divider(height: SpottSpacing.lg, color: SpottColors.border),
-          _buildInfoRow('Closest pickup', '1.2 km', SpottColors.info),
-          const Divider(height: SpottSpacing.lg, color: SpottColors.border),
-          _buildInfoRow('Seats requested', '2', SpottColors.accentPurple),
+          _buildInfoRow('Best cost share', '₹650', RBColors.green),
+          const Divider(height: 16, color: RBColors.divider),
+          _buildInfoRow('Closest pickup', '1.2 km', RBColors.blue),
+          const Divider(height: 16, color: RBColors.divider),
+          _buildInfoRow('Seats requested', '2', RBColors.primary),
         ],
       ),
     );
@@ -355,16 +520,29 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: SpottTextStyles.body),
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: RBColors.textMedium,
+          ),
+        ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: valueColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(SpottRadius.xs),
+            borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
             value,
-            style: SpottTextStyles.label.copyWith(color: valueColor),
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: valueColor,
+            ),
           ),
         ),
       ],
@@ -373,33 +551,45 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   Widget _buildNavigationScreen(BuildContext context) {
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: RBColors.background,
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(SpottSpacing.lg),
+              padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
                   Container(
                     width: 48,
                     height: 48,
                     decoration: const BoxDecoration(
-                      color: SpottColors.accentPurpleSoft,
+                      color: RBColors.primarySoft,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.navigation_rounded, color: SpottColors.accentPurple),
+                    child: const Icon(Icons.navigation_rounded, color: RBColors.primary),
                   ),
-                  const SizedBox(width: SpottSpacing.md),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Active Trip', style: SpottTextStyles.titleSmall),
+                        const Text(
+                          'Active Trip',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: RBColors.textDark,
+                          ),
+                        ),
                         const SizedBox(height: 4),
                         Text(
                           'Traveling toward $_destination',
-                          style: SpottTextStyles.caption,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            color: RBColors.textMedium,
+                          ),
                         ),
                       ],
                     ),
@@ -409,20 +599,27 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: SpottColors.surface1,
-                    borderRadius: BorderRadius.circular(SpottRadius.card),
-                    border: Border.all(color: SpottColors.border),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: RBColors.divider),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.map_rounded, size: 48, color: SpottColors.textTertiary),
-                        const SizedBox(height: SpottSpacing.sm),
-                        const Text('Map View', style: SpottTextStyles.caption),
+                        Icon(Icons.map_rounded, size: 48, color: RBColors.textLight),
+                        SizedBox(height: 8),
+                        Text(
+                          'Map View',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            color: RBColors.textMedium,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -430,53 +627,91 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(SpottSpacing.lg),
-              child: _PremiumCard(
+              padding: const EdgeInsets.all(20),
+              child: RBSectionContainer(
+                style: RBSectionStyle.white,
+                showBorder: true,
+                topRadius: 20,
+                bottomRadius: 20,
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const StatusChip(label: 'ROUTE ACTIVE', status: ChipStatus.verified),
-                    const SizedBox(height: SpottSpacing.md),
-                    const Text('Arriving in 18 mins', style: SpottTextStyles.title),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Arriving in 18 mins',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: RBColors.textDark,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    const Text('Distance remaining: 6.4 km', style: SpottTextStyles.caption),
-                    const SizedBox(height: SpottSpacing.lg),
+                    const Text(
+                      'Distance remaining: 6.4 km',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: RBColors.textMedium,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Row(
                       children: [
                         Expanded(
-                          child: SpottButton.secondary(
-                            label: 'COMPLETE TRIP',
-                            onPressed: () {
-                              setState(() {
-                                _isRideStarted = false;
-                                _isTravelActive = false;
-                                _destination = null;
-                                _completedTripsToday += 1;
-                                _todayEarnings += 350;
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Trip completed! Earnings updated.'),
-                                  backgroundColor: SpottColors.success,
+                          child: SizedBox(
+                            height: 48,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isRideStarted = false;
+                                  _isTravelActive = false;
+                                  _destination = null;
+                                  _completedTripsToday += 1;
+                                  _todayEarnings += 350;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Trip completed! Earnings updated.'),
+                                    backgroundColor: RBColors.seatAvailable,
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: RBColors.primary,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                              );
-                            },
+                                elevation: 0,
+                              ),
+                              child: const Text(
+                                'COMPLETE TRIP',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                        const SizedBox(width: SpottSpacing.md),
+                        const SizedBox(width: 14),
                         Container(
                           height: 48,
                           width: 48,
                           decoration: BoxDecoration(
-                            color: SpottColors.surface2,
-                            borderRadius: BorderRadius.circular(SpottRadius.pill),
-                            border: Border.all(color: SpottColors.border),
+                            color: RBColors.surfaceGrey,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: RBColors.divider),
                           ),
                           child: IconButton(
                             onPressed: () {
                               setState(() => _isRideStarted = false);
                             },
-                            icon: const Icon(Icons.pause_rounded, color: SpottColors.primary, size: 20),
+                            icon: const Icon(Icons.pause_rounded, color: RBColors.primary, size: 20),
                           ),
                         ),
                       ],
@@ -495,12 +730,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      backgroundColor: SpottColors.surface1,
+      backgroundColor: Colors.white,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(SpottRadius.xxl),
-          topRight: Radius.circular(SpottRadius.xxl),
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
       ),
       builder: (sheetContext) {
@@ -511,34 +746,47 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  SpottSpacing.lg,
+                  20,
                   0,
-                  SpottSpacing.lg,
-                  SpottSpacing.lg + MediaQuery.of(context).viewInsets.bottom,
+                  20,
+                  20 + MediaQuery.of(context).viewInsets.bottom,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Where are you heading?', style: SpottTextStyles.title),
-                    const SizedBox(height: SpottSpacing.md),
+                    const Text(
+                      'Where are you heading?',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: RBColors.textDark,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                       decoration: BoxDecoration(
-                        color: SpottColors.surface2,
-                        borderRadius: BorderRadius.circular(SpottRadius.pill),
-                        border: Border.all(color: SpottColors.border),
+                        color: RBColors.surfaceGrey,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: RBColors.divider),
                       ),
                       child: TextField(
                         controller: searchController,
                         autofocus: true,
-                        cursorColor: SpottColors.primary,
+                        cursorColor: RBColors.primary,
                         decoration: const InputDecoration(
                           hintText: 'Enter destination...',
                           border: InputBorder.none,
-                          icon: Icon(Icons.search_rounded, color: SpottColors.textSecondary),
+                          icon: Icon(Icons.search_rounded, color: RBColors.textMedium),
                         ),
-                        style: SpottTextStyles.bodyLarge,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: RBColors.textDark,
+                        ),
                         onSubmitted: (value) {
                           if (value.trim().isNotEmpty) {
                             Navigator.pop(sheetContext);
@@ -550,14 +798,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(height: SpottSpacing.lg),
-                    Text(
+                    const SizedBox(height: 20),
+                    const Text(
                       'POPULAR DESTINATIONS',
-                      style: SpottTextStyles.overline.copyWith(
-                        color: SpottColors.textTertiary,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: RBColors.textLight,
+                        letterSpacing: 1.0,
                       ),
                     ),
-                    const SizedBox(height: SpottSpacing.md),
+                    const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -574,14 +826,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             decoration: BoxDecoration(
-                              color: SpottColors.surface2,
-                              borderRadius: BorderRadius.circular(SpottRadius.pill),
-                              border: Border.all(color: SpottColors.border),
+                              color: RBColors.surfaceGrey,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: RBColors.divider),
                             ),
                             child: Text(
                               dest,
-                              style: SpottTextStyles.caption.copyWith(
-                                color: SpottColors.textPrimary,
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 13,
+                                color: RBColors.textDark,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -595,26 +850,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           },
         );
       },
-    );
-  }
-}
-
-class _PremiumCard extends StatelessWidget {
-  final Widget child;
-
-  const _PremiumCard({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(SpottSpacing.cardInner),
-      decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(SpottRadius.card),
-        border: Border.all(color: SpottColors.border),
-        boxShadow: SpottShadows.elevation1,
-      ),
-      child: child,
     );
   }
 }

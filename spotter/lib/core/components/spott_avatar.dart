@@ -39,7 +39,7 @@ class SpottAvatar extends StatelessWidget {
             radius: radius,
             backgroundImage: NetworkImage(imageUrl),
             backgroundColor: SpottColors.surface2,
-            onBackgroundImageError: (_, __) {},
+            onBackgroundImageError: (exception, stackTrace) {},
             child: _buildFallback(),
           ),
         ),
