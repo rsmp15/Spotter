@@ -96,4 +96,31 @@ class SpottShadows {
       offset: const Offset(0, -4),
     ),
   ];
+
+  /// Airbnb-style subtle card shadow
+  static final List<BoxShadow> cardShadow = [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.04),
+      blurRadius: 10,
+      offset: const Offset(0, 4),
+    ),
+  ];
+
+  /// Bottom bar shadow
+  static final List<BoxShadow> bottomBarShadow = [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.06),
+      blurRadius: 16,
+      offset: const Offset(0, -2),
+    ),
+  ];
+
+  /// Sticky header shadow
+  static final List<BoxShadow> stickyHeaderShadow = [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.04),
+      blurRadius: 6,
+      offset: const Offset(0, 2),
+    ),
+  ];
 }

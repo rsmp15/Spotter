@@ -14,68 +14,91 @@ class SpottColors {
   static bool isDark = false;
 
   // ── Backgrounds & Surfaces ──────────────────────────────────────────
-  static const Color background = ThemeColor(0xFFF8F8F8, 0xFFF8F8F8);
-  static const Color backgroundElevated = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color surface1 = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color surface2 = ThemeColor(0xFFF5F5F5, 0xFFF5F5F5); // Slightly off-white for depth / chips
-  static const Color surface3 = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color cardSurface = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color surface4 = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color surfaceContainer = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
+  static const Color background = Color(0xFFF8F8F8);
+  static const Color backgroundElevated = Color(0xFFFFFFFF);
+  static const Color surface1 = Color(0xFFFFFFFF);
+  static const Color surface2 = Color(0xFFF5F5F5); // Slightly off-white for depth / chips
+  static const Color surface3 = Color(0xFFFFFFFF);
+  static const Color cardSurface = Color(0xFFFFFFFF);
+  static const Color surface4 = Color(0xFFFFFFFF);
+  static const Color surfaceContainer = Color(0xFFFFFFFF);
 
   // ── Primary Palette & Actions ────────────────────────────────────────
-  static const Color primary = Color(0xFFD84E55); // RedBus Red
-  static const Color primaryDark = Color(0xFFB73D45); // RedBus Dark Red
-  static const Color primarySoft = ThemeColor(0xFFFFEBEE, 0xFFFFEBEE);
+  static const Color primary = Color(0xFFD84E55); // redBus Red
+  static const Color primaryDark = Color(0xFFB73D45); // redBus Dark Red
+  static const Color primaryLight = Color(0xFFE57373);
+  static const Color primarySoft = Color(0xFFFFEBEE);
+
+  // ── Interactive State Tokens ──────────────────────────────────────────
+  static const Color primaryPressed = Color(0xFF9E2A30); // Darker red on press
+  static const Color primaryHover = Color(0xFFE55D63); // Lighter red on hover
+  static const Color disabled = Color(0xFFE5E7EB);
+  static const Color disabledText = Color(0xFF9CA3AF);
+  static const Color overlayHover = Color(0x0A000000);
+  static const Color overlayPressed = Color(0x1A000000);
 
   // ── Accent (Marketplace & Community Accent) ──────────────────────────
-  static const Color accentPurple = Color(0xFFB73D45); // RedBus Secondary Dark Red
-  static const Color accentPurpleSoft = ThemeColor(0xFFFFEBEE, 0xFFFFEBEE);
+  static const Color accentPurple = Color(0xFFB73D45); // redBus Secondary Dark Red
+  static const Color accentPurpleSoft = Color(0xFFFFEBEE);
   static const Color accentSecondaryContainer = Color(0xFFD84E55);
 
-  // ── Semantic Status & Trust ──────────────────────────────────────────
-  static const Color success = Color(0xFF22C55E); // Emerald Green
-  static const Color successSoft = ThemeColor(0xFFDCFCE7, 0xFFDCFCE7);
-  static const Color warning = Color(0xFFF59E0B); // Amber
-  static const Color warningSoft = ThemeColor(0xFFFEF3C7, 0xFFFEF3C7);
-  static const Color danger = Color(0xFFEF4444);
-  static const Color dangerSoft = ThemeColor(0xFFFEE2E2, 0xFFFEE2E2);
-  static const Color info = Color(0xFF2196F3); // Blue for info
-  static const Color infoSoft = ThemeColor(0xFFE3F2FD, 0xFFE3F2FD);
+  // ── Semantic Status & Trust (WCAG Contrast Safe) ──────────────────────────
+  static const Color success = Color(0xFF16A34A); // Emerald Green (darkened slightly for light contrast)
+  static const Color successSoft = Color(0xFFDCFCE7);
+  static const Color warning = Color(0xFFD97706); // Amber (darkened for light contrast)
+  static const Color warningSoft = Color(0xFFFEF3C7);
+  static const Color danger = Color(0xFFDC2626); // Red (darkened for light contrast)
+  static const Color dangerSoft = Color(0xFFFEE2E2);
+  static const Color info = Color(0xFF2563EB); // Blue (darkened for light contrast)
+  static const Color infoSoft = Color(0xFFDBEAFE);
 
-  // ── Typography ──────────────────────────────────────────────────────
-  static const Color textPrimary = ThemeColor(0xFF1D1D1D, 0xFF1D1D1D);
-  static const Color textSecondary = ThemeColor(0xFF666666, 0xFF666666);
-  static const Color textTertiary = ThemeColor(0xFF9E9E9E, 0xFF9E9E9E);
-  static const Color textMuted = ThemeColor(0xFF9E9E9E, 0xFF9E9E9E);
+  // ── Typography (Contrast ratios >= 4.5:1) ──────────────────────────────────────────────────────
+  static const Color textPrimary = Color(0xFF111827); // Dark gray (almost black)
+  static const Color textSecondary = Color(0xFF4B5563); // Medium gray
+  static const Color textTertiary = Color(0xFF6B7280); // Light gray
+  static const Color textMuted = Color(0xFF9CA3AF); // Muted gray
+
+  // ── Icons ───────────────────────────────────────────────────────────
+  static const Color iconPrimary = Color(0xFF111827);
+  static const Color iconSecondary = Color(0xFF4B5563);
+
+  // ── Inputs & Cards ──────────────────────────────────────────────────
+  static const Color inputBackground = Color(0xFFFFFFFF);
+  static const Color cardBackground = Color(0xFFFFFFFF);
+
+  // ── Offer / Banner Accent Colors ─────────────────────────────────────
+  static const Color offerRed = Color(0xFFE53935);
+  static const Color offerBlue = Color(0xFF1976D2);
+  static const Color offerGreen = Color(0xFF43A047);
+  static const Color offerPurple = Color(0xFF8E24AA);
 
   // ── Glass & Borders ─────────────────────────────────────────────────
-  static const Color glassSurface = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color glassHigh = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color border = ThemeColor(0xFFEAEAEA, 0xFFEAEAEA);
-  static const Color borderSubtle = ThemeColor(0xFFEAEAEA, 0xFFEAEAEA);
-  static const Color divider = ThemeColor(0xFFEAEAEA, 0xFFEAEAEA);
+  static const Color glassSurface = Color(0xFFFFFFFF);
+  static const Color glassHigh = Color(0xFFFFFFFF);
+  static const Color border = Color(0xFFE5E7EB);
+  static const Color borderSubtle = Color(0xFFF3F4F6);
+  static const Color divider = Color(0xFFE5E7EB);
 
   // ── Overlay & Scrim ─────────────────────────────────────────────────
-  static const Color overlay = ThemeColor(0xCCF8F8F8, 0xCCF8F8F8);
-  static const Color scrim = ThemeColor(0x4D000000, 0x4D000000);
+  static const Color overlay = Color(0xCCF8F8F8);
+  static const Color scrim = Color(0x4D000000);
 
   // ── Shimmer / Skeleton Loading ──────────────────────────────────────
-  static const Color shimmerBase = ThemeColor(0xFFE6E8F0, 0xFFE6E8F0);
-  static const Color shimmerHighlight = ThemeColor(0xFFF5F6FA, 0xFFF5F6FA);
+  static const Color shimmerBase = Color(0xFFE5E7EB);
+  static const Color shimmerHighlight = Color(0xFFF3F4F6);
 
   // ── Trust & Verification ────────────────────────────────────────────
-  static const Color trustVerified = ThemeColor(0xFF22C55E, 0xFF22C55E);
-  static const Color trustPremium = Color(0xFFF59E0B);
-  static const Color trustBadge = ThemeColor(0xFF2196F3, 0xFF2196F3);
+  static const Color trustVerified = Color(0xFF16A34A);
+  static const Color trustPremium = Color(0xFFD97706);
+  static const Color trustBadge = Color(0xFF2563EB);
 
   // ── Gradient Endpoints ──────────────────────────────────────────────
-  static const Color gradientStart = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color gradientEnd = ThemeColor(0xFFF8F8F8, 0xFFF8F8F8);
-  static const Color heroGradientStart = ThemeColor(0xFFFFFFFF, 0xFFFFFFFF);
-  static const Color heroGradientEnd = ThemeColor(0xFFF8F8F8, 0xFFF8F8F8);
+  static const Color gradientStart = Color(0xFFFFFFFF);
+  static const Color gradientEnd = Color(0xFFF8F8F8);
+  static const Color heroGradientStart = Color(0xFFFFFFFF);
+  static const Color heroGradientEnd = Color(0xFFF8F8F8);
 
   static void updateTheme(bool dark) {
-    isDark = false; // Always light theme for RedBus premium feel
+    isDark = false; // Always light theme for premium feel
   }
 }

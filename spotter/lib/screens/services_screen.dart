@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
@@ -360,7 +359,7 @@ class ServicesScreen extends StatelessWidget {
                   height: 90,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
+                  errorBuilder: (context, error, stackTrace) => Container(
                     height: 90,
                     color: Colors.grey.shade200,
                     child: const Icon(Icons.image, color: Colors.grey),

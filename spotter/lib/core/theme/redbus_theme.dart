@@ -1,40 +1,43 @@
 import 'package:flutter/material.dart';
+import 'colors.dart';
+import 'spacing.dart';
+import 'radius.dart';
 
-/// redBus-exact color palette and theme constants
+/// redBus-exact color palette and theme constants mapped to canonical Spott tokens
 class RBColors {
   // ── Core Brand ──────────────────────────────────────────────────────
-  static const Color primary = Color(0xFFD84E55);  // redBus signature red
-  static const Color primaryDark = Color(0xFFB73D45);
-  static const Color primaryLight = Color(0xFFE57373);
-  static const Color primarySoft = Color(0xFFFFEBEE);
+  static const Color primary = SpottColors.primary;  // redBus signature red
+  static const Color primaryDark = SpottColors.primaryDark;
+  static const Color primaryLight = SpottColors.primaryLight;
+  static const Color primarySoft = SpottColors.primarySoft;
 
   // ── Backgrounds ─────────────────────────────────────────────────────
-  static const Color background = Color(0xFFF8F8F8);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceGrey = Color(0xFFF8F8F8);
-  static const Color headerBg = Color(0xFFD84E55);
+  static const Color background = SpottColors.background;
+  static const Color surface = SpottColors.surface1;
+  static const Color surfaceGrey = SpottColors.surface2;
+  static const Color headerBg = SpottColors.primary;
 
   // ── Status Colors ────────────────────────────────────────────────────
-  static const Color seatAvailable = Color(0xFF22C55E);
-  static const Color seatUnavailable = Color(0xFF9E9E9E);
-  static const Color seatSelected = Color(0xFF2196F3);
+  static const Color seatAvailable = SpottColors.success;
+  static const Color seatUnavailable = SpottColors.textMuted;
+  static const Color seatSelected = SpottColors.info;
   static const Color seatLadies = Color(0xFFE91E63);
-  static const Color seatYellow = Color(0xFFFFC107);
+  static const Color seatYellow = SpottColors.warning;
 
   // ── Text ─────────────────────────────────────────────────────────────
-  static const Color textDark = Color(0xFF1D1D1D);
-  static const Color textMedium = Color(0xFF666666);
-  static const Color textLight = Color(0xFF9E9E9E);
-  static const Color textWhite = Color(0xFFFFFFFF);
+  static const Color textDark = SpottColors.textPrimary;
+  static const Color textMedium = SpottColors.textSecondary;
+  static const Color textLight = SpottColors.textTertiary;
+  static const Color textWhite = Colors.white;
 
   // ── UI Elements ──────────────────────────────────────────────────────
-  static const Color divider = Color(0xFFEAEAEA);
-  static const Color border = Color(0xFFEAEAEA);
-  static const Color green = Color(0xFF4CAF50);
-  static const Color orange = Color(0xFFFF9800);
-  static const Color blue = Color(0xFF2196F3);
-  static const Color purple = Color(0xFF9C27B0);
-  static const Color gold = Color(0xFFFFC107);
+  static const Color divider = SpottColors.divider;
+  static const Color border = SpottColors.border;
+  static const Color green = SpottColors.success;
+  static const Color orange = SpottColors.warning;
+  static const Color blue = SpottColors.info;
+  static const Color purple = SpottColors.accentPurple;
+  static const Color gold = SpottColors.trustPremium;
 }
 
 class RBTextStyles {
@@ -138,21 +141,21 @@ class RBTextStyles {
 }
 
 class RBSpacing {
-  static const double xs = 4.0;
-  static const double sm = 8.0;
-  static const double md = 12.0;
-  static const double lg = 16.0;
-  static const double xl = 20.0;
-  static const double xxl = 24.0;
-  static const double pageH = 16.0;
+  static const double xs = SpottSpacing.xs;
+  static const double sm = SpottSpacing.sm;
+  static const double md = SpottSpacing.s12;
+  static const double lg = SpottSpacing.md;
+  static const double xl = SpottSpacing.s20;
+  static const double xxl = SpottSpacing.lg;
+  static const double pageH = SpottSpacing.pageHorizontal;
 }
 
 class RBRadius {
-  static const double xs = 4.0;
-  static const double sm = 8.0;
-  static const double md = 16.0; // Buttons / Inputs / Chips
-  static const double lg = 20.0; // Standard Cards
-  static const double xl = 24.0; // Search Containers / Bottom Sheets
-  static const double pill = 9999.0;
-  static const double card = 20.0; // Standard Cards
+  static const double xs = SpottRadius.xs;
+  static const double sm = SpottRadius.sm;
+  static const double md = SpottRadius.lg; // Buttons / Inputs / Chips
+  static const double lg = SpottRadius.xl; // Standard Cards
+  static const double xl = SpottRadius.xxl; // Search Containers / Bottom Sheets
+  static const double pill = SpottRadius.pill;
+  static const double card = SpottRadius.card;
 }

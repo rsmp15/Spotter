@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
 import '../app/app_routes.dart';
-import '../core/theme/redbus_theme.dart';
-import '../core/theme/animations.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/radius.dart';
+import '../core/theme/shadows.dart';
+import '../core/theme/typography.dart';
+import '../core/components/premium_chips.dart';
+import '../core/components/skeleton_route_card.dart';
 
 class SearchResultsScreen extends StatefulWidget {
   const SearchResultsScreen({super.key});
@@ -18,7 +21,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   Timer? _loadingTimer;
 
   static const _filters = [
-    'All', '🚗 Car', '🛵 Bike', 'Women Friendly', 'AC', 'Fastest',
+    'All', 'Earliest', 'Lowest Price', '🚗 Car', '🛵 Bike', 'Women Friendly', 'AC',
   ];
 
   @override
@@ -38,7 +41,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: RBColors.background,
+      backgroundColor: SpottColors.background,
       body: Column(
         children: [
           _buildHeader(context),
@@ -54,11 +57,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // RED HEADER with route summary
+  // HEADER with route summary
   // ══════════════════════════════════════════════════════════════════
   Widget _buildHeader(BuildContext context) {
     return Container(
-      color: RBColors.primary,
+      color: Colors.white,
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -70,24 +73,22 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back,
-                        color: Colors.white, size: 22),
+                        color: SpottColors.textPrimary, size: 22),
                     onPressed: () => Navigator.pop(context),
                     padding: EdgeInsets.zero,
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Select a Ride',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 16,
+                      'Find a Trip',
+                      style: SpottTextStyles.headline.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: SpottColors.textPrimary,
                       ),
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.tune_rounded,
-                        color: Colors.white, size: 22),
+                        color: SpottColors.textPrimary, size: 22),
                     onPressed: () {},
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -102,67 +103,60 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
+                  color: SpottColors.surface2,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: SpottColors.border),
                 ),
                 child: Row(
                   children: [
                     const Icon(Icons.radio_button_checked_rounded,
-                        color: Colors.white70, size: 14),
+                        color: SpottColors.success, size: 14),
                     const SizedBox(width: 6),
-                    const Text(
+                    Text(
                       'Pune',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
+                      style: SpottTextStyles.body.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: SpottColors.textPrimary,
                       ),
                     ),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Icon(Icons.arrow_forward_rounded,
-                          color: Colors.white54, size: 14),
+                          color: SpottColors.textTertiary, size: 14),
                     ),
                     const Icon(Icons.location_on_rounded,
-                        color: Colors.white70, size: 14),
+                        color: SpottColors.primary, size: 14),
                     const SizedBox(width: 6),
-                    const Text(
+                    Text(
                       'Kolhapur',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
+                      style: SpottTextStyles.body.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: SpottColors.textPrimary,
                       ),
                     ),
                     const Spacer(),
                     Container(
                       width: 1,
                       height: 16,
-                      color: Colors.white30,
+                      color: SpottColors.border,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'Today',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        color: Colors.white70,
+                      style: SpottTextStyles.caption.copyWith(
+                        color: SpottColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: const Text(
+                      child: Text(
                         'Edit',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 12,
+                        style: SpottTextStyles.caption.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: SpottColors.primary,
                           decoration: TextDecoration.underline,
-                          decorationColor: Colors.white,
+                          decorationColor: SpottColors.primary,
                         ),
                       ),
                     ),
@@ -177,7 +171,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // FILTER BAR — horizontal chips on white bg
+  // FILTER BAR
   // ══════════════════════════════════════════════════════════════════
   Widget _buildFilterBar() {
     return Container(
@@ -189,34 +183,30 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         child: Row(
           children: List.generate(_filters.length, (i) {
             final active = _activeFilter == i;
+            
+            // Animated sort icon that rotates when a sort filter is applied
+            Widget? sortIcon;
+            if (i == 1 || i == 2) {
+              sortIcon = AnimatedRotation(
+                turns: active ? 0.5 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: Icon(
+                  Icons.arrow_downward_rounded,
+                  size: 14,
+                  color: active ? SpottColors.primary : SpottColors.textSecondary,
+                ),
+              );
+            }
+
             return Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: GestureDetector(
+              child: PremiumFilterChip(
+                label: _filters[i],
+                isSelected: active,
+                icon: sortIcon,
                 onTap: () {
-                  HapticFeedback.selectionClick();
                   setState(() => _activeFilter = i);
                 },
-                child: AnimatedContainer(
-                  duration: SpottAnimations.fast,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: active ? RBColors.primary : Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: active ? RBColors.primary : RBColors.divider,
-                    ),
-                  ),
-                  child: Text(
-                    _filters[i],
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: active ? Colors.white : RBColors.textMedium,
-                    ),
-                  ),
-                ),
               ),
             );
           }),
@@ -232,16 +222,16 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       itemCount: 3,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
-      itemBuilder: (_, _) => _RBSkeletonCard(),
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
+      itemBuilder: (context, index) => const SkeletonRouteCard(),
     );
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // RESULTS — redBus operator-card style
+  // RESULTS
   // ══════════════════════════════════════════════════════════════════
   Widget _buildResults(BuildContext context) {
-    final results = [
+    final allResults = [
       _RideResult(
         driverName: 'Arjun K.',
         avatarSeed: 'a042581f4e29026704a',
@@ -259,7 +249,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         price: '₹850',
         amenities: [Icons.ac_unit_rounded, Icons.wifi_rounded, Icons.power_rounded],
         tag: 'Fastest',
-        tagColor: RBColors.blue,
+        tagColor: SpottColors.info,
         verificationLevel: 4,
       ),
       _RideResult(
@@ -279,7 +269,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         price: '₹700',
         amenities: [Icons.ac_unit_rounded, Icons.female_rounded],
         tag: '1 Seat Left',
-        tagColor: RBColors.orange,
+        tagColor: SpottColors.warning,
         verificationLevel: 3,
       ),
       _RideResult(
@@ -304,10 +294,35 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       ),
     ];
 
+    // Filter & Sort logic
+    List<_RideResult> results = List.from(allResults);
+    final filterText = _filters[_activeFilter];
+    if (filterText == '🚗 Car') {
+      results = results.where((r) => r.vehicleType == 'Car').toList();
+    } else if (filterText == '🛵 Bike') {
+      results = results.where((r) => r.vehicleType == 'Bike').toList();
+    } else if (filterText == 'Women Friendly') {
+      results = results.where((r) => r.amenities.contains(Icons.female_rounded)).toList();
+    } else if (filterText == 'AC') {
+      results = results.where((r) => r.amenities.contains(Icons.ac_unit_rounded)).toList();
+    } else if (filterText == 'Lowest Price') {
+      results.sort((a, b) {
+        final priceA = int.tryParse(a.price.replaceAll('₹', '')) ?? 0;
+        final priceB = int.tryParse(b.price.replaceAll('₹', '')) ?? 0;
+        return priceA.compareTo(priceB);
+      });
+    } else if (filterText == 'Earliest') {
+      results.sort((a, b) => a.departureTime.compareTo(b.departureTime));
+    }
+
+    if (results.isEmpty) {
+      return _buildEmptyState();
+    }
+
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 100),
       itemCount: results.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, i) => _RideResultCard(
         result: results[i],
         onTap: () =>
@@ -317,11 +332,54 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       ),
     );
   }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off_rounded,
+              size: 64,
+              color: SpottColors.textTertiary.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No trips match your filters',
+              style: SpottTextStyles.title.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try removing some filters or changing your search criteria.',
+              style: SpottTextStyles.body.copyWith(
+                color: SpottColors.textSecondary,
+                fontSize: 13,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                setState(() => _activeFilter = 0);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: SpottColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(SpottRadius.sm),
+                ),
+              ),
+              child: const Text('Reset Filters'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-// ════════════════════════════════════════════════════════════════════
-// DATA MODEL
-// ════════════════════════════════════════════════════════════════════
 class _RideResult {
   final String driverName;
   final String avatarSeed;
@@ -364,9 +422,6 @@ class _RideResult {
   });
 }
 
-// ════════════════════════════════════════════════════════════════════
-// RIDE RESULT CARD — redBus bus-operator card style
-// ════════════════════════════════════════════════════════════════════
 class _RideResultCard extends StatelessWidget {
   final _RideResult result;
   final VoidCallback onTap;
@@ -383,358 +438,220 @@ class _RideResultCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(RBRadius.lg),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(SpottRadius.card),
+          boxShadow: SpottShadows.elevation2,
+          border: Border.all(color: SpottColors.border),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Top: Driver + Route ────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Driver avatar + name
-                  Column(
+            // Driver row
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage: NetworkImage(
+                      'https://i.pravatar.cc/150?u=${result.avatarSeed}'),
+                  onBackgroundImageError: (exception, stackTrace) {},
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 22,
-                        backgroundImage: NetworkImage(
-                            'https://i.pravatar.cc/150?u=${result.avatarSeed}'),
-                        onBackgroundImageError: (exception, stackTrace) {},
-                      ),
-                      const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.star_rounded,
-                              color: RBColors.gold, size: 12),
-                          const SizedBox(width: 2),
                           Text(
-                            result.rating,
-                            style: const TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: RBColors.textDark,
+                            result.driverName,
+                            style: SpottTextStyles.body.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: SpottColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Row(
+                            children: List.generate(
+                              result.verificationLevel,
+                              (i) => const Icon(Icons.verified_rounded,
+                                  color: SpottColors.info, size: 12),
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(width: 12),
-                  // Center: Name + vehicle + time
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              result.driverName,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: RBColors.textDark,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            // Verification stars
-                            Row(
-                              children: List.generate(
-                                result.verificationLevel,
-                                (i) => const Icon(Icons.verified_rounded,
-                                    color: RBColors.blue, size: 11),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          result.vehicleInfo,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            color: RBColors.textMedium,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        // Time row
-                        Row(
-                          children: [
-                            Text(
-                              result.departureTime,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
-                                color: RBColors.textDark,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          height: 1,
-                                          color: RBColors.divider,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 4),
-                                        child: Text(
-                                          result.duration,
-                                          style: const TextStyle(
-                                            fontFamily: 'Inter',
-                                            fontSize: 10,
-                                            color: RBColors.textLight,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          height: 1,
-                                          color: RBColors.divider,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              result.arrivalTime,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
-                                color: RBColors.textDark,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                result.origin,
-                                style: const TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 10,
-                                  color: RBColors.textLight,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                result.destination,
-                                style: const TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 10,
-                                  color: RBColors.textLight,
-                                ),
-                                textAlign: TextAlign.right,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Right: Price
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
+                      const SizedBox(height: 2),
                       Text(
-                        result.price,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 19,
-                          fontWeight: FontWeight.w800,
-                          color: RBColors.primary,
-                        ),
-                      ),
-                      const Text(
-                        '/seat',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          color: RBColors.textLight,
+                        result.vehicleInfo,
+                        style: SpottTextStyles.caption.copyWith(
+                          color: SpottColors.textSecondary,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            // ── Bottom strip: amenities + seats + tag + book ──────
-            Container(
-              decoration: const BoxDecoration(
-                color: RBColors.surfaceGrey,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(RBRadius.lg),
-                  bottomRight: Radius.circular(RBRadius.lg),
                 ),
-              ),
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 8),
-              child: Row(
-                children: [
-                  // Amenity icons
-                  ...result.amenities.map(
-                    (icon) => Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: Tooltip(
-                        message: _amenityLabel(icon),
-                        child: Icon(icon,
-                            size: 16, color: RBColors.textMedium),
+                // Rating stars in clean gold
+                Row(
+                  children: [
+                    const Icon(Icons.star_rounded,
+                        color: SpottColors.warning, size: 16),
+                    const SizedBox(width: 2),
+                    Text(
+                      result.rating,
+                      style: SpottTextStyles.caption.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: SpottColors.textPrimary,
                       ),
                     ),
-                  ),
-                  const Spacer(),
-                  // Tag badge
-                  if (result.tag.isNotEmpty) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: result.tagColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                            color:
-                                result.tagColor.withValues(alpha: 0.3)),
-                      ),
-                      child: Text(
-                        result.tag,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: result.tagColor,
-                        ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Time & Price row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Time
+                Row(
+                  children: [
+                    Text(
+                      result.departureTime,
+                      style: SpottTextStyles.body.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: SpottColors.textPrimary,
                       ),
                     ),
                     const SizedBox(width: 8),
+                    Text(
+                      '-  ${result.duration}  -',
+                      style: SpottTextStyles.caption.copyWith(
+                        color: SpottColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      result.arrivalTime,
+                      style: SpottTextStyles.body.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: SpottColors.textPrimary,
+                      ),
+                    ),
                   ],
-                  // Seats
-                  Text(
-                    '${result.seatsAvailable} seats left',
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: RBColors.green,
+                ),
+                // Price
+                Text(
+                  result.price,
+                  style: SpottTextStyles.title.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: SpottColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            // Route detail
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    result.origin,
+                    style: SpottTextStyles.caption.copyWith(
+                      color: SpottColors.textTertiary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    result.destination,
+                    style: SpottTextStyles.caption.copyWith(
+                      color: SpottColors.textTertiary,
+                    ),
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1, color: SpottColors.divider),
+            const SizedBox(height: 12),
+            // Bottom row: Amenities, Seats, Tag, Book
+            Row(
+              children: [
+                ...result.amenities.map(
+                  (icon) => Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Icon(icon,
+                        size: 16, color: SpottColors.textMuted),
+                  ),
+                ),
+                const Spacer(),
+                if (result.tag.isNotEmpty) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: result.tagColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(SpottRadius.xs),
+                    ),
+                    child: Text(
+                      result.tag,
+                      style: SpottTextStyles.caption.copyWith(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: result.tagColor,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  // Book button
-                  SizedBox(
-                    height: 30,
-                    child: ElevatedButton(
-                      onPressed: onBook,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: RBColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(RBRadius.md),
-                        ),
-                        elevation: 0,
-                        minimumSize: Size.zero,
-                      ),
-                      child: const Text(
-                        'BOOK',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                  ),
+                  const SizedBox(width: 8),
                 ],
-              ),
+                Text(
+                  '${result.seatsAvailable} seats left',
+                  style: SpottTextStyles.caption.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: SpottColors.success,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: onBook,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: SpottColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(SpottRadius.sm),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'BOOK',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  String _amenityLabel(IconData icon) {
-    if (icon == Icons.ac_unit_rounded) return 'AC';
-    if (icon == Icons.wifi_rounded) return 'WiFi';
-    if (icon == Icons.power_rounded) return 'Charging';
-    if (icon == Icons.female_rounded) return 'Women Friendly';
-    return '';
-  }
-}
-
-// ════════════════════════════════════════════════════════════════════
-// SKELETON CARD
-// ════════════════════════════════════════════════════════════════════
-class _RBSkeletonCard extends StatefulWidget {
-  @override
-  State<_RBSkeletonCard> createState() => _RBSkeletonCardState();
-}
-
-class _RBSkeletonCardState extends State<_RBSkeletonCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1200))
-      ..repeat(reverse: true);
-    _anim = Tween<double>(begin: 0.4, end: 0.9).animate(
-        CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _anim,
-      builder: (_, _) => Container(
-        height: 120,
-        decoration: BoxDecoration(
-          color: Colors.grey.withValues(alpha: _anim.value * 0.15),
-          borderRadius: BorderRadius.circular(RBRadius.lg),
         ),
       ),
     );

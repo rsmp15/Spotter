@@ -5,6 +5,7 @@ import '../../app/app_config.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
+import '../../core/theme/colors.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
 
@@ -113,7 +114,7 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
                           Text(
                             'Suggestions',
                             style: TextStyle(
-                              fontFamily: 'Hanken Grotesk',
+                              fontFamily: 'Inter',
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
                               color: isDark ? Colors.white : Colors.black,
@@ -132,7 +133,7 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
                             child: const Text(
                               'View All',
                               style: TextStyle(
-                                color: Helper.ink,
+                                color: SpottColors.textPrimary,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -166,11 +167,13 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
                       ),
                     ],
 
-                    const SizedBox(height: 20),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: _PaymentBanner(),
-                    ),
+                    if (_PaymentBanner._shouldShow) ...[
+                      const SizedBox(height: 20),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: _PaymentBanner(),
+                      ),
+                    ],
 
                     const SizedBox(height: 28),
                     _CardRailSection(
@@ -283,12 +286,12 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? Helper.ink
+              ? SpottColors.textPrimary
               : (isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF3F4F6)),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: isSelected
-                ? Helper.ink
+                ? SpottColors.textPrimary
                 : (isDark
                       ? Colors.white.withValues(alpha: 0.08)
                       : Colors.transparent),
@@ -321,7 +324,7 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
             Text(
               label,
               style: TextStyle(
-                fontFamily: 'Geist',
+                fontFamily: 'Inter',
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: isSelected
@@ -555,7 +558,7 @@ class _CarouselRideCard extends StatelessWidget {
                       color: badgeTextColor,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
-                      fontFamily: 'Geist',
+                      fontFamily: 'Inter',
                     ),
                   ),
                 ),
@@ -594,7 +597,7 @@ class _CarouselRideCard extends StatelessWidget {
                     Text(
                       rating,
                       style: TextStyle(
-                        fontFamily: 'Geist',
+                        fontFamily: 'Inter',
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: isDark ? const Color(0xFFE5E2E1) : Colors.black,
@@ -654,10 +657,10 @@ class _CarouselRideCard extends StatelessWidget {
                         TextSpan(
                           text: fare,
                           style: TextStyle(
-                            fontFamily: 'Geist',
+                            fontFamily: 'Inter',
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-                            color: isDark ? Colors.white : Helper.ink,
+                            color: isDark ? Colors.white : SpottColors.textPrimary,
                           ),
                         ),
                         TextSpan(
@@ -678,7 +681,7 @@ class _CarouselRideCard extends StatelessWidget {
                 ElevatedButton(
                   onPressed: onBookTap,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Helper.ink,
+                    backgroundColor: SpottColors.textPrimary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
@@ -712,6 +715,7 @@ class _CarouselRideCard extends StatelessWidget {
 }
 
 class _PaymentBanner extends StatelessWidget {
+  static const bool _shouldShow = false;
   const _PaymentBanner();
 
   @override
@@ -835,7 +839,7 @@ class _CardRailSection extends StatelessWidget {
           child: Text(
             title,
             style: TextStyle(
-              fontFamily: 'Hanken Grotesk',
+              fontFamily: 'Inter',
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: isDark ? Colors.white : Colors.black,
@@ -959,7 +963,7 @@ class _AroundYouSection extends StatelessWidget {
         Text(
           'Around you',
           style: TextStyle(
-            fontFamily: 'Hanken Grotesk',
+            fontFamily: 'Inter',
             fontSize: 20,
             fontWeight: FontWeight.w800,
             color: isDark ? Colors.white : Colors.black,
@@ -1000,7 +1004,7 @@ class _AroundYouSection extends StatelessWidget {
                     width: 122,
                     height: 122,
                     decoration: BoxDecoration(
-                      color: Helper.ink.withValues(alpha: 0.12),
+                      color: SpottColors.textPrimary.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -1010,7 +1014,7 @@ class _AroundYouSection extends StatelessWidget {
                     width: 18,
                     height: 18,
                     decoration: BoxDecoration(
-                      color: Helper.ink,
+                      color: SpottColors.textPrimary,
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 3),
                     ),
@@ -1105,7 +1109,7 @@ class _PremierBanner extends StatelessWidget {
                     Text(
                       'Comfortable sedan rides',
                       style: TextStyle(
-                        fontFamily: 'Hanken Grotesk',
+                        fontFamily: 'Inter',
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -1156,7 +1160,7 @@ class _PremierBanner extends StatelessWidget {
               height: 8,
               margin: const EdgeInsets.symmetric(horizontal: 3),
               decoration: BoxDecoration(
-                color: index == 0 ? Helper.ink : const Color(0xFFD1D5DB),
+                color: index == 0 ? SpottColors.textPrimary : const Color(0xFFD1D5DB),
                 shape: BoxShape.circle,
               ),
             ),

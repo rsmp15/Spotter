@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../helper.dart';
+import '../core/theme/colors.dart';
 import '../models/ride_models.dart';
 import '../spotter_widgets.dart';
 
@@ -84,8 +85,8 @@ class _DestinationSearchScreenState extends State<DestinationSearchScreen> {
     final suggestions = _filteredSuggestions(destinationQuery);
     final scaffoldBg = isDark
         ? const Color(0xFF050505)
-        : Helper.backgroundColor;
-    final textColor = isDark ? Colors.white : Helper.ink;
+        : SpottColors.background;
+    final textColor = isDark ? Colors.white : SpottColors.textPrimary;
 
     return Scaffold(
       backgroundColor: scaffoldBg,
@@ -244,8 +245,8 @@ class _DestinationSearchScreenState extends State<DestinationSearchScreen> {
         ? Colors.white.withValues(alpha: 0.08)
         : const Color(0xFFE2E8F0);
     final buttonBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF2F4F7);
-    final textColor = isDark ? Colors.white : Helper.ink;
-    final iconColor = isDark ? Colors.white : Helper.ink;
+    final textColor = isDark ? Colors.white : SpottColors.textPrimary;
+    final iconColor = isDark ? Colors.white : SpottColors.textPrimary;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -360,12 +361,12 @@ class _DestinationSearchScreenState extends State<DestinationSearchScreen> {
     final ride = RideScope.of(context);
     final isDark = ride.isDarkMode;
     final bgColor = isDark ? const Color(0xFF121212) : Colors.white;
-    final textColor = isDark ? Colors.white : Helper.ink;
+    final textColor = isDark ? Colors.white : SpottColors.textPrimary;
     final subtitleColor = isDark
         ? const Color(0xFF8E90A2)
         : const Color(0xFF667085);
     final avatarBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF2F4F7);
-    final iconColor = isDark ? Colors.white : Helper.ink;
+    final iconColor = isDark ? Colors.white : SpottColors.textPrimary;
     final barrierColor = isDark
         ? Colors.black.withValues(alpha: 0.6)
         : Colors.black.withValues(alpha: 0.4);
@@ -488,8 +489,8 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chipBg = isDark ? const Color(0xFF1E293B) : Helper.canvasSoft;
-    final textColor = isDark ? Colors.white : Helper.ink;
+    final chipBg = isDark ? const Color(0xFF1E293B) : SpottColors.surface2;
+    final textColor = isDark ? Colors.white : SpottColors.textPrimary;
 
     return InkWell(
       borderRadius: BorderRadius.circular(999),
@@ -576,7 +577,7 @@ class _LocationInputs extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: Helper.ink,
+                    color: SpottColors.textPrimary,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -591,7 +592,7 @@ class _LocationInputs extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: Helper.ink,
+                    color: SpottColors.textPrimary,
                     shape: BoxShape.rectangle,
                   ),
                 ),
@@ -667,7 +668,7 @@ class _FieldShell extends StatelessWidget {
         autofocus: autofocus,
         textInputAction: textInputAction,
         onSubmitted: onSubmitted,
-        cursorColor: Helper.ink,
+        cursorColor: SpottColors.textPrimary,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
@@ -714,8 +715,8 @@ class _SavedPlacesTile extends StatelessWidget {
         ? Colors.white.withValues(alpha: 0.08)
         : const Color(0xFFF2F4F7);
     final avatarBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF2F4F7);
-    final iconColor = isDark ? Colors.white : Helper.ink;
-    final textColor = isDark ? Colors.white : Helper.ink;
+    final iconColor = isDark ? Colors.white : SpottColors.textPrimary;
+    final textColor = isDark ? Colors.white : SpottColors.textPrimary;
 
     return InkWell(
       onTap: onTap,
@@ -780,8 +781,8 @@ class _DestinationResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final avatarBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF2F4F7);
-    final iconColor = isDark ? Colors.white : Helper.ink;
-    final textColor = isDark ? Colors.white : Helper.ink;
+    final iconColor = isDark ? Colors.white : SpottColors.textPrimary;
+    final textColor = isDark ? Colors.white : SpottColors.textPrimary;
     final subtitleColor = isDark
         ? const Color(0xFF8E90A2)
         : const Color(0xFF667085);

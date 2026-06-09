@@ -261,7 +261,7 @@ class AppRoutes {
       case profile:
         return const RoleGuard(
           allowedRoles: [UserRole.passenger, UserRole.parcelSender],
-          child: MainNavigationShell(initialTab: 4),
+          child: MainNavigationShell(initialTab: 3),
         );
       case chat:
         return const ChatScreen();

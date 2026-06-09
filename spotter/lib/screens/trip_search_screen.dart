@@ -4,7 +4,12 @@ import 'dart:async';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../core/components/skeleton_route_card.dart';
-import '../core/theme/redbus_theme.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/radius.dart';
+import '../core/theme/shadows.dart';
+import '../core/theme/typography.dart';
+import '../core/components/premium_chips.dart';
+import '../widgets/premium/premium_selectors.dart';
 
 class TripSearchScreen extends StatefulWidget {
   const TripSearchScreen({super.key});
@@ -24,6 +29,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
   bool _isSearching = false;
   bool _searchDone = false;
   Timer? _searchTimer;
+  int _activeFilter = 0;
 
   @override
   void dispose() {
@@ -62,7 +68,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
     final ride = RideScope.of(context);
 
     return Scaffold(
-      backgroundColor: RBColors.background,
+      backgroundColor: SpottColors.background,
       body: Column(
         children: [
           _buildHeader(context),
@@ -74,7 +80,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                 children: [
                   _buildSearchForm(context),
                   _buildFilterChips(),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   _buildResultsSection(context, ride),
                   const SizedBox(height: 100),
                 ],
@@ -91,11 +97,11 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
   // ══════════════════════════════════════════════════════════════════
   Widget _buildHeader(BuildContext context) {
     return Container(
-      color: RBColors.primary,
+      color: SpottColors.primary,
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(6, 4, 16, 10),
+          padding: const EdgeInsets.fromLTRB(6, 4, 16, 12),
           child: Row(
             children: [
               IconButton(
@@ -104,11 +110,9 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                 onPressed: () => Navigator.pop(context),
                 padding: EdgeInsets.zero,
               ),
-              const Text(
+              Text(
                 'Find a Trip',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 16,
+                style: SpottTextStyles.headline.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
@@ -121,43 +125,39 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // SEARCH FORM (white card)
+  // SEARCH FORM (Premium Booking Card)
   // ══════════════════════════════════════════════════════════════════
   Widget _buildSearchForm(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(14),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(RBRadius.xl),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(SpottRadius.card),
+        boxShadow: SpottShadows.elevation2,
+        border: Border.all(color: SpottColors.border),
       ),
       child: Column(
         children: [
           // FROM / TO
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: RBColors.divider),
-              borderRadius: BorderRadius.circular(RBRadius.lg),
+              border: Border.all(color: SpottColors.border),
+              borderRadius: BorderRadius.circular(SpottRadius.lg),
+              color: SpottColors.surface2,
             ),
             child: Column(
               children: [
                 _buildFieldRow(
                   icon: Icons.radio_button_checked_rounded,
-                  iconColor: RBColors.green,
+                  iconColor: SpottColors.success,
                   label: 'Leaving from',
                   controller: _sourceController,
                 ),
                 Stack(
                   alignment: Alignment.centerRight,
                   children: [
-                    const Divider(height: 1, color: RBColors.divider),
+                    const Divider(height: 1, color: SpottColors.divider),
                     Padding(
                       padding: const EdgeInsets.only(right: 12),
                       child: GestureDetector(
@@ -169,12 +169,13 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                             color: Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: RBColors.primary, width: 1.5),
+                                color: SpottColors.primary, width: 1.5),
+                            boxShadow: SpottShadows.elevation1,
                           ),
                           child: const Icon(
                             Icons.swap_vert_rounded,
-                            color: RBColors.primary,
-                            size: 17,
+                            color: SpottColors.primary,
+                            size: 18,
                           ),
                         ),
                       ),
@@ -183,14 +184,14 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                 ),
                 _buildFieldRow(
                   icon: Icons.location_on_rounded,
-                  iconColor: RBColors.primary,
+                  iconColor: SpottColors.primary,
                   label: 'Going to',
                   controller: _destController,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -199,20 +200,28 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                   label: 'Date',
                   value: _selectedDate,
                   onTap: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
+                    DateTime initDate;
+                    try {
+                      final parts = _selectedDate.split('/');
+                      if (parts.length == 3) {
+                        initDate = DateTime(
+                          int.parse(parts[2]),
+                          int.parse(parts[1]),
+                          int.parse(parts[0]),
+                        );
+                      } else {
+                        initDate = DateTime.now();
+                      }
+                    } catch (_) {
+                      initDate = DateTime.now();
+                    }
+
+                    final date = await PremiumDatePickerBottomSheet.show(
+                      context,
+                      initialDate: initDate,
                       firstDate: DateTime.now(),
-                      lastDate: DateTime.now()
-                          .add(const Duration(days: 365)),
-                      builder: (ctx, child) => Theme(
-                        data: Theme.of(ctx).copyWith(
-                          colorScheme: const ColorScheme.light(
-                              primary: RBColors.primary,
-                              onPrimary: Colors.white),
-                        ),
-                        child: child!,
-                      ),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      primaryColor: SpottColors.primary,
                     );
                     if (date != null) {
                       setState(() =>
@@ -222,49 +231,54 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                   },
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Expanded(
                 child: _buildTapBox(
                   icon: Icons.person_rounded,
                   label: 'Passengers',
                   value: '$_passengers Seat',
-                  onTap: () {
-                    setState(() {
-                      int p = int.parse(_passengers);
-                      p = p > 3 ? 1 : p + 1;
-                      _passengers = p.toString();
-                    });
+                  onTap: () async {
+                    final currentVal = int.tryParse(_passengers) ?? 1;
+                    final picked = await PremiumPassengersBottomSheet.show(
+                      context,
+                      initialSeats: currentVal,
+                      maxSeats: 4,
+                      primaryColor: SpottColors.primary,
+                      title: 'Select Seats',
+                      subtitle: 'Choose how many seats to book',
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        _passengers = picked.toString();
+                      });
+                    }
                   },
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: 50,
             child: ElevatedButton(
               onPressed: () {
                 HapticFeedback.lightImpact();
                 _triggerSearch();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: RBColors.primary,
+                backgroundColor: SpottColors.primary,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(RBRadius.md),
+                  borderRadius: BorderRadius.circular(SpottRadius.button),
                 ),
-              ),
-              child: const Text(
-                'SEARCH',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
+                textStyle: SpottTextStyles.label.copyWith(
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
                 ),
               ),
+              child: const Text('SEARCH'),
             ),
           ),
         ],
@@ -279,30 +293,28 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
     required TextEditingController controller,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Row(
         children: [
           Icon(icon, color: iconColor, size: 18),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
+                  style: SpottTextStyles.caption.copyWith(
+                    color: SpottColors.textTertiary,
                     fontSize: 10,
-                    color: RBColors.textLight,
                   ),
                 ),
+                const SizedBox(height: 2),
                 TextField(
                   controller: controller,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: RBColors.textDark,
+                  style: SpottTextStyles.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: SpottColors.textPrimary,
                   ),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -326,33 +338,36 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(RBRadius.md),
+      borderRadius: BorderRadius.circular(SpottRadius.lg),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          border: Border.all(color: RBColors.divider),
-          borderRadius: BorderRadius.circular(RBRadius.md),
+          border: Border.all(color: SpottColors.border),
+          borderRadius: BorderRadius.circular(SpottRadius.lg),
+          color: SpottColors.surface2,
         ),
         child: Row(
           children: [
-            Icon(icon, color: RBColors.primary, size: 15),
-            const SizedBox(width: 7),
+            Icon(icon, color: SpottColors.primary, size: 16),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label,
-                      style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          color: RBColors.textLight)),
+                  Text(
+                    label,
+                    style: SpottTextStyles.caption.copyWith(
+                      color: SpottColors.textTertiary,
+                      fontSize: 10,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
                   Text(
                     value,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
+                    style: SpottTextStyles.body.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: SpottColors.textPrimary,
                       fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: RBColors.textDark,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -375,31 +390,20 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
     ];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        children: chips.map((c) {
+        children: List.generate(chips.length, (i) {
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 7),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: RBColors.divider),
-              ),
-              child: Text(
-                c,
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: RBColors.textMedium,
-                ),
-              ),
+            child: PremiumFilterChip(
+              label: chips[i],
+              isSelected: _activeFilter == i,
+              onTap: () {
+                setState(() => _activeFilter = i);
+              },
             ),
           );
-        }).toList(),
+        }),
       ),
     );
   }
@@ -409,12 +413,12 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
   // ══════════════════════════════════════════════════════════════════
   Widget _buildResultsSection(BuildContext context, RideController ride) {
     if (_isSearching) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           children: [
             SkeletonRouteCard(),
-            const SizedBox(height: 10),
+            SizedBox(height: 12),
             SkeletonRouteCard(),
           ],
         ),
@@ -427,15 +431,13 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
         child: Center(
           child: Column(
             children: [
-              Icon(Icons.search_rounded,
-                  size: 48, color: RBColors.divider),
+              const Icon(Icons.search_rounded,
+                  size: 48, color: SpottColors.border),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Enter route and tap Search.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  color: RBColors.textMedium,
+                style: SpottTextStyles.body.copyWith(
+                  color: SpottColors.textSecondary,
                 ),
               ),
             ],
@@ -450,25 +452,21 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
         child: Center(
           child: Column(
             children: [
-              Icon(Icons.search_off_rounded,
-                  size: 48, color: RBColors.orange),
+              const Icon(Icons.search_off_rounded,
+                  size: 48, color: SpottColors.warning),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'No rides found for this route.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: RBColors.textDark,
+                style: SpottTextStyles.body.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: SpottColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'Try a different date or route.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  color: RBColors.textLight,
+                style: SpottTextStyles.caption.copyWith(
+                  color: SpottColors.textSecondary,
                 ),
               ),
             ],
@@ -478,33 +476,29 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   '${ride.activeTrips.length} rides found',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: RBColors.textDark,
+                  style: SpottTextStyles.label.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: SpottColors.textPrimary,
                   ),
                 ),
                 GestureDetector(
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.searchResults),
-                  child: const Text(
+                  child: Text(
                     'View All',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: RBColors.primary,
+                    style: SpottTextStyles.label.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: SpottColors.primary,
                     ),
                   ),
                 ),
@@ -517,7 +511,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
               orElse: () => ride.drivers.first,
             );
             return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: 12),
               child: _ResultCard(
                 driverName: driver.name,
                 vehicleInfo: 'Car (AC)',
@@ -544,7 +538,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
 }
 
 // ════════════════════════════════════════════════════════════════════
-// RESULT CARD — redBus operator style
+// RESULT CARD
 // ════════════════════════════════════════════════════════════════════
 class _ResultCard extends StatelessWidget {
   final String driverName;
@@ -582,122 +576,97 @@ class _ResultCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(RBRadius.lg),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(SpottRadius.card),
+          boxShadow: SpottShadows.elevation1,
+          border: Border.all(color: SpottColors.border),
         ),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Left: time
+                  // Left: time column
                   Column(
                     children: [
                       Text(
                         departureTime,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: RBColors.textDark,
+                        style: SpottTextStyles.body.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: SpottColors.textPrimary,
                         ),
                       ),
                       Padding(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Column(
                           children: [
-                            Container(
-                                width: 1.5,
-                                height: 6,
-                                color: RBColors.divider),
+                            Container(width: 1.5, height: 8, color: SpottColors.border),
                             Text(
                               duration,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
+                              style: SpottTextStyles.caption.copyWith(
                                 fontSize: 9,
-                                color: RBColors.textLight,
+                                color: SpottColors.textSecondary,
                               ),
                             ),
-                            Container(
-                                width: 1.5,
-                                height: 6,
-                                color: RBColors.divider),
+                            Container(width: 1.5, height: 8, color: SpottColors.border),
                           ],
                         ),
                       ),
                       Text(
                         arrivalTime,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: RBColors.textDark,
+                        style: SpottTextStyles.body.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: SpottColors.textPrimary,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(width: 14),
-                  // Center: driver + destination
+                  const SizedBox(width: 16),
+                  // Center: driver info
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           driverName,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: RBColors.textDark,
+                          style: SpottTextStyles.body.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: SpottColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           vehicleInfo,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 11,
-                            color: RBColors.textMedium,
+                          style: SpottTextStyles.caption.copyWith(
+                            color: SpottColors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           destination,
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 11,
-                            color: RBColors.textLight,
+                          style: SpottTextStyles.caption.copyWith(
+                            color: SpottColors.textTertiary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 8),
                         Row(
                           children: [
                             const Icon(Icons.star_rounded,
-                                color: RBColors.gold, size: 12),
+                                color: SpottColors.warning, size: 14),
                             const SizedBox(width: 2),
                             Text(
                               rating,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: RBColors.textDark,
+                              style: SpottTextStyles.caption.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: SpottColors.textPrimary,
                               ),
                             ),
                             const SizedBox(width: 8),
                             const Icon(Icons.verified_rounded,
-                                color: RBColors.blue, size: 12),
+                                color: SpottColors.info, size: 14),
                           ],
                         ),
                       ],
@@ -709,19 +678,15 @@ class _ResultCard extends StatelessWidget {
                     children: [
                       Text(
                         price,
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 18,
+                        style: SpottTextStyles.title.copyWith(
                           fontWeight: FontWeight.w800,
-                          color: RBColors.primary,
+                          color: SpottColors.primary,
                         ),
                       ),
-                      const Text(
+                      Text(
                         '/seat',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          color: RBColors.textLight,
+                        style: SpottTextStyles.caption.copyWith(
+                          color: SpottColors.textSecondary,
                         ),
                       ),
                     ],
@@ -732,73 +697,58 @@ class _ResultCard extends StatelessWidget {
             // Bottom bar
             Container(
               decoration: const BoxDecoration(
-                color: RBColors.surfaceGrey,
+                color: SpottColors.surface2,
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(RBRadius.lg),
-                  bottomRight: Radius.circular(RBRadius.lg),
+                  bottomLeft: Radius.circular(SpottRadius.card),
+                  bottomRight: Radius.circular(SpottRadius.card),
                 ),
               ),
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
                 children: [
                   if (isFastFilling)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 7, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: RBColors.orange.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                            color:
-                                RBColors.orange.withValues(alpha: 0.3)),
+                        color: SpottColors.warningSoft,
+                        borderRadius: BorderRadius.circular(SpottRadius.xs),
+                        border: Border.all(color: SpottColors.warning.withValues(alpha: 0.3)),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Fast filling',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
+                        style: SpottTextStyles.caption.copyWith(
                           fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: RBColors.orange,
+                          fontWeight: FontWeight.bold,
+                          color: SpottColors.warning,
                         ),
                       ),
                     ),
                   const Spacer(),
                   Text(
                     '$seatsLeft seats left',
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: RBColors.green,
+                    style: SpottTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: SpottColors.success,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   SizedBox(
-                    height: 28,
+                    height: 32,
                     child: ElevatedButton(
                       onPressed: onBook,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: RBColors.primary,
+                        backgroundColor: SpottColors.primary,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(RBRadius.md),
-                        ),
                         elevation: 0,
-                        minimumSize: Size.zero,
-                      ),
-                      child: const Text(
-                        'BOOK',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(SpottRadius.sm),
+                        ),
+                        textStyle: SpottTextStyles.caption.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
+                      child: const Text('BOOK'),
                     ),
                   ),
                 ],

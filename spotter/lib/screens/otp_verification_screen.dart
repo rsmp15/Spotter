@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
+import 'dart:async';
 import '../app/app_routes.dart';
-import '../custom_button.dart';
-import '../custom_card.dart';
-import '../helper.dart';
-import '../white_text_field.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/radius.dart';
+import '../core/theme/shadows.dart';
+import '../core/theme/typography.dart';
+import '../core/components/spott_buttons.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
@@ -15,20 +17,50 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final TextEditingController _otpController = TextEditingController();
+  final FocusNode _otpFocusNode = FocusNode();
+  
+  int _secondsRemaining = 30;
+  Timer? _countdownTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+    // Auto-focus OTP field after a short delay
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _otpFocusNode.requestFocus();
+    });
+  }
 
   @override
   void dispose() {
     _otpController.dispose();
+    _otpFocusNode.dispose();
+    _countdownTimer?.cancel();
     super.dispose();
+  }
+
+  void _startTimer() {
+    setState(() {
+      _secondsRemaining = 30;
+    });
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      if (_secondsRemaining == 0) {
+        timer.cancel();
+      } else {
+        setState(() {
+          _secondsRemaining--;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final inkColor = Helper.inkColor(context);
-    final mutedColor = Helper.mutedColor(context);
-
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: SpottColors.background,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -40,92 +72,175 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.maybePop(context),
-                    icon: Icon(Icons.arrow_back, color: inkColor),
+                    icon: const Icon(Icons.arrow_back, color: SpottColors.textPrimary),
                     style: IconButton.styleFrom(
-                      backgroundColor: Helper.cardBg(context),
+                      backgroundColor: SpottColors.surface1,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(999),
-                        side: BorderSide(color: Helper.line(context)),
+                        side: const BorderSide(color: SpottColors.border),
                       ),
                     ),
                   ),
                   const SizedBox(height: 26),
                   Text(
                     'Verify your number',
-                    style: TextStyle(
-                      fontSize: 36,
-                      height: 1.15,
+                    style: SpottTextStyles.displayLarge.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: inkColor,
+                      color: SpottColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'OTP sent to +91 98765 43210',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: mutedColor,
+                    style: SpottTextStyles.body.copyWith(
+                      color: SpottColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  WhiteTextField(
-                    controller: _otpController,
-                    labelText: '6 Digit OTP',
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _verifyOtp(context),
+                  const SizedBox(height: 32),
+
+                  // 6-digit verification code layout
+                  GestureDetector(
+                    onTap: () => _otpFocusNode.requestFocus(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(6, (index) {
+                        final text = _otpController.text;
+                        String char = '';
+                        bool isCurrent = false;
+
+                        if (index < text.length) {
+                          char = text[index];
+                        }
+                        if (_otpFocusNode.hasFocus && index == text.length) {
+                          isCurrent = true;
+                        }
+
+                        return Container(
+                          width: 50,
+                          height: 56,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: SpottColors.surface1,
+                            borderRadius: BorderRadius.circular(SpottRadius.md),
+                            border: Border.all(
+                              color: isCurrent
+                                  ? SpottColors.primary
+                                  : SpottColors.border,
+                              width: isCurrent ? 2.0 : 1.0,
+                            ),
+                            boxShadow: isCurrent ? SpottShadows.glowPrimary : null,
+                          ),
+                          child: Text(
+                            char.isNotEmpty ? char : '•',
+                            style: SpottTextStyles.display.copyWith(
+                              fontFamily: 'RobotoMono',
+                              fontWeight: FontWeight.bold,
+                              color: char.isNotEmpty
+                                  ? SpottColors.textPrimary
+                                  : SpottColors.textMuted,
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  CustomButton(
-                    label: 'Verify And Continue',
+
+                  // Hidden input field
+                  SizedBox(
+                    width: 0,
+                    height: 0,
+                    child: TextField(
+                      controller: _otpController,
+                      focusNode: _otpFocusNode,
+                      keyboardType: TextInputType.number,
+                      autofillHints: const [AutofillHints.oneTimeCode],
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(6),
+                      ],
+                      onChanged: (val) {
+                        setState(() {});
+                        if (val.length == 6) {
+                          _verifyOtp(context);
+                        }
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Verify Button
+                  SpottButton.primary(
+                    label: 'Verify and Continue',
                     onPressed: () => _verifyOtp(context),
                   ),
-                  const SizedBox(height: 80),
-                  CustomCard(
-                    vertical: 16,
-                    horizontal: 16,
-                    height: 104,
-                    hasShadow: false,
-                    children: [
-                      Text(
-                        'Did not receive the OTP?',
-                        style: TextStyle(
-                          color: inkColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
+
+                  const SizedBox(height: 48),
+
+                  // Timer & Resend Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: SpottColors.surface1,
+                      borderRadius: BorderRadius.circular(SpottRadius.card),
+                      border: Border.all(color: SpottColors.border),
+                      boxShadow: SpottShadows.elevation1,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Did not receive the OTP?',
+                          style: SpottTextStyles.body.copyWith(
+                            color: SpottColors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('OTP resent')),
-                              );
-                            },
-                            child: Text(
-                              'Resend OTP',
-                              style: TextStyle(
-                                color: inkColor,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: _secondsRemaining > 0
+                                  ? null
+                                  : () {
+                                      _startTimer();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('OTP resent successfully'),
+                                          backgroundColor: SpottColors.success,
+                                        ),
+                                      );
+                                    },
+                              child: Text(
+                                'Resend OTP',
+                                style: SpottTextStyles.body.copyWith(
+                                  color: _secondsRemaining > 0
+                                      ? SpottColors.disabledText
+                                      : SpottColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                          Text(
-                            'Expires in 00:30',
-                            style: TextStyle(
-                              color: mutedColor,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
+                            Text(
+                              _secondsRemaining > 0
+                                  ? 'Expires in 00:${_secondsRemaining.toString().padLeft(2, '0')}'
+                                  : 'Code expired',
+                              style: SpottTextStyles.caption.copyWith(
+                                color: _secondsRemaining > 0
+                                    ? SpottColors.textSecondary
+                                    : SpottColors.danger,
+                                fontWeight: _secondsRemaining > 0
+                                    ? FontWeight.normal
+                                    : FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   const Spacer(),
                 ],
@@ -141,7 +256,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (_otpController.text.trim().length != 6) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Enter the 6 digit OTP')));
+      ).showSnackBar(const SnackBar(
+        content: Text('Enter the 6 digit OTP'),
+        backgroundColor: SpottColors.danger,
+      ));
       return;
     }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
+import '../../core/theme/colors.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
 
@@ -95,7 +96,7 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
                         'Driver matches',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: isDark ? Colors.white : Helper.ink,
+                          color: isDark ? Colors.white : SpottColors.textPrimary,
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
                         ),

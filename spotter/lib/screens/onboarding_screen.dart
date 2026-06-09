@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:spotter/custom_card.dart';
-import 'package:spotter/helper.dart';
-
 import '../app/app_routes.dart';
-import '../custom_button.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/radius.dart';
+import '../core/theme/shadows.dart';
+import '../core/theme/typography.dart';
+import '../core/components/spott_buttons.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -11,149 +12,226 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Helper.backgroundColor,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 430),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'SPOTT',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: Helper.ink,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  const Text(
-                    'Share your journey with Spott',
-                    style: TextStyle(
-                      fontSize: 36,
-                      height: 1.12,
-                      fontWeight: FontWeight.w700,
-                      color: Helper.ink,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Container(
-                    height: 230,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEFEFEF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Helper.lineColor),
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: CustomPaint(painter: _SpottRoutePainter()),
-                        ),
-                        const Center(
-                          child: Icon(
-                            Icons.near_me,
-                            size: 74,
-                            color: Helper.ink,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Reduce travel costs by sharing seats on trips you\'re already making.',
-                    style: TextStyle(
-                      color: Helper.muted,
-                      fontSize: 16,
-                      height: 1.45,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const Spacer(),
-                  const CustomCard(
-                    height: 154,
-                    hasShadow: false,
-                    children: [
-                      Text(
-                        'Search intercity trips and travel at a fraction of the cost',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Helper.ink,
-                        ),
+      backgroundColor: SpottColors.background,
+      body: Column(
+        children: [
+          // Full-bleed Top Hero Section with subtle premium gradient
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [SpottColors.surface1, SpottColors.background],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'SPOTT',
+                      style: SpottTextStyles.headline.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: SpottColors.primary,
+                        letterSpacing: 2.0,
                       ),
-                      Text(
-                        'Find your route match with verified travelers',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Helper.ink,
-                        ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Share your journey\nwith Spott',
+                      style: SpottTextStyles.displayLarge.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: SpottColors.textPrimary,
+                        height: 1.15,
+                        letterSpacing: -0.5,
                       ),
-                      Text(
-                        'Send parcels same-day through travelers on their way',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Helper.ink,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  const CustomButton(routeName: AppRoutes.login),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
+
+          // Main Scrollable Content area
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 430),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 12),
+                      
+                      // Premium Card surface (replacing route painter placeholder)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: SpottColors.surface1,
+                          borderRadius: BorderRadius.circular(SpottRadius.card),
+                          boxShadow: SpottShadows.elevation1,
+                          border: Border.all(color: SpottColors.border),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    const CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: SpottColors.primarySoft,
+                                      child: Icon(Icons.person_rounded, color: SpottColors.primary, size: 18),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Arjun K.',
+                                          style: SpottTextStyles.label.copyWith(fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          '4.9 ★ Verified Driver',
+                                          style: SpottTextStyles.caption.copyWith(color: SpottColors.success),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  '₹450',
+                                  style: SpottTextStyles.title.copyWith(
+                                    color: SpottColors.primary,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            const Divider(color: SpottColors.divider),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Column(
+                                  children: [
+                                    const Icon(Icons.radio_button_checked_rounded, color: SpottColors.success, size: 16),
+                                    Container(width: 1.5, height: 24, color: SpottColors.border),
+                                    const Icon(Icons.location_on_rounded, color: SpottColors.primary, size: 16),
+                                  ],
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Pune',
+                                        style: SpottTextStyles.body.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: SpottColors.textPrimary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 18),
+                                      Text(
+                                        'Mumbai',
+                                        style: SpottTextStyles.body.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: SpottColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      Text(
+                        "Reduce travel costs by sharing seats on trips you're already making.",
+                        style: SpottTextStyles.bodyLarge.copyWith(
+                          color: SpottColors.textSecondary,
+                          height: 1.45,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      
+                      // Feature list inside elevated container
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: SpottColors.surface1,
+                          borderRadius: BorderRadius.circular(SpottRadius.card),
+                          boxShadow: SpottShadows.elevation1,
+                          border: Border.all(color: SpottColors.border),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFeatureRow(Icons.search_rounded, 'Search intercity trips at a fraction of the cost'),
+                            const SizedBox(height: 16),
+                            _buildFeatureRow(Icons.verified_user_rounded, 'Find route matches with verified co-travelers'),
+                            const SizedBox(height: 16),
+                            _buildFeatureRow(Icons.local_shipping_rounded, 'Send parcels same-day through travelers'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
+          // Sticky CTA inside bottom safe area
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 430),
+                child: SpottButton.primary(
+                  label: 'Get Started',
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.login);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureRow(IconData icon, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: SpottColors.primary, size: 22),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Text(
+            text,
+            style: SpottTextStyles.body.copyWith(
+              color: SpottColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
-}
-
-class _SpottRoutePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final linePaint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 10
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-    final path = Path()
-      ..moveTo(size.width * 0.14, size.height * 0.68)
-      ..cubicTo(
-        size.width * 0.34,
-        size.height * 0.28,
-        size.width * 0.64,
-        size.height * 0.88,
-        size.width * 0.86,
-        size.height * 0.34,
-      );
-    canvas.drawPath(path, linePaint);
-
-    final dotPaint = Paint()..color = Helper.ink;
-    canvas.drawCircle(
-      Offset(size.width * 0.14, size.height * 0.68),
-      7,
-      dotPaint,
-    );
-    canvas.drawRect(
-      Rect.fromCenter(
-        center: Offset(size.width * 0.86, size.height * 0.34),
-        width: 14,
-        height: 14,
-      ),
-      dotPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -751,76 +751,89 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
   Widget _buildBookingBar(BuildContext context) {
     final count = _selectedSeats.length;
     final total = count * _pricePerSeat;
+    final isVisible = count > 0;
 
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 12,
-        bottom: MediaQuery.of(context).padding.bottom + 12,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  count == 0
-                      ? 'No seats selected'
-                      : '$count seat${count > 1 ? 's' : ''} selected',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: RBColors.textMedium,
-                  ),
-                ),
-                Text(
-                  count == 0 ? '₹0' : '₹$total',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: RBColors.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 46,
-            child: ElevatedButton(
-              onPressed: count == 0
-                  ? null
-                  : () {
-                      HapticFeedback.lightImpact();
-                      Navigator.pushNamed(context, AppRoutes.confirmRide);
-                    },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: RBColors.primary,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: RBColors.divider,
-                disabledForegroundColor: RBColors.textLight,
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(RBRadius.md),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                count == 0 ? 'Select Seats' : 'PROCEED',
-                style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      height: isVisible ? (70.0 + MediaQuery.of(context).padding.bottom) : 0,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, -2),
           ),
         ],
+      ),
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Container(
+          height: 70.0 + MediaQuery.of(context).padding.bottom,
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 12,
+            bottom: MediaQuery.of(context).padding.bottom + 12,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$count seat${count > 1 ? 's' : ''} selected',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: RBColors.textMedium,
+                      ),
+                    ),
+                    Text(
+                      '₹$total',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: RBColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 46,
+                child: ElevatedButton(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.pushNamed(context, AppRoutes.confirmRide);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: RBColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(RBRadius.md),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'PROCEED',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

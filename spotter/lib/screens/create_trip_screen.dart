@@ -11,6 +11,7 @@ import '../core/theme/colors.dart';
 import '../core/theme/spacing.dart';
 import '../core/theme/typography.dart';
 import '../core/theme/radius.dart';
+import '../widgets/premium/premium_selectors.dart';
 
 class CreateTripScreen extends StatefulWidget {
   const CreateTripScreen({super.key});
@@ -196,11 +197,12 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                                 value: departureDateStr,
                                 icon: Icons.calendar_today_rounded,
                                 onTap: () async {
-                                  final picked = await showDatePicker(
-                                    context: context,
+                                  final picked = await PremiumDatePickerBottomSheet.show(
+                                    context,
                                     initialDate: _departureDate,
                                     firstDate: DateTime.now(),
                                     lastDate: DateTime.now().add(const Duration(days: 365)),
+                                    primaryColor: SpottColors.primary,
                                   );
                                   if (picked != null) setState(() => _departureDate = picked);
                                 },
@@ -224,43 +226,23 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Available Seats', style: SpottTextStyles.label.copyWith(color: SpottColors.textSecondary, letterSpacing: 1.1)),
-                                  const SizedBox(height: SpottSpacing.xs),
-                                  Container(
-                                    height: 56,
-                                    padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.sm),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(color: SpottColors.borderSubtle),
-                                      borderRadius: BorderRadius.circular(SpottRadius.md),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        InkWell(
-                                          onTap: _availableSeats > 1 ? () => setState(() => _availableSeats--) : null,
-                                          child: Container(
-                                            width: 32, height: 32,
-                                            decoration: BoxDecoration(color: SpottColors.surface1, shape: BoxShape.circle),
-                                            child: const Icon(Icons.remove_rounded, size: 20),
-                                          ),
-                                        ),
-                                        Text('$_availableSeats', style: SpottTextStyles.headline.copyWith(fontSize: 20)),
-                                        InkWell(
-                                          onTap: _availableSeats < 6 ? () => setState(() => _availableSeats++) : null,
-                                          child: Container(
-                                            width: 32, height: 32,
-                                            decoration: BoxDecoration(color: SpottColors.surface1, shape: BoxShape.circle),
-                                            child: const Icon(Icons.add_rounded, size: 20),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                              child: _buildTouchableInput(
+                                label: 'Available Seats',
+                                value: '$_availableSeats Seat${_availableSeats > 1 ? 's' : ''}',
+                                icon: Icons.airline_seat_recline_normal_rounded,
+                                onTap: () async {
+                                  final picked = await PremiumPassengersBottomSheet.show(
+                                    context,
+                                    initialSeats: _availableSeats,
+                                    maxSeats: 6,
+                                    primaryColor: SpottColors.primary,
+                                    title: 'Available Seats',
+                                    subtitle: 'Choose how many empty seats you have',
+                                  );
+                                  if (picked != null) {
+                                    setState(() => _availableSeats = picked);
+                                  }
+                                },
                               ),
                             ),
                             const SizedBox(width: SpottSpacing.md),

@@ -138,8 +138,8 @@ class RBSectionContainer extends StatelessWidget {
             ),
           ],
         );
-        defaultPadding = const EdgeInsets.all(20);
-        defaultMargin = const EdgeInsets.symmetric(horizontal: 20, vertical: 12);
+        defaultPadding = const EdgeInsets.all(16);
+        defaultMargin = const EdgeInsets.symmetric(horizontal: 12, vertical: 12);
         break;
     }
 
@@ -286,12 +286,12 @@ class RBWaveSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: topColor,
+      color: bottomColor,
       child: ClipPath(
         clipper: RBWaveClipper(waveAtTop: false),
         child: Container(
           height: height,
-          color: bottomColor,
+          color: topColor,
         ),
       ),
     );
@@ -355,7 +355,7 @@ class _RBCarouselSectionState extends State<RBCarouselSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: RBSectionHeader(
             title: widget.title,
             subtitle: widget.subtitle,
@@ -368,7 +368,7 @@ class _RBCarouselSectionState extends State<RBCarouselSection> {
           child: ListView.separated(
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: widget.items.length,
             separatorBuilder: (_, _) => const SizedBox(width: 14),
             itemBuilder: (context, index) => widget.items[index],

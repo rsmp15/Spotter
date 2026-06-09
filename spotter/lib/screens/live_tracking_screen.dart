@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../core/components/spott_avatar.dart';
 import '../core/theme/colors.dart';
@@ -241,12 +242,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                         child: GestureDetector(
                           onTap: () {
                             HapticFeedback.heavyImpact();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('SOS triggered! Emergency contacts notified.'),
-                                backgroundColor: Color(0xFFEF4444),
-                              ),
-                            );
+                            Navigator.pushNamed(context, AppRoutes.safetyToolkit);
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: SpottTheme.spacingMedium),

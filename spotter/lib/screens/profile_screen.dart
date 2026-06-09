@@ -93,11 +93,12 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(
                 width: 104,
                 height: 104,
-                child: CircularProgressIndicator(
-                  value: 0.92, // represents trust completeness
-                  strokeWidth: 4.5,
-                  color: SpottColors.success,
-                  backgroundColor: SpottColors.border,
+                child: CustomPaint(
+                  painter: TrustScoreRingPainter(
+                    scorePercent: 0.92,
+                    activeColor: SpottColors.success,
+                    backgroundColor: SpottColors.border,
+                  ),
                 ),
               ),
               const SpottAvatar(
@@ -943,4 +944,47 @@ class _SettingItem {
   final VoidCallback onTap;
 
   const _SettingItem(this.icon, this.title, this.onTap);
+}
+
+class TrustScoreRingPainter extends CustomPainter {
+  final double scorePercent;
+  final Color activeColor;
+  final Color backgroundColor;
+
+  TrustScoreRingPainter({
+    required this.scorePercent,
+    required this.activeColor,
+    required this.backgroundColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width - 4.5) / 2;
+
+    // Background track
+    final bgPaint = Paint()
+      ..color = backgroundColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.5;
+    canvas.drawCircle(center, radius, bgPaint);
+
+    // Active arc
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    final paint = Paint()
+      ..color = activeColor
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 4.5;
+
+    final sweepAngle = 2 * 3.1415926535 * scorePercent;
+    canvas.drawArc(rect, -1.570796, sweepAngle, false, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant TrustScoreRingPainter oldDelegate) {
+    return oldDelegate.scorePercent != scorePercent ||
+        oldDelegate.activeColor != activeColor ||
+        oldDelegate.backgroundColor != backgroundColor;
+  }
 }

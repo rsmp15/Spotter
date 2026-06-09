@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'core/theme/colors.dart';
+import 'core/theme/radius.dart';
+import 'core/theme/spacing.dart';
+import 'core/theme/shadows.dart';
+import 'core/theme/typography.dart';
 
 class Helper {
   // Spott Design System v2 Premium tokens
@@ -7,15 +11,15 @@ class Helper {
   static const Color muted = SpottColors.textSecondary;
   static const Color softText = SpottColors.textSecondary;
   static const Color backgroundColor = SpottColors.background;
-  static const Color darkBackground = Color(0xFF09090B); 
+  static const Color darkBackground = SpottColors.background; // Map to background for premium consistency
   static const Color cardColor = SpottColors.surface1;
   static const Color lineColor = SpottColors.border;
  
-  static const Color primary = Color(0xFFD84E55); // RedBus Red
-  static const Color accent = Color(0xFFB73D45); // RedBus Dark Red
+  static const Color primary = SpottColors.primary; // RedBus Red
+  static const Color accent = SpottColors.primaryDark; // RedBus Dark Red
   static const Color success = SpottColors.success; 
   static const Color warning = SpottColors.warning; 
-  static const Color danger = Color(0xFFEF4444); 
+  static const Color danger = SpottColors.danger; 
   static const Color mapFill = SpottColors.surface1;
  
   // Internal background levels
@@ -40,18 +44,14 @@ class Helper {
   static const Color hairline = SpottColors.border;
  
   static const BorderRadiusGeometry cardRadius = BorderRadius.all(
-    Radius.circular(20), // 20px card corner radii as requested
+    Radius.circular(SpottRadius.card),
   );
   
-  static const List<BoxShadow> premiumShadows = [
-    BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 2)),
-  ];
+  static final List<BoxShadow> premiumShadows = SpottShadows.elevation1;
 
-  static TextStyle get titleStyle => TextStyle(
+  static TextStyle get titleStyle => SpottTextStyles.displayLarge.copyWith(
     fontSize: 26,
-    fontWeight: FontWeight.bold,
     color: SpottColors.textPrimary,
-    fontFamily: 'Inter',
   );
 
   // Context-aware dynamic color getters for proper theme support
@@ -70,21 +70,23 @@ class Helper {
   static ThemeData get theme => buildTheme(isDarkMode: false); // Default to light theme
 
   static ThemeData buildTheme({required bool isDarkMode}) {
-    // Force RedBus Light Premium style
+    // Force Light Premium style as Spott is designed for high accessibility
+    // and premium branding, maintaining a light mode primary appearance.
     SpottColors.updateTheme(false);
 
-    final primaryColor = primary;
-    final bg = backgroundColor;
-    final cardBgColor = cardColor;
-    final lineBorder = lineColor;
-    final textColor = textHi;
+    final primaryColor = SpottColors.primary;
+    final bg = SpottColors.background;
+    final cardBgColor = SpottColors.surface1;
+    final lineBorder = SpottColors.border;
+    final textColor = SpottColors.textPrimary;
+    final textMed = SpottColors.textSecondary;
 
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: primary,
+      seedColor: SpottColors.primary,
       primary: primaryColor,
-      secondary: accent,
+      secondary: SpottColors.primaryDark,
       surface: cardBgColor,
-      error: danger,
+      error: SpottColors.danger,
       brightness: Brightness.light,
     );
 
@@ -105,7 +107,7 @@ class Helper {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: cardRadius,
+          borderRadius: BorderRadius.circular(SpottRadius.card),
           side: BorderSide(color: lineBorder, width: 1.0),
         ),
       ),
@@ -113,62 +115,54 @@ class Helper {
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(56),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16), // 16px radius buttons
+            borderRadius: BorderRadius.circular(SpottRadius.button),
           ),
-          backgroundColor: primary,
+          backgroundColor: SpottColors.primary,
           foregroundColor: Colors.white,
-          textStyle: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Inter',
+          textStyle: SpottTextStyles.label.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: primary,
+          foregroundColor: SpottColors.primary,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: bgSurf,
+        fillColor: SpottColors.surface2,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
+          horizontal: SpottSpacing.s16,
+          vertical: SpottSpacing.s16,
         ),
         border: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(16)), // 16px inputs
+          borderRadius: const BorderRadius.all(Radius.circular(SpottRadius.inputs)),
           borderSide: BorderSide(color: lineBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          borderRadius: const BorderRadius.all(Radius.circular(SpottRadius.inputs)),
           borderSide: BorderSide(color: lineBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-          borderSide: BorderSide(color: primary, width: 1.5),
+          borderRadius: const BorderRadius.all(Radius.circular(SpottRadius.inputs)),
+          borderSide: BorderSide(color: SpottColors.primary, width: 1.5),
         ),
       ),
       textTheme: TextTheme(
-        headlineSmall: TextStyle(
+        headlineSmall: SpottTextStyles.display.copyWith(
           color: textColor,
           fontSize: 26,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -0.5,
-          fontFamily: 'Inter',
         ),
-        titleLarge: TextStyle(
+        titleLarge: SpottTextStyles.titleSmall.copyWith(
           color: textColor,
           fontSize: 20,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.5,
-          fontFamily: 'Inter',
         ),
-        bodyMedium: TextStyle(
+        bodyMedium: SpottTextStyles.body.copyWith(
           color: textMed,
           fontSize: 14,
           height: 1.35,
-          fontFamily: 'Inter',
         ),
       ),
     );

@@ -4,6 +4,7 @@ import '../../app/app_assets.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
+import '../../core/theme/colors.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
 
@@ -64,7 +65,7 @@ class SpotterFarePanel extends StatelessWidget {
                       onPressed: () => Navigator.maybePop(context),
                       icon: Icon(
                         Icons.arrow_back,
-                        color: isDark ? Colors.white : Helper.ink,
+                        color: isDark ? Colors.white : SpottColors.textPrimary,
                       ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -74,7 +75,7 @@ class SpotterFarePanel extends StatelessWidget {
                         'Price estimate',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: isDark ? Colors.white : Helper.ink,
+                          color: isDark ? Colors.white : SpottColors.textPrimary,
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
                         ),
@@ -115,7 +116,7 @@ class SpotterFarePanel extends StatelessWidget {
                 SpotterCard(
                   color: isDark
                       ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-                      : Helper.cardColor,
+                      : SpottColors.surface1,
                   padding: const EdgeInsets.all(14),
                   children: [
                     Text(
@@ -183,13 +184,13 @@ class SpotterFarePanel extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 16,
-                            backgroundColor: Helper.canvasSoft,
+                            backgroundColor: SpottColors.surface2,
                             child: const Text(
                               'A',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: Helper.ink,
+                                color: SpottColors.textPrimary,
                               ),
                             ),
                           ),
@@ -205,7 +206,7 @@ class SpotterFarePanel extends StatelessWidget {
                           Text(
                             'Drop off: Koregaon Park',
                             style: TextStyle(
-                              color: isDark ? Colors.grey[400] : Helper.muted,
+                              color: isDark ? Colors.grey[400] : SpottColors.textSecondary,
                               fontSize: 11,
                             ),
                           ),
@@ -216,13 +217,13 @@ class SpotterFarePanel extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 16,
-                            backgroundColor: Helper.canvasSoft,
+                            backgroundColor: SpottColors.surface2,
                             child: const Text(
                               'R',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: Helper.ink,
+                                color: SpottColors.textPrimary,
                               ),
                             ),
                           ),

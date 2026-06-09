@@ -10,6 +10,7 @@ class AppAssets {
   static const String route = 'route.png';
   static const String safety = 'safety.png';
   static const String verification = 'verification.png';
+  static const String support = 'Support.png';
 
   static String forRideId(String id) {
     switch (id.toLowerCase()) {

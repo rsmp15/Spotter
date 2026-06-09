@@ -1,76 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/radius.dart';
 
-void main() {
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
-  );
-  runApp(const PremiumActivityApp());
-}
-
-class PremiumActivityApp extends StatelessWidget {
-  const PremiumActivityApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Activity Dashboard',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: AppColors.background,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          surface: AppColors.surface,
-          primary: AppColors.primary,
-        ),
-        fontFamily:
-            'Roboto', // Default flutter font, but styled to look premium
-      ),
-      home: const ActivityScreen(),
-    );
-  }
-}
-
-class AppColors {
-  // RedBus inspired primary - a sophisticated crimson/red
-  static const Color primary = Color(0xFFD84E55);
-  static const Color primarySoft = Color(0xFFFCEAEB);
-
-  static const Color background = Color(0xFFF4F5F7);
-  static const Color surface = Colors.white;
-  static const Color surfaceElevated = Color(0xFFFAFAFA);
-
-  static const Color textPrimary = Color(0xFF1A1D21);
-  static const Color textSecondary = Color(0xFF6B7280);
-  static const Color textMuted = Color(0xFF9CA3AF);
-
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color divider = Color(0xFFF3F4F6);
-
-  // Status Colors
-  static const Color success = Color(0xFF10B981);
-  static const Color successSoft = Color(0xFFD1FAE5);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color warningSoft = Color(0xFFFEF3C7);
-  static const Color info = Color(0xFF3B82F6);
-  static const Color infoSoft = Color(0xFFDBEAFE);
-
-  // Service Accents
-  static const Color tripsAccent = primary;
-  static const Color parcelsAccent = Color(0xFF8B5CF6);
-  static const Color parkingAccent = warning;
-}
-
-class AppRadius {
-  static const double card = 16.0;
-  static const double button = 12.0;
-  static const double badge = 8.0;
-}
 
 enum ActivityFilter { all, trips, parcels, parking }
 
 enum ActivityStatus { completed, upcoming, cancelled, inTransit }
+
+
 
 class ActivityItem {
   final ActivityFilter type;
@@ -101,7 +38,7 @@ class ActivityItem {
 final List<ActivityItem> _mockActivities = [
   ActivityItem(
     type: ActivityFilter.trips,
-    title: 'Spott Prime Sedan',
+    title: 'Ride to Airport',
     id: 'PNR: 884X29',
     startLocation: 'Koregaon Park, Pune',
     endLocation: 'Pune International Airport',
@@ -113,7 +50,7 @@ final List<ActivityItem> _mockActivities = [
   ),
   ActivityItem(
     type: ActivityFilter.parcels,
-    title: 'Express Delivery',
+    title: 'Package to Kalyani Nagar',
     id: 'TRK: SPT94832',
     startLocation: 'Office (WTC)',
     endLocation: 'Home (Kalyani Nagar)',
@@ -135,7 +72,7 @@ final List<ActivityItem> _mockActivities = [
   ),
   ActivityItem(
     type: ActivityFilter.parking,
-    title: 'Downtown Secure Parking',
+    title: 'Downtown Garage',
     id: 'TKT: PKG-221',
     startLocation: 'Phoenix Mall Level 2',
     endLocation: '3 Hours Duration',
@@ -145,7 +82,7 @@ final List<ActivityItem> _mockActivities = [
   ),
   ActivityItem(
     type: ActivityFilter.trips,
-    title: 'Spott Moto',
+    title: 'Moto from Office',
     id: 'PNR: 112M8',
     startLocation: 'Viman Nagar',
     endLocation: 'Magarpatta City',
@@ -174,7 +111,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: SpottColors.background,
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(),
@@ -207,14 +144,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
       floating: true,
       pinned: true,
       elevation: 0,
-      backgroundColor: AppColors.surface,
+      backgroundColor: SpottColors.surface1,
       surfaceTintColor: Colors.transparent,
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         title: const Text(
-          'My Bookings',
+          'Your activity',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: SpottColors.textPrimary,
             fontWeight: FontWeight.w800,
             fontSize: 22,
             letterSpacing: -0.5,
@@ -225,7 +162,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [AppColors.primarySoft, AppColors.surface],
+              colors: [SpottColors.primarySoft, SpottColors.surface1],
               stops: [0.0, 0.4],
             ),
           ),
@@ -233,13 +170,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.search_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.search_rounded, color: SpottColors.textPrimary),
           onPressed: () {},
         ),
         IconButton(
           icon: const Icon(
             Icons.help_outline_rounded,
-            color: AppColors.textPrimary,
+            color: SpottColors.textPrimary,
           ),
           onPressed: () {},
         ),
@@ -257,7 +194,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: SpottColors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
@@ -268,7 +205,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 title: 'Total Trips',
                 value: '24',
                 icon: Icons.route_rounded,
-                color: AppColors.primary,
+                color: SpottColors.primary,
                 trend: '+3 this month',
               ),
             ),
@@ -278,7 +215,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 title: 'Amount Saved',
                 value: '₹840',
                 icon: Icons.savings_rounded,
-                color: AppColors.success,
+                color: SpottColors.success,
                 trend: 'Top 10% saver',
               ),
             ),
@@ -291,14 +228,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
   Widget _buildActionCards() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.border),
+        color: SpottColors.surface1,
+        borderRadius: BorderRadius.circular(SpottRadius.card),
+        border: Border.all(color: SpottColors.border),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(AppRadius.card),
+          borderRadius: BorderRadius.circular(SpottRadius.card),
           onTap: () {},
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -307,12 +244,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
+                    color: SpottColors.primarySoft,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.receipt_long_rounded,
-                    color: AppColors.primary,
+                    color: SpottColors.primary,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -325,7 +262,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: AppColors.textPrimary,
+                          color: SpottColors.textPrimary,
                         ),
                       ),
                       SizedBox(height: 4),
@@ -333,7 +270,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         'Download PDF for May 2026',
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.textSecondary,
+                          color: SpottColors.textSecondary,
                         ),
                       ),
                     ],
@@ -341,7 +278,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 ),
                 const Icon(
                   Icons.download_rounded,
-                  color: AppColors.textSecondary,
+                  color: SpottColors.textSecondary,
                 ),
               ],
             ),
@@ -356,7 +293,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       pinned: true,
       delegate: _StickyFilterDelegate(
         child: Container(
-          color: AppColors.background,
+          color: SpottColors.background,
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -369,7 +306,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 ),
                 _buildFilterChip(
                   ActivityFilter.trips,
-                  'Trips',
+                  'Rides',
                   Icons.directions_car_rounded,
                 ),
                 _buildFilterChip(
@@ -403,25 +340,25 @@ class _ActivityScreenState extends State<ActivityScreen> {
             Icon(
               icon,
               size: 16,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
+              color: isSelected ? Colors.white : SpottColors.textSecondary,
             ),
             const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : AppColors.textPrimary,
+                color: isSelected ? Colors.white : SpottColors.textPrimary,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 fontSize: 14,
               ),
             ),
           ],
         ),
-        backgroundColor: AppColors.surface,
-        selectedColor: AppColors.primary,
+        backgroundColor: SpottColors.surface1,
+        selectedColor: SpottColors.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
           side: BorderSide(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? SpottColors.primary : SpottColors.border,
             width: 1,
           ),
         ),
@@ -445,7 +382,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 Icon(
                   Icons.search_off_rounded,
                   size: 64,
-                  color: AppColors.border,
+                  color: SpottColors.border,
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -453,13 +390,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: SpottColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'Try changing your filters',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: SpottColors.textSecondary),
                 ),
               ],
             ),
@@ -470,13 +407,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate((context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: _TicketCard(item: items[index]),
-          );
-        }, childCount: items.length),
+      sliver: SliverToBoxAdapter(
+        child: Column(
+          children: items.map((item) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: _TicketCard(item: item),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
@@ -491,9 +430,9 @@ class _TicketCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.border),
+        color: SpottColors.surface1,
+        borderRadius: BorderRadius.circular(SpottRadius.card),
+        border: Border.all(color: SpottColors.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -533,7 +472,7 @@ class _TicketCard extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 16,
-                            color: AppColors.textPrimary,
+                            color: SpottColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -542,7 +481,7 @@ class _TicketCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
+                            color: SpottColors.textSecondary,
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -576,14 +515,14 @@ class _TicketCard extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
-                            color: AppColors.textPrimary,
+                            color: SpottColors.textPrimary,
                           ),
                         ),
                         Text(
                           _formatTime(item.date),
                           style: const TextStyle(
                             fontSize: 13,
-                            color: AppColors.textSecondary,
+                            color: SpottColors.textSecondary,
                           ),
                         ),
                       ],
@@ -596,14 +535,14 @@ class _TicketCard extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 18,
-                            color: AppColors.textPrimary,
+                            color: SpottColors.textPrimary,
                           ),
                         ),
                         const Text(
                           'Paid',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.success,
+                            color: SpottColors.success,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -618,10 +557,10 @@ class _TicketCard extends StatelessWidget {
           // Bottom Section: Actions
           Container(
             decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppColors.border)),
-              color: AppColors.surfaceElevated,
+              border: Border(top: BorderSide(color: SpottColors.border)),
+              color: SpottColors.surface2,
               borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(AppRadius.card),
+                bottom: Radius.circular(SpottRadius.card),
               ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
@@ -632,14 +571,14 @@ class _TicketCard extends StatelessWidget {
                     child: _buildActionButton(
                       'Track',
                       Icons.location_on_outlined,
-                      AppColors.primary,
+                      SpottColors.primary,
                     ),
                   ),
                   Expanded(
                     child: _buildActionButton(
                       'E-Ticket',
                       Icons.qr_code_rounded,
-                      AppColors.textPrimary,
+                      SpottColors.textPrimary,
                     ),
                   ),
                 ] else ...[
@@ -647,14 +586,14 @@ class _TicketCard extends StatelessWidget {
                     child: _buildActionButton(
                       'Support',
                       Icons.headset_mic_outlined,
-                      AppColors.textPrimary,
+                      SpottColors.textPrimary,
                     ),
                   ),
                   Expanded(
                     child: _buildActionButton(
                       'Rebook',
                       Icons.refresh_rounded,
-                      AppColors.primary,
+                      SpottColors.primary,
                     ),
                   ),
                 ],
@@ -678,17 +617,17 @@ class _TicketCard extends StatelessWidget {
               width: 10,
               height: 10,
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.textMuted, width: 2),
+                border: Border.all(color: SpottColors.textMuted, width: 2),
                 shape: BoxShape.circle,
                 color: Colors.white,
               ),
             ),
-            Container(width: 2, height: 24, color: AppColors.border),
+            Container(width: 2, height: 24, color: SpottColors.border),
             Container(
               width: 10,
               height: 10,
               decoration: const BoxDecoration(
-                color: AppColors.primary,
+                color: SpottColors.primary,
                 shape: BoxShape.circle,
               ),
             ),
@@ -705,7 +644,7 @@ class _TicketCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+                  color: SpottColors.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -716,7 +655,7 @@ class _TicketCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: SpottColors.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -745,7 +684,7 @@ class _TicketCard extends StatelessWidget {
                 width: dashWidth,
                 height: dashHeight,
                 child: DecoratedBox(
-                  decoration: BoxDecoration(color: AppColors.border),
+                  decoration: BoxDecoration(color: SpottColors.border),
                 ),
               );
             }),
@@ -762,7 +701,7 @@ class _TicketCard extends StatelessWidget {
         foregroundColor: color,
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.button),
+          borderRadius: BorderRadius.circular(SpottRadius.button),
         ),
       ),
       icon: Icon(icon, size: 18),
@@ -789,13 +728,13 @@ class _TicketCard extends StatelessWidget {
   Color _getTypeColor(ActivityFilter type) {
     switch (type) {
       case ActivityFilter.trips:
-        return AppColors.primary;
+        return SpottColors.primary;
       case ActivityFilter.parcels:
-        return AppColors.parcelsAccent;
+        return SpottColors.offerPurple;
       case ActivityFilter.parking:
-        return AppColors.parkingAccent;
+        return SpottColors.warning;
       default:
-        return AppColors.textPrimary;
+        return SpottColors.textPrimary;
     }
   }
 
@@ -840,23 +779,23 @@ class _StatusBadge extends StatelessWidget {
 
     switch (status) {
       case ActivityStatus.completed:
-        bgColor = AppColors.successSoft;
-        textColor = AppColors.success;
+        bgColor = SpottColors.successSoft;
+        textColor = SpottColors.success;
         text = 'COMPLETED';
         break;
       case ActivityStatus.upcoming:
-        bgColor = AppColors.infoSoft;
-        textColor = AppColors.info;
+        bgColor = SpottColors.infoSoft;
+        textColor = SpottColors.info;
         text = 'UPCOMING';
         break;
       case ActivityStatus.cancelled:
-        bgColor = AppColors.warningSoft;
-        textColor = AppColors.warning;
+        bgColor = SpottColors.warningSoft;
+        textColor = SpottColors.warning;
         text = 'CANCELLED';
         break;
       case ActivityStatus.inTransit:
-        bgColor = AppColors.primarySoft;
-        textColor = AppColors.primary;
+        bgColor = SpottColors.primarySoft;
+        textColor = SpottColors.primary;
         text = 'IN TRANSIT';
         break;
     }
@@ -865,7 +804,7 @@ class _StatusBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(AppRadius.badge),
+        borderRadius: BorderRadius.circular(SpottRadius.sm),
       ),
       child: Text(
         text,
@@ -900,9 +839,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.border),
+        color: SpottColors.surface1,
+        borderRadius: BorderRadius.circular(SpottRadius.card),
+        border: Border.all(color: SpottColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -921,7 +860,7 @@ class _StatCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: SpottColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
@@ -930,7 +869,7 @@ class _StatCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
+              color: SpottColors.textSecondary,
             ),
           ),
           const SizedBox(height: 8),
@@ -969,7 +908,7 @@ class _StickyFilterDelegate extends SliverPersistentHeaderDelegate {
       height: maxExtent,
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: SpottColors.background,
         boxShadow: overlapsContent
             ? [
                 BoxShadow(

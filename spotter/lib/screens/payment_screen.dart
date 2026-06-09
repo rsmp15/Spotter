@@ -5,6 +5,10 @@ import '../controllers/ride_controller.dart';
 import '../helper.dart';
 import '../models/ride_models.dart';
 import '../spotter_widgets.dart';
+import '../core/theme/colors.dart';
+import '../core/theme/radius.dart';
+import '../core/theme/typography.dart';
+import '../core/theme/animations.dart';
 
 class PaymentScreen extends StatelessWidget {
   const PaymentScreen({super.key});
@@ -68,33 +72,80 @@ class _PaymentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SpotterCard(
-      height: 72,
-      onTap: onTap,
-      color: selected ? Helper.primary : Colors.white,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                method.label,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: selected ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(SpottRadius.card),
+          child: AnimatedContainer(
+            duration: SpottAnimations.fast,
+            curve: SpottCurves.standard,
+            height: 72,
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            decoration: BoxDecoration(
+              color: selected
+                  ? SpottColors.primary.withValues(alpha: 0.04)
+                  : SpottColors.surface1,
+              borderRadius: BorderRadius.circular(SpottRadius.card),
+              border: Border.all(
+                color: selected ? SpottColors.primary : SpottColors.border,
+                width: selected ? 2.0 : 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
                 ),
-              ),
+              ],
             ),
-            Text(
-              method.detail,
-              style: TextStyle(
-                color: selected ? Colors.white : Helper.muted,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        method.label,
+                        style: SpottTextStyles.titleSmall.copyWith(
+                          color: SpottColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        method.detail,
+                        style: SpottTextStyles.caption.copyWith(
+                          color: SpottColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                AnimatedSwitcher(
+                  duration: SpottAnimations.instant,
+                  child: selected
+                      ? const Icon(
+                          Icons.check_circle_rounded,
+                          color: SpottColors.primary,
+                          size: 22,
+                          key: ValueKey('selected'),
+                        )
+                      : const Icon(
+                          Icons.radio_button_off_rounded,
+                          color: SpottColors.textMuted,
+                          size: 22,
+                          key: ValueKey('unselected'),
+                        ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }

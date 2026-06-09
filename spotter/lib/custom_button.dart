@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'helper.dart';
+import 'core/theme/colors.dart';
 
 class CustomButton extends StatelessWidget {
   final Widget? targetScreen;
@@ -63,13 +64,13 @@ class CustomButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Helper.lineColor, width: 1.5),
+            border: Border.all(color: SpottColors.border, width: 1.5),
           ),
           child: Center(
             child: Text(
               label,
               style: const TextStyle(
-                color: Helper.ink,
+                color: SpottColors.textPrimary,
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),

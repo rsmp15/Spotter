@@ -8,7 +8,7 @@ import '../theme/animations.dart';
 import '../theme/gradients.dart';
 import 'glass_container.dart';
 
-enum SpottButtonVariant { primary, secondary, ghost, danger }
+enum SpottButtonVariant { primary, secondary, ghost, danger, text }
 enum SpottButtonSize { normal, small }
 
 class SpottButton extends StatefulWidget {
@@ -71,6 +71,16 @@ class SpottButton extends StatefulWidget {
     this.isFullWidth = true,
   }) : variant = SpottButtonVariant.danger;
 
+  const SpottButton.text({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.size = SpottButtonSize.normal,
+    this.isLoading = false,
+    this.icon,
+    this.isFullWidth = false,
+  }) : variant = SpottButtonVariant.text;
+
   @override
   State<SpottButton> createState() => _SpottButtonState();
 }
@@ -85,7 +95,7 @@ class _SpottButtonState extends State<SpottButton>
     super.initState();
     _pressController = AnimationController(
       vsync: this,
-      duration: SpottAnimations.instant,
+      duration: const Duration(milliseconds: 96),
     );
     _scaleAnim = Tween<double>(begin: 1.0, end: 0.96).animate(
       CurvedAnimation(parent: _pressController, curve: SpottCurves.decelerate),
@@ -112,6 +122,13 @@ class _SpottButtonState extends State<SpottButton>
       );
     }
 
+    if (widget.variant == SpottButtonVariant.text) {
+      return _buildAnimatedWrapper(
+        child: _buildText(isDisabled),
+        isDisabled: isDisabled,
+      );
+    }
+
     return _buildAnimatedWrapper(
       isDisabled: isDisabled,
       child: Container(
@@ -119,7 +136,8 @@ class _SpottButtonState extends State<SpottButton>
         height: _height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(SpottRadius.button),
-          gradient: _gradient,
+          color: isDisabled ? SpottColors.disabled : null,
+          gradient: isDisabled ? null : _gradient,
           boxShadow: isDisabled ? null : _shadow,
         ),
         child: Material(
@@ -224,9 +242,11 @@ class _SpottButtonState extends State<SpottButton>
     final double fontSize =
         widget.size == SpottButtonSize.small ? 14.0 : 16.0;
 
+    final bool isDisabled = widget.onPressed == null || widget.isLoading;
+
     final Color contentColor = widget.variant == SpottButtonVariant.ghost
-        ? SpottColors.textPrimary
-        : Colors.white;
+        ? (isDisabled ? SpottColors.disabledText : SpottColors.textPrimary)
+        : (isDisabled ? SpottColors.disabledText : Colors.white);
 
     if (widget.isLoading) {
       return SizedBox(
@@ -266,6 +286,58 @@ class _SpottButtonState extends State<SpottButton>
         fontWeight: FontWeight.w700,
         color: contentColor,
         fontFamily: 'Inter',
+      ),
+    );
+  }
+
+  Widget _buildText(bool isDisabled) {
+    final double fontSize =
+        widget.size == SpottButtonSize.small ? 14.0 : 16.0;
+
+    final Color contentColor = isDisabled ? SpottColors.disabledText : SpottColors.primary;
+
+    Widget child = widget.icon != null
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              widget.icon!,
+              const SizedBox(width: SpottSpacing.sm),
+              Text(
+                widget.label,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w700,
+                  color: contentColor,
+                  fontFamily: 'Inter',
+                ),
+              ),
+            ],
+          )
+        : Text(
+            widget.label,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.w700,
+              color: contentColor,
+              fontFamily: 'Inter',
+            ),
+          );
+
+    return InkWell(
+      onTap: isDisabled ? null : () {
+        HapticFeedback.lightImpact();
+        widget.onPressed?.call();
+      },
+      borderRadius: BorderRadius.circular(SpottRadius.button),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.sm),
+        child: widget.isFullWidth
+            ? SizedBox(
+                width: double.infinity,
+                height: _height,
+                child: Center(child: child),
+              )
+            : child,
       ),
     );
   }

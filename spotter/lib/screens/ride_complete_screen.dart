@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../helper.dart';
+import '../core/theme/colors.dart';
 import '../spotter_widgets.dart';
 
 class RideCompleteScreen extends StatelessWidget {
@@ -19,11 +20,11 @@ class RideCompleteScreen extends StatelessWidget {
         const Center(
           child: CircleAvatar(
             radius: 84,
-            backgroundColor: Helper.canvasSoft,
+            backgroundColor: SpottColors.surface2,
             child: Text(
               'DONE',
               style: TextStyle(
-                color: Helper.ink,
+                color: SpottColors.textPrimary,
                 fontSize: 32,
                 fontWeight: FontWeight.w700,
               ),

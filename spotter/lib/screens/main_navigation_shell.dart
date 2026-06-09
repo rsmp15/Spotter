@@ -8,7 +8,6 @@ import '../core/components/floating_bottom_nav.dart';
 import 'home_screen.dart';
 import 'services_screen.dart';
 import 'activity_screen.dart';
-import 'safety_toolkit_screen.dart';
 import 'profile_screen.dart';
 
 // Traveler Screens
@@ -60,7 +59,6 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       HomeScreen(),
       ServicesScreen(),
       ActivityScreen(), // Passenger Trips
-      PremiumSosAlertScreen(),
       ProfileScreen(),
     ];
 

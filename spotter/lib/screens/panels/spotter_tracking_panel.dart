@@ -62,7 +62,7 @@ class SpotterTrackingPanel extends StatelessWidget {
                     Text(
                       'Live tracking',
                       style: TextStyle(
-                        color: isDark ? Colors.white : Helper.ink,
+                        color: isDark ? Colors.white : SpottColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                       ),
@@ -385,22 +385,22 @@ class _ResponsiveRideContextCard extends StatelessWidget {
         InfoRow(
           label: 'Route',
           value: route,
-          valueColor: isDark ? Colors.white : Helper.ink,
+          valueColor: isDark ? Colors.white : SpottColors.textPrimary,
         ),
         InfoRow(
           label: 'Fare',
           value: fare,
-          valueColor: isDark ? const Color(0xFF38BDF8) : Helper.primary,
+          valueColor: isDark ? const Color(0xFF38BDF8) : SpottColors.primary,
         ),
         InfoRow(
           label: 'Driver',
           value: driver,
-          valueColor: isDark ? Colors.white : Helper.ink,
+          valueColor: isDark ? Colors.white : SpottColors.textPrimary,
         ),
         InfoRow(
           label: 'Status',
           value: status,
-          valueColor: isDark ? Colors.white : Helper.ink,
+          valueColor: isDark ? Colors.white : SpottColors.textPrimary,
         ),
       ],
     );

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/radius.dart';
@@ -28,28 +29,54 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasBlur = blurSigma > 0.0;
+    
+    final decoration = BoxDecoration(
+      color: hasBlur
+          ? Colors.white.withValues(alpha: 0.8) // Frosted glass overlay
+          : SpottColors.surface1,
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: hasBorder
+          ? Border.all(
+              color: SpottColors.border,
+              width: 1.0,
+            )
+          : null,
+      gradient: gradient,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.03),
+          blurRadius: 10,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    );
+
+    if (hasBlur) {
+      return Container(
+        width: width,
+        height: height,
+        margin: margin,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+            child: Container(
+              padding: padding ?? EdgeInsets.zero,
+              decoration: decoration,
+              child: child,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Container(
       width: width,
       height: height,
       margin: margin,
       padding: padding ?? EdgeInsets.zero,
-      decoration: BoxDecoration(
-        color: SpottColors.surface1, // Solid white surface
-        borderRadius: BorderRadius.circular(borderRadius),
-        border: hasBorder
-            ? Border.all(
-                color: SpottColors.border,
-                width: 1.0,
-              )
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: decoration,
       child: child,
     );
   }

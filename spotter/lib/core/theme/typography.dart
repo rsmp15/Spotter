@@ -5,6 +5,16 @@ class SpottTextStyles {
   static const String _fontFamily = 'Inter';
 
   // ── Display ─────────────────────────────────────────────────────────
+  /// Large hero text
+  static const TextStyle displayXL = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 40,
+    fontWeight: FontWeight.w600, // SemiBold
+    color: SpottColors.textPrimary,
+    letterSpacing: -0.6,
+    height: 1.1,
+  );
+
   /// Hero text — welcome headlines
   static const TextStyle displayLarge = TextStyle(
     fontFamily: _fontFamily,
@@ -75,7 +85,26 @@ class SpottTextStyles {
     height: 1.4,
   );
 
+  /// Small body text
+  static const TextStyle bodySmall = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400, // Regular
+    color: SpottColors.textSecondary,
+    height: 1.4,
+  );
+
   // ── Label ───────────────────────────────────────────────────────────
+  /// Prominent button text
+  static const TextStyle labelLarge = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w600, // SemiBold
+    color: SpottColors.textPrimary,
+    letterSpacing: 0.1,
+    height: 1.3,
+  );
+
   /// Button labels, inline action text
   static const TextStyle label = TextStyle(
     fontFamily: _fontFamily,

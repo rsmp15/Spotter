@@ -27,7 +27,7 @@ class SpottSpacing {
   /// Top padding for screen content below app bar
   static const double pageTop = 16.0;
   /// Bottom padding to clear floating navigation bar
-  static const double pageBottom = 96.0;
+  static const double pageBottom = 120.0;
   /// Horizontal page margins
-  static const double pageHorizontal = 16.0;
+  static const double pageHorizontal = 12.0;
 }

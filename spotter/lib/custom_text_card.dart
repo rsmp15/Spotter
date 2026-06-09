@@ -26,7 +26,7 @@ class CustomTextCard extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: vertical, horizontal: horizontal),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E24) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.08)

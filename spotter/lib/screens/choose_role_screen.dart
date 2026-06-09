@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../app/app_routes.dart';
 import '../app/app_assets.dart';
 import '../models/spott_models.dart';
 import '../controllers/ride_controller.dart';
-import '../core/components/marketplace_card.dart';
 import '../core/components/glass_scaffold.dart';
-import '../core/components/status_chip.dart';
 import '../core/theme/colors.dart';
 import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
 
 class ChooseRoleScreen extends StatelessWidget {
   const ChooseRoleScreen({super.key});
@@ -23,112 +21,232 @@ class ChooseRoleScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: const BackButton(color: SpottColors.textPrimary),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        centerTitle: true,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: SpottSpacing.sm),
-            const Text(
-              'How will you\nuse Spott?',
-              style: SpottTextStyles.screenTitle,
+            // Custom map pin logo matching the design
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF9D5DB),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.location_on_rounded,
+                color: Color(0xFF6B1D2F),
+                size: 20,
+              ),
             ),
-            const SizedBox(height: SpottSpacing.xs),
-            const Text('You can switch anytime', style: SpottTextStyles.body),
-            const SizedBox(height: SpottSpacing.md),
-
-            // Marketplace Metrics
-            Wrap(
-              spacing: 12,
-              runSpacing: 8,
-              children: const [
-                _MetricChip("1.2K Travelers", Icons.people_outline_rounded),
-                _MetricChip("342 Routes", Icons.map_outlined),
-                _MetricChip("99.2% Safe", Icons.verified_user_outlined),
-              ],
-            ),
-            const SizedBox(height: SpottSpacing.lg),
-
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.only(bottom: SpottSpacing.md),
-                children: [
-                  // Passenger Card (Primary)
-                  _RoleBentoCard(
-                    title: 'Find &\nJoin Trips',
-                    subtitle: 'Ride with verified travelers',
-                    chipLabel: 'MOST POPULAR',
-                    chipStatus: ChipStatus.neutral,
-                    assetPath: AppAssets.car,
-                    onTap: () {
-                      ride.updateUserRole(UserRole.passenger);
-                      Navigator.pushNamed(context, AppRoutes.home);
-                    },
-                  ),
-
-                  // Traveler Card (Primary)
-                  _RoleBentoCard(
-                    title: 'Offer &\nShare Trips',
-                    subtitle: 'Recover costs, meet co-travelers',
-                    chipLabel: 'EARN MONEY',
-                    chipStatus: ChipStatus.verified,
-                    assetPath: AppAssets.bike,
-                    onTap: () {
-                      ride.updateUserRole(UserRole.traveler);
-                      Navigator.pushNamed(context, AppRoutes.kyc);
-                    },
-                  ),
-
-                  // Parcel Sender Card (Secondary)
-                  _RoleBentoCard(
-                    title: 'Ship via\nTravelers',
-                    subtitle: 'Affordable • Fast • Tracked',
-                    chipLabel: 'FAST DELIVERY',
-                    chipStatus: ChipStatus.pending,
-                    assetPath: AppAssets.parcel,
-                    isSecondary: true,
-                    onTap: () {
-                      ride.updateUserRole(UserRole.parcelSender);
-                      Navigator.pushNamed(context, AppRoutes.home);
-                    },
-                  ),
-                ],
+            const SizedBox(width: 8),
+            Text(
+              'Spott',
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF6B1D2F),
+                letterSpacing: -0.5,
               ),
             ),
           ],
         ),
+        actions: const [
+          SizedBox(width: 48), // To balance back button
+        ],
+      ),
+      body: Stack(
+        children: [
+          // Faint map background matching the image
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.04,
+              child: Image.asset(
+                AppAssets.route,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: SpottSpacing.sm),
+                Text(
+                  'How will you\nuse Spott?',
+                  style: GoogleFonts.poppins(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
+                    height: 1.15,
+                  ),
+                ),
+                const SizedBox(height: SpottSpacing.xs),
+                Text(
+                  'You can switch anytime',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: SpottSpacing.lg),
+
+                // Premium Marketplace Metrics Cards
+                Row(
+                  children: [
+                    Expanded(
+                      child: _MetricCard(
+                        value: '1.2K',
+                        label: 'Travelers',
+                        icon: Icons.group_rounded,
+                        themeColor: const Color(0xFF6B1D2F),
+                        borderColor: const Color(0xFFF9D5DB),
+                        bgColor: const Color(0xFFFFF5F6),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _MetricCard(
+                        value: '342',
+                        label: 'Routes',
+                        icon: Icons.map_rounded,
+                        themeColor: const Color(0xFF6B1D2F),
+                        borderColor: const Color(0xFFF9D5DB),
+                        bgColor: const Color(0xFFFFF5F6),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _MetricCard(
+                        value: '99.2%',
+                        label: 'Safety Rating',
+                        icon: Icons.verified_user_rounded,
+                        themeColor: const Color(0xFF10B981),
+                        borderColor: const Color(0xFFD1FAE5),
+                        bgColor: const Color(0xFFF0FDF4),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: SpottSpacing.lg),
+
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.only(bottom: SpottSpacing.md),
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      // Passenger Card
+                      _RoleBentoCard(
+                        title: 'Find &\nJoin Trips',
+                        subtitle: 'Ride with verified, local travelers',
+                        tag: 'MOST POPULAR',
+                        tagColor: const Color(0xFF6B1D2F),
+                        assetPath: AppAssets.car,
+                        onTap: () {
+                          ride.updateUserRole(UserRole.passenger);
+                          Navigator.pushNamed(context, AppRoutes.home);
+                        },
+                      ),
+
+                      // Traveler Card
+                      _RoleBentoCard(
+                        title: 'Offer &\nShare Trips',
+                        subtitle: 'Recover costs, build community',
+                        tag: 'EARN MONEY',
+                        tagColor: const Color(0xFF047857),
+                        assetPath: AppAssets.bike,
+                        onTap: () {
+                          ride.updateUserRole(UserRole.traveler);
+                          Navigator.pushNamed(context, AppRoutes.kyc);
+                        },
+                      ),
+
+                      // Parcel Sender Card
+                      _RoleBentoCard(
+                        title: 'Ship via\nTravelers',
+                        subtitle: 'Affordable 📦 Fast 🛡️ Fully Tracked',
+                        tag: 'FAST DELIVERY',
+                        tagColor: const Color(0xFFB45309),
+                        assetPath: AppAssets.parcel,
+                        onTap: () {
+                          ride.updateUserRole(UserRole.parcelSender);
+                          Navigator.pushNamed(context, AppRoutes.home);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _MetricChip extends StatelessWidget {
+class _MetricCard extends StatelessWidget {
+  final String value;
   final String label;
   final IconData icon;
+  final Color themeColor;
+  final Color borderColor;
+  final Color bgColor;
 
-  const _MetricChip(this.label, this.icon);
+  const _MetricCard({
+    required this.value,
+    required this.label,
+    required this.icon,
+    required this.themeColor,
+    required this.borderColor,
+    required this.bgColor,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       decoration: BoxDecoration(
-        color: SpottColors.surface2,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: SpottColors.border),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: themeColor.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: SpottColors.primary),
-          const SizedBox(width: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                value,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                ),
+              ),
+              Icon(
+                icon,
+                color: themeColor,
+                size: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: SpottColors.textPrimary,
+              color: Colors.black54,
             ),
           ),
         ],
@@ -140,75 +258,105 @@ class _MetricChip extends StatelessWidget {
 class _RoleBentoCard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String chipLabel;
-  final ChipStatus chipStatus;
+  final String tag;
+  final Color tagColor;
   final String assetPath;
   final VoidCallback onTap;
-  final bool isSecondary;
 
   const _RoleBentoCard({
     required this.title,
     required this.subtitle,
-    required this.chipLabel,
-    required this.chipStatus,
+    required this.tag,
+    required this.tagColor,
     required this.assetPath,
     required this.onTap,
-    this.isSecondary = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final double cardHeight = isSecondary ? 140 : 180;
-    final double imageWidth = isSecondary ? 110 : 130;
-
-    return MarketplaceCard(
-      onTap: onTap,
-      padding: EdgeInsets.zero,
-      borderRadius: 16,
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
-            ),
-            child: Container(
-              width: imageWidth,
-              height: cardHeight,
-              color: SpottColors.surface2,
-              padding: const EdgeInsets.all(SpottSpacing.md),
-              child: Image.asset(assetPath, fit: BoxFit.contain),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(SpottSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  StatusChip(label: chipLabel, status: chipStatus),
-                  const SizedBox(height: SpottSpacing.sm),
-                  Text(
-                    title,
-                    style: SpottTextStyles.sectionTitle.copyWith(
-                      fontSize: isSecondary ? 18 : 20,
-                      height: 1.15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: SpottSpacing.xs),
-                  Text(
-                    subtitle,
-                    style: SpottTextStyles.caption.copyWith(
-                      color: SpottColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06), width: 1),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                // Left Image Container
+                Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E7EB).withValues(alpha: 0.5), // Faint grey background
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Image.asset(assetPath, fit: BoxFit.contain),
+                ),
+                const SizedBox(width: 16),
+                // Middle text content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        tag,
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: tagColor,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
+                          height: 1.15,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Trailing Chevron
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.black26,
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../theme/spott_theme.dart';
+import '../../core/theme/colors.dart';
+import '../../core/theme/radius.dart';
+import '../../core/theme/shadows.dart';
 
 class Glassmorphism extends StatelessWidget {
   final Widget child;
@@ -16,7 +18,7 @@ class Glassmorphism extends StatelessWidget {
   const Glassmorphism({
     Key? key,
     required this.child,
-    this.borderRadius = SpottTheme.radiusMedium,
+    this.borderRadius = SpottRadius.lg,
     this.padding = EdgeInsets.zero,
     this.margin = EdgeInsets.zero,
     this.blur = 10.0,
@@ -34,7 +36,7 @@ class Glassmorphism extends StatelessWidget {
       margin: margin,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),
-        boxShadow: SpottTheme.premiumShadow,
+        boxShadow: SpottShadows.elevation2,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
@@ -43,7 +45,7 @@ class Glassmorphism extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: color ?? SpottTheme.glassmorphismColor,
+              color: color ?? SpottColors.overlayPressed.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(borderRadius),
               border:
                   border ??
