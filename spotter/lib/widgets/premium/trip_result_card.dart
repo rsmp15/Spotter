@@ -1,0 +1,170 @@
+import 'package:flutter/material.dart';
+import '../../theme/spott_theme.dart';
+import 'glassmorphism.dart';
+import 'trust_badge.dart';
+
+class TripResultCard extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const TripResultCard({Key? key, required this.onTap}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: SpottTheme.spacingLarge),
+        decoration: BoxDecoration(
+          borderRadius: SpottTheme.borderRadiusLarge,
+          color: SpottTheme.surface,
+          boxShadow: SpottTheme.premiumShadow,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            // Image Header
+            Stack(
+              children: [
+                Image.network(
+                  'https://picsum.photos/seed/route/600/300',
+                  height: 140,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: Glassmorphism(
+                    borderRadius: SpottTheme.radiusMedium,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: Text(
+                      '₹ 450',
+                      style: SpottTheme.textTheme.titleMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  child: Glassmorphism(
+                    borderRadius: SpottTheme.radiusSmall,
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.people_alt, color: Colors.white, size: 14),
+                        const SizedBox(width: 4),
+                        Text(
+                          '2 Mutual Travelers',
+                          style: SpottTheme.textTheme.labelMedium?.copyWith(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+            
+            Padding(
+              padding: const EdgeInsets.all(SpottTheme.spacingMedium),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Route
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          const Icon(Icons.circle, size: 10, color: SpottTheme.primary),
+                          Container(height: 20, width: 2, color: SpottTheme.card),
+                          const Icon(Icons.location_on, size: 14, color: SpottTheme.success),
+                        ],
+                      ),
+                      const SizedBox(width: SpottTheme.spacingSmall),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Pune, Maharashtra", style: SpottTheme.textTheme.bodyMedium),
+                            const SizedBox(height: 8),
+                            Text("Kolhapur, Maharashtra", style: SpottTheme.textTheme.titleMedium),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text("10:30 AM", style: SpottTheme.textTheme.titleMedium),
+                          Text("3h 45m", style: SpottTheme.textTheme.bodyMedium),
+                        ],
+                      ),
+                    ],
+                  ),
+                  
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: SpottTheme.spacingMedium),
+                    child: Divider(color: SpottTheme.card),
+                  ),
+                  
+                  // Driver & Vehicle
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 24,
+                        backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=a042581f4e29026704d'),
+                      ),
+                      const SizedBox(width: SpottTheme.spacingMedium),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text("Rohan M.", style: SpottTheme.textTheme.titleMedium),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.star, size: 14, color: SpottTheme.warning),
+                                Text(" 4.9", style: SpottTheme.textTheme.bodyMedium),
+                              ],
+                            ),
+                            Text("White Hyundai Creta • SUV", style: SpottTheme.textTheme.bodyMedium),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: SpottTheme.card,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          "3 Seats",
+                          style: SpottTheme.textTheme.labelLarge?.copyWith(color: SpottTheme.primary),
+                        ),
+                      )
+                    ],
+                  ),
+                  
+                  const SizedBox(height: SpottTheme.spacingMedium),
+                  
+                  // Badges
+                  const Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      TrustBadge(label: "Aadhaar Verified"),
+                      TrustBadge(label: "Accepts Parcels", icon: Icons.local_shipping_outlined, color: SpottTheme.warning),
+                      TrustBadge(label: "Corporate", icon: Icons.business),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

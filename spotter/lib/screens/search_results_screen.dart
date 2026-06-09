@@ -232,8 +232,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       itemCount: 3,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
-      itemBuilder: (_, __) => _RBSkeletonCard(),
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      itemBuilder: (_, _) => _RBSkeletonCard(),
     );
   }
 
@@ -307,7 +307,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 100),
       itemCount: results.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (context, i) => _RideResultCard(
         result: results[i],
         onTap: () =>
@@ -730,7 +730,7 @@ class _RBSkeletonCardState extends State<_RBSkeletonCard>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _anim,
-      builder: (_, __) => Container(
+      builder: (_, _) => Container(
         height: 120,
         decoration: BoxDecoration(
           color: Colors.grey.withValues(alpha: _anim.value * 0.15),

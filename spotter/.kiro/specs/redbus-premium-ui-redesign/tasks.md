@@ -42,7 +42,7 @@ Migrate the Spotter Flutter app from its dark glass-effect UI to the RedBus Prem
 
   - [ ] 3.3 Update `lib/core/components/trust_badge.dart` with RB token references
     - Replace `SpottColors.trustVerified` → `RBColors.success`
-    - Replace `SpottColors.warningSoft` → `RBColors.warning.withOpacity(0.12)`
+    - Replace `SpottColors.warningSoft` → `RBColors.warning.withValues(alpha:0.12)`
     - Replace `SpottColors.warning` → `RBColors.warning`
     - Replace `SpottColors.textSecondary` / `textTertiary` → `RBColors.textSecondary`
     - Replace `SpottColors.surface3` → `RBColors.background`
@@ -75,7 +75,7 @@ Migrate the Spotter Flutter app from its dark glass-effect UI to the RedBus Prem
     - Replace all `SpottTextStyles.*` → `RBTextStyles.*` equivalents
     - Replace `SpottButton.primary` → RB primary button variant
     - Set background to `RBColors.background` — remove all dark/glass surfaces
-    - Icon container: `RBColors.primary.withOpacity(0.12)`
+    - Icon container: `RBColors.primary.withValues(alpha:0.12)`
     - Implement graceful fallback when illustration asset fails to load (heading + description only)
     - _Requirements: 12.1–12.4_
 
@@ -410,7 +410,7 @@ Migrate the Spotter Flutter app from its dark glass-effect UI to the RedBus Prem
 
   - [ ] 14.8 Redesign `lib/screens/maintenance_screen.dart`
     - Replace scaffold with `Scaffold(backgroundColor: RBColors.background)`
-    - Build centred column: icon in `RBColors.primary.withOpacity(0.12)` container (80px), heading (`RBTextStyles.heading`), description (`RBTextStyles.body`), "Retry" primary CTA
+    - Build centred column: icon in `RBColors.primary.withValues(alpha:0.12)` container (80px), heading (`RBTextStyles.heading`), description (`RBTextStyles.body`), "Retry" primary CTA
     - _Requirements: 20.5_
 
   - [ ] 14.9 Redesign `lib/screens/network_error_screen.dart`

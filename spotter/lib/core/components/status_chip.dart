@@ -38,6 +38,7 @@ class StatusChip extends StatelessWidget {
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: _getTextColor(),
+              fontFamily: 'Inter',
             ),
           ),
         ],
@@ -50,15 +51,14 @@ class StatusChip extends StatelessWidget {
       case ChipStatus.verified:
       case ChipStatus.approved:
       case ChipStatus.delivered:
-        return SpottColors.success.withValues(alpha: 0.15);
+        return SpottColors.success.withValues(alpha: 0.14);
       case ChipStatus.pending:
       case ChipStatus.inTransit:
-        return SpottColors.warning.withValues(alpha: 0.15);
+        return SpottColors.warning.withValues(alpha: 0.14);
       case ChipStatus.rejected:
-        return SpottColors.primary.withValues(alpha: 0.15);
+        return SpottColors.danger.withValues(alpha: 0.14);
       case ChipStatus.neutral:
-
-        return SpottColors.glassSurface;
+        return SpottColors.surface2;
     }
   }
 
@@ -72,9 +72,8 @@ class StatusChip extends StatelessWidget {
       case ChipStatus.inTransit:
         return SpottColors.warning.withValues(alpha: 0.3);
       case ChipStatus.rejected:
-        return SpottColors.primary.withValues(alpha: 0.3);
+        return SpottColors.danger.withValues(alpha: 0.3);
       case ChipStatus.neutral:
-
         return SpottColors.border;
     }
   }
@@ -89,10 +88,9 @@ class StatusChip extends StatelessWidget {
       case ChipStatus.inTransit:
         return SpottColors.warning;
       case ChipStatus.rejected:
-        return SpottColors.primary;
+        return SpottColors.danger;
       case ChipStatus.neutral:
-
-        return SpottColors.textPrimary;
+        return SpottColors.textSecondary;
     }
   }
 }

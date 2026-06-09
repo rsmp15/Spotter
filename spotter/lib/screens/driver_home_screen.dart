@@ -3,13 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../app/app_routes.dart';
 import '../core/components/status_chip.dart';
-import '../core/components/spott_buttons.dart';
 import '../core/components/spott_avatar.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/shadows.dart';
+
 import '../core/theme/redbus_theme.dart';
 import '../core/components/redbus_sections.dart';
 

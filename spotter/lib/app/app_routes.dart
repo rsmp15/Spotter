@@ -284,7 +284,7 @@ class AppRoutes {
       case support:
         return const SupportScreen();
       case safetyToolkit:
-        return const SafetyToolkitScreen();
+        return const PremiumSosAlertScreen();
       case services:
         return const RoleGuard(
           allowedRoles: [UserRole.passenger, UserRole.parcelSender],
@@ -333,7 +333,7 @@ class AppRoutes {
         );
       case createTrip:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.traveler, UserRole.passenger],
           child: CreateTripScreen(),
         );
       case jobRequests:
@@ -360,7 +360,7 @@ class AppRoutes {
         return const AdminReviewScreen();
       case parcelBooking:
         return const RoleGuard(
-          allowedRoles: [UserRole.parcelSender],
+          allowedRoles: [UserRole.parcelSender, UserRole.passenger],
           child: ParcelBookingScreen(),
         );
       case parcelTracking:

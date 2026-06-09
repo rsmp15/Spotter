@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../controllers/ride_controller.dart';
-import '../core/components/glass_card.dart';
-import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_avatar.dart';
 import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/gradients.dart';
+import '../theme/spott_theme.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
   const LiveTrackingScreen({super.key});
@@ -43,225 +38,203 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
     final ride = RideScope.of(context);
     final driver = ride.selectedDriver;
 
-    return GlassScaffold(
+    return Scaffold(
+      backgroundColor: SpottTheme.background,
+      appBar: AppBar(
+        backgroundColor: SpottTheme.background,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        title: Text('Live Tracking', style: SpottTheme.textTheme.titleLarge),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: AnimatedBuilder(
+              animation: _pulseController,
+              builder: (context, _) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: SpottTheme.success.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(SpottTheme.radiusMedium),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: SpottTheme.success.withValues(alpha: 
+                            0.5 + 0.5 * _pulseController.value,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'LIVE',
+                        style: SpottTheme.textTheme.labelLarge?.copyWith(
+                          color: SpottTheme.success,
+                          fontSize: 12,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
-          // ── Top Bar ──────────────────────────────────────────
-          SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: SpottSpacing.pageHorizontal,
-                vertical: SpottSpacing.sm,
-              ),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.maybePop(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: SpottColors.glassSurface,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: SpottColors.borderSubtle),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_rounded,
-                        color: SpottColors.textPrimary,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: SpottSpacing.md),
-                  Expanded(
-                    child: Text('Live Tracking', style: SpottTextStyles.titleSmall),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: SpottColors.successSoft,
-                      borderRadius: BorderRadius.circular(SpottRadius.pill),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedBuilder(
-                          animation: _pulseController,
-                          builder: (context, _) {
-                            return Container(
-                              width: 6,
-                              height: 6,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: SpottColors.success.withValues(
-                                  alpha: 0.5 + 0.5 * _pulseController.value,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'LIVE',
-                          style: SpottTextStyles.overline.copyWith(
-                            color: SpottColors.success,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // ── Map Area ─────────────────────────────────────────
           Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: SpottSpacing.pageHorizontal,
-                vertical: SpottSpacing.sm,
-              ),
-              decoration: BoxDecoration(
-                color: SpottColors.surface2,
-                borderRadius: BorderRadius.circular(SpottRadius.card),
-                border: Border.all(color: SpottColors.border),
-              ),
-              child: Stack(
-                children: [
-                  // Decorative grid pattern
-                  Positioned.fill(
-                    child: CustomPaint(painter: _MapGridPainter()),
-                  ),
-                  // Route path
-                  Center(
-                    child: CustomPaint(
-                      size: const Size(200, 200),
-                      painter: _RoutePathPainter(progress: _currentStep / 3),
-                    ),
-                  ),
-                  // Origin marker
-                  Positioned(
-                    left: 60,
-                    top: 80,
-                    child: _buildMapMarker(
-                      icon: Icons.my_location_rounded,
-                      color: SpottColors.accentPurple,
-                      label: 'Pickup',
-                    ),
-                  ),
-                  // Destination marker
-                  Positioned(
-                    right: 60,
-                    bottom: 80,
-                    child: _buildMapMarker(
-                      icon: Icons.flag_rounded,
-                      color: SpottColors.primary,
-                      label: 'Drop',
-                    ),
-                  ),
-                  // ETA Floating Card
-                  Positioned(
-                    top: SpottSpacing.md,
-                    right: SpottSpacing.md,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: SpottSpacing.md,
-                        vertical: SpottSpacing.sm,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: SpottTheme.spacingLarge),
+              child: Container(
+                margin: const EdgeInsets.only(top: SpottTheme.spacingLarge),
+                decoration: BoxDecoration(
+                  color: SpottTheme.surface,
+                  borderRadius: BorderRadius.circular(SpottTheme.radiusXLarge),
+                  boxShadow: SpottTheme.premiumShadow,
+                ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(child: CustomPaint(painter: _MapGridPainter())),
+                    Center(
+                      child: CustomPaint(
+                        size: const Size(220, 220),
+                        painter: _RoutePathPainter(progress: _currentStep / 3),
                       ),
-                      decoration: BoxDecoration(
-                        color: SpottColors.surface1.withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(SpottRadius.md),
-                        border: Border.all(color: SpottColors.border),
+                    ),
+                    Positioned(
+                      left: 56,
+                      top: 96,
+                      child: _buildMapMarker(
+                        icon: Icons.my_location_rounded,
+                        color: SpottTheme.primary,
+                        label: 'Pickup',
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '18 min',
-                            style: SpottTextStyles.title.copyWith(
-                              fontWeight: FontWeight.w800,
+                    ),
+                    Positioned(
+                      right: 56,
+                      bottom: 96,
+                      child: _buildMapMarker(
+                        icon: Icons.flag_rounded,
+                        color: SpottTheme.success,
+                        label: 'Drop',
+                      ),
+                    ),
+                    Positioned(
+                      top: SpottTheme.spacingLarge,
+                      right: SpottTheme.spacingLarge,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: SpottTheme.spacingMedium,
+                          vertical: SpottTheme.spacingSmall,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(SpottTheme.radiusLarge),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '18 min',
+                              style: SpottTheme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          Text(
-                            '6.4 km',
-                            style: SpottTextStyles.caption,
-                          ),
-                        ],
+                            Text(
+                              '6.4 km',
+                              style: SpottTheme.textTheme.bodySmall?.copyWith(
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
 
-          // ── Bottom Panel ─────────────────────────────────────
           Container(
-            padding: const EdgeInsets.fromLTRB(
-              SpottSpacing.pageHorizontal,
-              SpottSpacing.lg,
-              SpottSpacing.pageHorizontal,
-              SpottSpacing.xl,
-            ),
+            width: double.infinity,
             decoration: BoxDecoration(
-              gradient: SpottGradients.surfaceElevated,
+              color: SpottTheme.surface,
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(SpottRadius.xxl),
-                topRight: Radius.circular(SpottRadius.xxl),
+                topLeft: Radius.circular(SpottTheme.radiusXLarge),
+                topRight: Radius.circular(SpottTheme.radiusXLarge),
               ),
-              border: Border(top: BorderSide(color: SpottColors.border)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.18),
+                  blurRadius: 24,
+                  offset: const Offset(0, -8),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.fromLTRB(
+              SpottTheme.spacingLarge,
+              SpottTheme.spacingLarge,
+              SpottTheme.spacingLarge,
+              SpottTheme.spacingLarge,
             ),
             child: SafeArea(
               top: false,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Trip Progress Steps
                   _buildProgressSteps(),
-
-                  const SizedBox(height: SpottSpacing.lg),
-
-                  // ── Driver Info ─────────────────────────────
-                  GlassCard(
-                    padding: const EdgeInsets.all(SpottSpacing.md),
+                  const SizedBox(height: SpottTheme.spacingLarge),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: SpottTheme.background,
+                      borderRadius: BorderRadius.circular(SpottTheme.radiusLarge),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    ),
+                    padding: const EdgeInsets.all(SpottTheme.spacingLarge),
                     child: Row(
                       children: [
                         SpottAvatar(
                           imageUrl: 'https://i.pravatar.cc/150?u=driver1',
-                          radius: 24,
+                          radius: 26,
                           isVerified: true,
                           isOnline: true,
                         ),
-                        const SizedBox(width: SpottSpacing.md),
+                        const SizedBox(width: SpottTheme.spacingLarge),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 driver?.name ?? 'Amit Sharma',
-                                style: SpottTextStyles.label,
+                                style: SpottTheme.textTheme.titleLarge,
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 6),
                               Text(
                                 'Swift Dzire • MH 12 AB 1234',
-                                style: SpottTextStyles.caption.copyWith(fontSize: 11),
+                                style: SpottTheme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white70,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        _buildActionButton(Icons.phone_rounded, SpottColors.success),
-                        const SizedBox(width: SpottSpacing.sm),
-                        _buildActionButton(Icons.chat_rounded, SpottColors.info),
+                        _buildActionButton(Icons.phone_rounded, SpottTheme.success),
+                        const SizedBox(width: SpottTheme.spacingSmall),
+                        _buildActionButton(Icons.chat_rounded, SpottTheme.primary),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: SpottSpacing.md),
-
-                  // ── Safety Quick Actions ────────────────────
+                  const SizedBox(height: SpottTheme.spacingLarge),
                   Row(
                     children: [
                       Expanded(
@@ -271,28 +244,28 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('SOS triggered! Emergency contacts notified.'),
-                                backgroundColor: SpottColors.danger,
+                                backgroundColor: Color(0xFFEF4444),
                               ),
                             );
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: SpottSpacing.md),
+                            padding: const EdgeInsets.symmetric(vertical: SpottTheme.spacingMedium),
                             decoration: BoxDecoration(
-                              color: SpottColors.dangerSoft,
-                              borderRadius: BorderRadius.circular(SpottRadius.md),
+                              color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(SpottTheme.radiusLarge),
                               border: Border.all(
-                                color: SpottColors.danger.withValues(alpha: 0.3),
+                                color: const Color(0xFFEF4444).withValues(alpha: 0.24),
                               ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.sos_rounded, color: SpottColors.danger, size: 18),
-                                const SizedBox(width: 6),
+                                const Icon(Icons.sos_rounded, color: Color(0xFFEF4444), size: 18),
+                                const SizedBox(width: 8),
                                 Text(
                                   'SOS',
-                                  style: SpottTextStyles.label.copyWith(
-                                    color: SpottColors.danger,
+                                  style: SpottTheme.textTheme.labelLarge?.copyWith(
+                                    color: const Color(0xFFEF4444),
                                     fontSize: 13,
                                   ),
                                 ),
@@ -301,7 +274,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                           ),
                         ),
                       ),
-                      const SizedBox(width: SpottSpacing.sm),
+                      const SizedBox(width: SpottTheme.spacingSmall),
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
@@ -311,21 +284,21 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                             );
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: SpottSpacing.md),
+                            padding: const EdgeInsets.symmetric(vertical: SpottTheme.spacingMedium),
                             decoration: BoxDecoration(
-                              color: SpottColors.glassSurface,
-                              borderRadius: BorderRadius.circular(SpottRadius.md),
-                              border: Border.all(color: SpottColors.borderSubtle),
+                              color: Colors.white.withValues(alpha: 0.06),
+                              borderRadius: BorderRadius.circular(SpottTheme.radiusLarge),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.share_rounded, color: SpottColors.textSecondary, size: 18),
-                                const SizedBox(width: 6),
+                                const Icon(Icons.share_rounded, color: Colors.white70, size: 18),
+                                const SizedBox(width: 8),
                                 Text(
                                   'Share Trip',
-                                  style: SpottTextStyles.label.copyWith(
-                                    color: SpottColors.textSecondary,
+                                  style: SpottTheme.textTheme.labelLarge?.copyWith(
+                                    color: Colors.white70,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -351,7 +324,6 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
     return Row(
       children: List.generate(steps.length * 2 - 1, (i) {
         if (i.isOdd) {
-          // Connector line
           final stepIndex = i ~/ 2;
           final isCompleted = stepIndex < _currentStep;
           return Expanded(
@@ -360,16 +332,18 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(2),
                 gradient: isCompleted
-                    ? const LinearGradient(
-                        colors: [SpottColors.success, SpottColors.success],
+                    ? LinearGradient(
+                        colors: [
+                          SpottTheme.success,
+                          SpottTheme.success.withValues(alpha: 0.8),
+                        ],
                       )
                     : null,
-                color: isCompleted ? null : SpottColors.surface3,
+                color: isCompleted ? null : Colors.white.withValues(alpha: 0.08),
               ),
             ),
           );
         }
-        // Step dot + label
         final stepIndex = i ~/ 2;
         final isActive = stepIndex == _currentStep;
         final isCompleted = stepIndex < _currentStep;
@@ -383,14 +357,14 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isCompleted
-                    ? SpottColors.success
+                    ? SpottTheme.success
                     : isActive
-                        ? SpottColors.primary
-                        : SpottColors.surface3,
+                        ? SpottTheme.primary
+                        : Colors.white.withValues(alpha: 0.08),
                 boxShadow: isActive
                     ? [
                         BoxShadow(
-                          color: SpottColors.primary.withValues(alpha: 0.4),
+                          color: SpottTheme.primary.withValues(alpha: 0.35),
                           blurRadius: 8,
                         ),
                       ]
@@ -407,10 +381,10 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
                 fontSize: 9,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                 color: isActive
-                    ? SpottColors.textPrimary
+                    ? Colors.white
                     : isCompleted
-                        ? SpottColors.success
-                        : SpottColors.textTertiary,
+                        ? SpottTheme.success
+                        : Colors.white54,
                 fontFamily: 'Inter',
               ),
             ),
@@ -432,26 +406,24 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
+            color: color.withValues(alpha: 0.16),
             shape: BoxShape.circle,
-            border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
+            border: Border.all(color: color.withValues(alpha: 0.35), width: 1.5),
           ),
           child: Icon(icon, color: color, size: 18),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: SpottColors.surface1,
-            borderRadius: BorderRadius.circular(4),
+            color: SpottTheme.surface,
+            borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
+            style: SpottTheme.textTheme.bodySmall?.copyWith(
               color: color,
-              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -466,9 +438,9 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
+          color: color.withValues(alpha: 0.14),
           shape: BoxShape.circle,
-          border: Border.all(color: color.withValues(alpha: 0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
         ),
         child: Icon(icon, color: color, size: 18),
       ),
@@ -476,28 +448,24 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen>
   }
 }
 
-// ── Map Grid Painter ──────────────────────────────────────────────────
 class _MapGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // Land Background
-    final landPaint = Paint()..color = const Color(0xFFF4F5F8);
+    final landPaint = Paint()..color = const Color(0xFF0B0F16);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), landPaint);
 
-    // Green Parks
     final parkPaint = Paint()
-      ..color = const Color(0xFFE2F3E7) // Soft light green
+      ..color = const Color(0xFF1E2A3E)
       ..style = PaintingStyle.fill;
-    
+
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(20, 40, 80, 60), const Radius.circular(8)), parkPaint);
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(180, 240, 90, 80), const Radius.circular(12)), parkPaint);
     canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(30, 320, 60, 50), const Radius.circular(8)), parkPaint);
 
-    // Water Bodies (River)
     final waterPaint = Paint()
-      ..color = const Color(0xFFC4E0E5) // Soft light blue water
+      ..color = const Color(0xFF1A2E40)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 24.0
+      ..strokeWidth = 20.0
       ..strokeCap = StrokeCap.round;
 
     final riverPath = Path()
@@ -505,18 +473,16 @@ class _MapGridPainter extends CustomPainter {
       ..cubicTo(size.width * 0.3, size.height * 0.8, size.width * 0.6, size.height * 0.95, size.width, size.height * 0.7);
     canvas.drawPath(riverPath, waterPaint);
 
-    // Major Roads/Highways
     final roadPaint = Paint()
-      ..color = const Color(0xFFFFFFFF) // White roads
+      ..color = Colors.white.withValues(alpha: 0.14)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.5;
 
     final highwayPaint = Paint()
-      ..color = const Color(0xFFE2E6EC) // Light grey highway
+      ..color = Colors.white.withValues(alpha: 0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6.0;
 
-    // Draw some horizontal and vertical roads representing streets
     final roadPath = Path()
       ..moveTo(0, size.height * 0.15)
       ..lineTo(size.width, size.height * 0.15)
@@ -526,21 +492,17 @@ class _MapGridPainter extends CustomPainter {
       ..lineTo(size.width * 0.25, size.height)
       ..moveTo(size.width * 0.75, 0)
       ..lineTo(size.width * 0.75, size.height);
-    
     canvas.drawPath(roadPath, roadPaint);
-
-    // Draw a major highway diagonal crossing
     final highwayPath = Path()
       ..moveTo(0, size.height * 0.8)
       ..lineTo(size.width, size.height * 0.2);
     canvas.drawPath(highwayPath, highwayPaint);
 
-    // Traffic Layer indicators (slow traffic segments in orange/red)
     final trafficPaint = Paint()
-      ..color = SpottColors.warning // Orange slow traffic
+      ..color = SpottColors.warning
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
-    
+
     canvas.drawLine(
       Offset(size.width * 0.25, size.height * 0.2),
       Offset(size.width * 0.25, size.height * 0.4),
@@ -552,7 +514,6 @@ class _MapGridPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ── Route Path Painter ────────────────────────────────────────────────
 class _RoutePathPainter extends CustomPainter {
   final double progress;
   _RoutePathPainter({required this.progress});
@@ -570,31 +531,27 @@ class _RoutePathPainter extends CustomPainter {
         size.height * 0.8,
       );
 
-    // Background road path representation (grey)
     final bgPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6.0
-      ..strokeCap = StrokeCap.round;
+      ..strokeCap = StrokeCap.round
+      ..color = Colors.white.withValues(alpha: 0.08);
 
-    // Inner route background
     final bgInnerPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0
-      ..color = const Color(0xFFFFFFFF)
+      ..color = Colors.white.withValues(alpha: 0.18)
       ..strokeCap = StrokeCap.round;
 
-    bgPaint.color = SpottColors.border;
     canvas.drawPath(path, bgPaint);
     canvas.drawPath(path, bgInnerPaint);
 
-    // Solid Google Maps-style Blue Route Path
     final progressPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0;
+      ..strokeWidth = 4.0
+      ..color = SpottTheme.primary;
 
-    progressPaint.color = SpottColors.info; // Safe Maps Blue
     progressPaint.strokeCap = StrokeCap.round;
-
     final metrics = path.computeMetrics();
     for (final metric in metrics) {
       final length = metric.length * progress;

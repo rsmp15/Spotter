@@ -1,11 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
+import '../controllers/ride_controller.dart';
 import '../core/theme/colors.dart';
 import '../core/theme/radius.dart';
 import '../core/theme/spacing.dart';
 import '../core/theme/typography.dart';
-import '../core/theme/shadows.dart';
 import '../core/theme/redbus_theme.dart';
 import '../core/components/redbus_sections.dart';
 import '../spotter_widgets.dart';
@@ -360,7 +360,7 @@ class ServicesScreen extends StatelessWidget {
                   height: 90,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (_, _, _) => Container(
                     height: 90,
                     color: Colors.grey.shade200,
                     child: const Icon(Icons.image, color: Colors.grey),
@@ -628,7 +628,7 @@ class ServicesScreen extends StatelessWidget {
                 icon: Icons.security_rounded,
                 label: 'Safety',
                 color: const Color(0xFF005f90),
-                onTap: () => Navigator.pushNamed(context, AppRoutes.safetyToolkit),
+                onTap: () => RideScope.of(context).switchTab(3),
               ),
               _UtilityCircularButton(
                 icon: Icons.notifications_rounded,

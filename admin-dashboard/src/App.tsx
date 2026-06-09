@@ -1,42 +1,65 @@
-
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { RemoteConfigManager } from './views/RemoteConfigManager';
 import { UsersView } from './views/UsersView';
 import { TripsView } from './views/TripsView';
 import { SupportView } from './views/SupportView';
-import { Menu, UserCircle } from 'lucide-react';
+import { Bell, Search } from 'lucide-react';
+
+const PAGE_META: Record<string, { title: string; desc: string }> = {
+  users:     { title: 'Users & KYC',       desc: 'Manage riders, drivers and identity verification' },
+  trips:     { title: 'Live Dispatch',      desc: 'Monitor active rides and reassign drivers in real-time' },
+  support:   { title: 'Support & Safety',   desc: 'Handle rider and driver support tickets' },
+  config:    { title: 'Remote Config',      desc: 'Manage dynamic feature flags and configuration' },
+  analytics: { title: 'Reports',            desc: 'View analytics and operational metrics' },
+};
 
 function App() {
   const location = useLocation();
-  const pathName = location.pathname.replace('/', '');
-  const title = pathName.charAt(0).toUpperCase() + pathName.slice(1);
+  const segment = location.pathname.replace('/', '').split('/')[0];
+  const meta = PAGE_META[segment] || { title: 'Dashboard', desc: 'Spotter Operations' };
 
   return (
     <div className="dashboard-shell">
       <Sidebar />
 
       <main className="main-content">
-        <header className="topbar" style={{ justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Menu size={24} color="var(--ink)" />
-            <span className="text-body-md" style={{ fontWeight: 500, color: 'var(--mute)' }}>
-              Administration / <span style={{ color: 'var(--ink)' }}>{title || 'Dashboard'}</span>
-            </span>
+        {/* ── Topbar ─────────────────────────────── */}
+        <header className="topbar">
+          {/* Breadcrumb */}
+          <div className="topbar-breadcrumb">
+            <span className="topbar-breadcrumb-root">Spotter Ops</span>
+            <span className="topbar-breadcrumb-sep">/</span>
+            <span className="topbar-breadcrumb-current">{meta.title}</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span className="text-body-sm" style={{ fontWeight: 500 }}>Admin User</span>
-            <UserCircle size={28} color="var(--ink)" />
+
+          {/* Search + actions */}
+          <div className="topbar-actions">
+            <label className="topbar-search">
+              <Search size={14} color="var(--hint)" />
+              <input placeholder="Search anything…" />
+            </label>
+
+            <button className="topbar-icon-btn" title="Notifications" aria-label="Notifications">
+              <Bell size={16} />
+              <span className="topbar-notif-dot" />
+            </button>
           </div>
         </header>
 
+        {/* ── Content ───────────────────────────── */}
         <div className="content-area">
           <Routes>
-            <Route path="/" element={<Navigate to="/users" replace />} />
-            <Route path="/users" element={<UsersView />} />
-            <Route path="/trips" element={<TripsView />} />
-            <Route path="/support" element={<SupportView />} />
-            <Route path="/config" element={<RemoteConfigManager />} />
+            <Route path="/"          element={<Navigate to="/users" replace />} />
+            <Route path="/users"     element={<UsersView />} />
+            <Route path="/trips"     element={<TripsView />} />
+            <Route path="/support"   element={<SupportView />} />
+            <Route path="/config"    element={<RemoteConfigManager />} />
+            <Route path="/analytics" element={
+              <div style={{ padding: '48px', textAlign: 'center', color: 'var(--hint)' }}>
+                <p style={{ fontSize: 15 }}>Analytics view coming soon</p>
+              </div>
+            } />
           </Routes>
         </div>
       </main>

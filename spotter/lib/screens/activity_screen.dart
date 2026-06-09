@@ -24,7 +24,8 @@ class PremiumActivityApp extends StatelessWidget {
           surface: AppColors.surface,
           primary: AppColors.primary,
         ),
-        fontFamily: 'Roboto', // Default flutter font, but styled to look premium
+        fontFamily:
+            'Roboto', // Default flutter font, but styled to look premium
       ),
       home: const ActivityScreen(),
     );
@@ -35,18 +36,18 @@ class AppColors {
   // RedBus inspired primary - a sophisticated crimson/red
   static const Color primary = Color(0xFFD84E55);
   static const Color primarySoft = Color(0xFFFCEAEB);
-  
+
   static const Color background = Color(0xFFF4F5F7);
   static const Color surface = Colors.white;
   static const Color surfaceElevated = Color(0xFFFAFAFA);
-  
+
   static const Color textPrimary = Color(0xFF1A1D21);
   static const Color textSecondary = Color(0xFF6B7280);
   static const Color textMuted = Color(0xFF9CA3AF);
-  
+
   static const Color border = Color(0xFFE5E7EB);
   static const Color divider = Color(0xFFF3F4F6);
-  
+
   // Status Colors
   static const Color success = Color(0xFF10B981);
   static const Color successSoft = Color(0xFFD1FAE5);
@@ -54,7 +55,7 @@ class AppColors {
   static const Color warningSoft = Color(0xFFFEF3C7);
   static const Color info = Color(0xFF3B82F6);
   static const Color infoSoft = Color(0xFFDBEAFE);
-  
+
   // Service Accents
   static const Color tripsAccent = primary;
   static const Color parcelsAccent = Color(0xFF8B5CF6);
@@ -68,6 +69,7 @@ class AppRadius {
 }
 
 enum ActivityFilter { all, trips, parcels, parking }
+
 enum ActivityStatus { completed, upcoming, cancelled, inTransit }
 
 class ActivityItem {
@@ -235,7 +237,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
           onPressed: () {},
         ),
         IconButton(
-          icon: const Icon(Icons.help_outline_rounded, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.help_outline_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () {},
         ),
         const SizedBox(width: 8),
@@ -305,7 +310,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     color: AppColors.primarySoft,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.receipt_long_rounded, color: AppColors.primary),
+                  child: const Icon(
+                    Icons.receipt_long_rounded,
+                    color: AppColors.primary,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 const Expanded(
@@ -331,7 +339,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     ],
                   ),
                 ),
-                const Icon(Icons.download_rounded, color: AppColors.textSecondary),
+                const Icon(
+                  Icons.download_rounded,
+                  color: AppColors.textSecondary,
+                ),
               ],
             ),
           ),
@@ -351,10 +362,26 @@ class _ActivityScreenState extends State<ActivityScreen> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFilterChip(ActivityFilter.all, 'All Bookings', Icons.list_alt_rounded),
-                _buildFilterChip(ActivityFilter.trips, 'Trips', Icons.directions_car_rounded),
-                _buildFilterChip(ActivityFilter.parcels, 'Parcels', Icons.inventory_2_rounded),
-                _buildFilterChip(ActivityFilter.parking, 'Parking', Icons.local_parking_rounded),
+                _buildFilterChip(
+                  ActivityFilter.all,
+                  'All Bookings',
+                  Icons.list_alt_rounded,
+                ),
+                _buildFilterChip(
+                  ActivityFilter.trips,
+                  'Trips',
+                  Icons.directions_car_rounded,
+                ),
+                _buildFilterChip(
+                  ActivityFilter.parcels,
+                  'Parcels',
+                  Icons.inventory_2_rounded,
+                ),
+                _buildFilterChip(
+                  ActivityFilter.parking,
+                  'Parking',
+                  Icons.local_parking_rounded,
+                ),
               ],
             ),
           ),
@@ -415,7 +442,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.search_off_rounded, size: 64, color: AppColors.border),
+                Icon(
+                  Icons.search_off_rounded,
+                  size: 64,
+                  color: AppColors.border,
+                ),
                 const SizedBox(height: 16),
                 const Text(
                   'No bookings found',
@@ -440,15 +471,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: _TicketCard(item: items[index]),
-            );
-          },
-          childCount: items.length,
-        ),
+        delegate: SliverChildBuilderDelegate((context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: _TicketCard(item: items[index]),
+          );
+        }, childCount: items.length),
       ),
     );
   }
@@ -468,7 +496,7 @@ class _TicketCard extends StatelessWidget {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -487,7 +515,7 @@ class _TicketCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: _getTypeColor(item.type).withOpacity(0.1),
+                        color: _getTypeColor(item.type).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
@@ -526,10 +554,10 @@ class _TicketCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Dashed Divider (Ticket effect)
           _buildDashedDivider(),
-          
+
           // Middle Section: Route & Time
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -586,27 +614,53 @@ class _TicketCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Bottom Section: Actions
           Container(
             decoration: const BoxDecoration(
               border: Border(top: BorderSide(color: AppColors.border)),
               color: AppColors.surfaceElevated,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(AppRadius.card)),
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(AppRadius.card),
+              ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             child: Row(
               children: [
                 if (item.status == ActivityStatus.upcoming) ...[
-                  Expanded(child: _buildActionButton('Track', Icons.location_on_outlined, AppColors.primary)),
-                  Expanded(child: _buildActionButton('E-Ticket', Icons.qr_code_rounded, AppColors.textPrimary)),
+                  Expanded(
+                    child: _buildActionButton(
+                      'Track',
+                      Icons.location_on_outlined,
+                      AppColors.primary,
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildActionButton(
+                      'E-Ticket',
+                      Icons.qr_code_rounded,
+                      AppColors.textPrimary,
+                    ),
+                  ),
                 ] else ...[
-                  Expanded(child: _buildActionButton('Support', Icons.headset_mic_outlined, AppColors.textPrimary)),
-                  Expanded(child: _buildActionButton('Rebook', Icons.refresh_rounded, AppColors.primary)),
+                  Expanded(
+                    child: _buildActionButton(
+                      'Support',
+                      Icons.headset_mic_outlined,
+                      AppColors.textPrimary,
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildActionButton(
+                      'Rebook',
+                      Icons.refresh_rounded,
+                      AppColors.primary,
+                    ),
+                  ),
                 ],
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -629,11 +683,7 @@ class _TicketCard extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            Container(
-              width: 2,
-              height: 24,
-              color: AppColors.border,
-            ),
+            Container(width: 2, height: 24, color: AppColors.border),
             Container(
               width: 10,
               height: 10,
@@ -694,7 +744,9 @@ class _TicketCard extends StatelessWidget {
               return const SizedBox(
                 width: dashWidth,
                 height: dashHeight,
-                child: DecoratedBox(decoration: BoxDecoration(color: AppColors.border)),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: AppColors.border),
+                ),
               );
             }),
           );
@@ -709,7 +761,9 @@ class _TicketCard extends StatelessWidget {
       style: TextButton.styleFrom(
         foregroundColor: color,
         padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.button),
+        ),
       ),
       icon: Icon(icon, size: 18),
       label: Text(
@@ -721,29 +775,52 @@ class _TicketCard extends StatelessWidget {
 
   IconData _getTypeIcon(ActivityFilter type) {
     switch (type) {
-      case ActivityFilter.trips: return Icons.directions_bus_rounded; // Changed to Bus for RedBus feel
-      case ActivityFilter.parcels: return Icons.local_shipping_rounded;
-      case ActivityFilter.parking: return Icons.local_parking_rounded;
-      default: return Icons.receipt_rounded;
+      case ActivityFilter.trips:
+        return Icons.directions_bus_rounded; // Changed to Bus for RedBus feel
+      case ActivityFilter.parcels:
+        return Icons.local_shipping_rounded;
+      case ActivityFilter.parking:
+        return Icons.local_parking_rounded;
+      default:
+        return Icons.receipt_rounded;
     }
   }
 
   Color _getTypeColor(ActivityFilter type) {
     switch (type) {
-      case ActivityFilter.trips: return AppColors.primary;
-      case ActivityFilter.parcels: return AppColors.parcelsAccent;
-      case ActivityFilter.parking: return AppColors.parkingAccent;
-      default: return AppColors.textPrimary;
+      case ActivityFilter.trips:
+        return AppColors.primary;
+      case ActivityFilter.parcels:
+        return AppColors.parcelsAccent;
+      case ActivityFilter.parking:
+        return AppColors.parkingAccent;
+      default:
+        return AppColors.textPrimary;
     }
   }
 
   String _formatDate(DateTime date) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
   String _formatTime(DateTime date) {
-    final hour = date.hour == 0 ? 12 : (date.hour > 12 ? date.hour - 12 : date.hour);
+    final hour = date.hour == 0
+        ? 12
+        : (date.hour > 12 ? date.hour - 12 : date.hour);
     final period = date.hour >= 12 ? 'PM' : 'AM';
     final minute = date.minute.toString().padLeft(2, '0');
     return '$hour:$minute $period';
@@ -833,7 +910,7 @@ class _StatCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 20),
@@ -883,14 +960,24 @@ class _StickyFilterDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => 60.0;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       height: maxExtent,
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
         color: AppColors.background,
         boxShadow: overlapsContent
-            ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ]
             : null,
       ),
       child: child,

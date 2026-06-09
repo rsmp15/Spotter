@@ -343,9 +343,9 @@ colors: const [
 ### 3.7 `status_chip.dart` — rewrite in-place
 
 Map `ChipStatus` to RB semantic colours:
-- `verified / approved / delivered` → bg `RBColors.success.withOpacity(0.12)`, text `RBColors.success`
-- `pending / inTransit` → bg `RBColors.warning.withOpacity(0.12)`, text `RBColors.warning`
-- `rejected` → bg `RBColors.error.withOpacity(0.12)`, text `RBColors.error`
+- `verified / approved / delivered` → bg `RBColors.success.withValues(alpha:0.12)`, text `RBColors.success`
+- `pending / inTransit` → bg `RBColors.warning.withValues(alpha:0.12)`, text `RBColors.warning`
+- `rejected` → bg `RBColors.error.withValues(alpha:0.12)`, text `RBColors.error`
 - `neutral` → bg `RBColors.border`, text `RBColors.textSecondary`
 
 Remove `SpottColors.glassSurface`. Use `borderRadius: RBRadius.pill`, padding: `horizontal: RBSpacing.sm`.
@@ -353,7 +353,7 @@ Remove `SpottColors.glassSurface`. Use `borderRadius: RBRadius.pill`, padding: `
 ### 3.8 `trust_badge.dart` — update token references
 
 Replace `SpottColors.trustVerified` → `RBColors.success`.
-Replace `SpottColors.warningSoft` → `RBColors.warning.withOpacity(0.12)`.
+Replace `SpottColors.warningSoft` → `RBColors.warning.withValues(alpha:0.12)`.
 Replace `SpottColors.warning` → `RBColors.warning`.
 Replace `SpottColors.textSecondary` → `RBColors.textSecondary`.
 Replace `SpottColors.textTertiary` → `RBColors.textSecondary`.
@@ -367,7 +367,7 @@ Replace `SpottColors.accentPurple` → `RBColors.primary`.
 Replace `SpottTextStyles.*` → `RBTextStyles.*` equivalents.
 Replace `SpottButton.primary` → `RBButton.primary` (or `ElevatedButton` styled to spec).
 Background: `RBColors.background` (no dark surfaces).
-Icon container: `RBColors.primary.withOpacity(0.12)`.
+Icon container: `RBColors.primary.withValues(alpha:0.12)`.
 
 ### 3.10 `floating_bottom_nav.dart` — update
 
@@ -691,7 +691,7 @@ Identical pattern to Profile settings sections (Requirement 20.4).
 ```
 Scaffold(bg: RBColors.background)
 └── Center → Column
-    ├── Icon (RBColors.primary.withOpacity(0.12) container, 80px)
+    ├── Icon (RBColors.primary.withValues(alpha:0.12) container, 80px)
     ├── Heading (RBTextStyles.heading)
     ├── Description (RBTextStyles.body)
     └── 'Retry' primary button (h:52, RBColors.primary)

@@ -1,82 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app/app_routes.dart';
-import '../core/components/glass_card.dart';
-import '../core/components/glass_scaffold.dart';
-import '../core/components/status_chip.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
+import '../core/components/status_chip.dart';
+import '../theme/spott_theme.dart';
 
 class ActiveTripScreen extends StatelessWidget {
   const ActiveTripScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GlassScaffold(
+    return Scaffold(
+      backgroundColor: SpottTheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: SpottTheme.background,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Active Trip', style: SpottTextStyles.sectionTitle),
         centerTitle: true,
+        leading: const BackButton(color: Colors.white),
+        title: Text('Active Trip', style: SpottTheme.textTheme.titleLarge),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(SpottSpacing.lg),
+            padding: const EdgeInsets.all(SpottTheme.spacingLarge),
             children: [
-              Text('Navigating to destination...', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
-              const SizedBox(height: SpottSpacing.xl),
+              Text(
+                'Navigating to destination',
+                style: SpottTheme.textTheme.headlineMedium,
+              ),
+              const SizedBox(height: SpottTheme.spacingLarge),
 
-              // Map Placeholder
               Container(
                 height: 300,
                 decoration: BoxDecoration(
-                  color: SpottColors.surface1,
-                  borderRadius: BorderRadius.circular(SpottRadius.card),
-                  border: Border.all(color: SpottColors.border),
+                  color: SpottTheme.surface,
+                  borderRadius: BorderRadius.circular(SpottTheme.radiusXLarge),
+                  boxShadow: SpottTheme.premiumShadow,
                 ),
                 child: const Center(
-                  child: Icon(Icons.map_rounded, size: 48, color: SpottColors.textSecondary),
+                  child: Icon(Icons.map_rounded, size: 48, color: Colors.white70),
                 ),
               ),
-              const SizedBox(height: SpottSpacing.lg),
+              const SizedBox(height: SpottTheme.spacingLarge),
 
-              GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.md),
+              Container(
+                decoration: BoxDecoration(
+                  color: SpottTheme.surface,
+                  borderRadius: BorderRadius.circular(SpottTheme.radiusLarge),
+                  boxShadow: SpottTheme.premiumShadow,
+                ),
+                padding: const EdgeInsets.all(SpottTheme.spacingLarge),
                 child: Column(
                   children: [
                     _buildInfoRow('ETA', '45 mins'),
-                    const SizedBox(height: SpottSpacing.sm),
+                    const SizedBox(height: SpottTheme.spacingSmall),
                     _buildInfoRow('Next Stop', 'Drop Arjun (Koregaon Park)'),
                   ],
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: SpottTheme.spacingLarge),
 
-              GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.md),
+              Container(
+                decoration: BoxDecoration(
+                  color: SpottTheme.surface,
+                  borderRadius: BorderRadius.circular(SpottTheme.radiusLarge),
+                  boxShadow: SpottTheme.premiumShadow,
+                ),
+                padding: const EdgeInsets.all(SpottTheme.spacingLarge),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const StatusChip(label: 'Passengers', status: ChipStatus.verified),
-                    const SizedBox(height: SpottSpacing.md),
+                    const SizedBox(height: SpottTheme.spacingLarge),
                     _buildInfoRow('Arjun K.', 'Drop: Koregaon Park'),
-                    const SizedBox(height: SpottSpacing.sm),
+                    const SizedBox(height: SpottTheme.spacingSmall),
                     _buildInfoRow('Priya M.', 'Drop: Viman Nagar'),
                   ],
                 ),
               ),
-              const SizedBox(height: 100),
+              const SizedBox(height: 120),
             ],
           ),
           Positioned(
-            bottom: SpottSpacing.lg,
-            left: SpottSpacing.lg,
-            right: SpottSpacing.lg,
+            bottom: SpottTheme.spacingLarge,
+            left: SpottTheme.spacingLarge,
+            right: SpottTheme.spacingLarge,
             child: SpottButton.primary(
               label: 'End Trip',
               onPressed: () => Navigator.pushNamed(context, AppRoutes.driverHome),
@@ -91,8 +101,14 @@ class ActiveTripScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: SpottTextStyles.body),
-        Text(value, style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold, color: SpottColors.textPrimary)),
+        Text(label, style: SpottTheme.textTheme.bodyLarge),
+        Text(
+          value,
+          style: SpottTheme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
       ],
     );
   }

@@ -60,7 +60,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       HomeScreen(),
       ServicesScreen(),
       ActivityScreen(), // Passenger Trips
-      SafetyToolkitScreen(),
+      PremiumSosAlertScreen(),
       ProfileScreen(),
     ];
 

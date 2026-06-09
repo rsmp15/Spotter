@@ -223,7 +223,7 @@ This feature covers the complete UI redesign of the Spotter Flutter application 
 #### Acceptance Criteria
 
 1. THE App SHALL provide distinct Empty_State configurations for: No Results, No Trips, No Transactions, No Notifications, and No Bookings.
-2. THE Empty_State SHALL render a centred illustration or icon in `RBColors.primary.withOpacity(0.12)` container, a heading in `RBTextStyles.heading` with `color: RBColors.textPrimary`, and a description in `RBTextStyles.body` with `color: RBColors.textSecondary`. IF the illustration asset fails to load, THE Empty_State SHALL display only the heading and description text without the illustration.
+2. THE Empty_State SHALL render a centred illustration or icon in `RBColors.primary.withValues(alpha:0.12)` container, a heading in `RBTextStyles.heading` with `color: RBColors.textPrimary`, and a description in `RBTextStyles.body` with `color: RBColors.textSecondary`. IF the illustration asset fails to load, THE Empty_State SHALL display only the heading and description text without the illustration.
 3. WHERE the Empty_State has a recoverable action (e.g., "Search for Rides", "Try Again"), THE Empty_State SHALL render a primary CTA button below the description.
 4. THE Empty_State SHALL use `RBColors.background` as its background — not dark or glass surfaces.
 5. THE No_Results_Screen, Empty_State_Screen, and inline empty states in the Activity_Screen, Notifications_Screen, and Parcel_History_Screen SHALL comply with acceptance criteria 1 through 4 of this requirement.
@@ -266,9 +266,9 @@ This feature covers the complete UI redesign of the Spotter Flutter application 
 
 #### Acceptance Criteria
 
-1. THE Status_Chip SHALL render "Confirmed" / "Active" / "Completed" statuses with `backgroundColor: RBColors.success.withOpacity(0.12)` and `textColor: RBColors.success`.
-2. THE Status_Chip SHALL render "Pending" / "Waiting" statuses with `backgroundColor: RBColors.warning.withOpacity(0.12)` and `textColor: RBColors.warning`.
-3. THE Status_Chip SHALL render "Cancelled" / "Failed" / "Rejected" statuses with `backgroundColor: RBColors.error.withOpacity(0.12)` and `textColor: RBColors.error`.
+1. THE Status_Chip SHALL render "Confirmed" / "Active" / "Completed" statuses with `backgroundColor: RBColors.success.withValues(alpha:0.12)` and `textColor: RBColors.success`.
+2. THE Status_Chip SHALL render "Pending" / "Waiting" statuses with `backgroundColor: RBColors.warning.withValues(alpha:0.12)` and `textColor: RBColors.warning`.
+3. THE Status_Chip SHALL render "Cancelled" / "Failed" / "Rejected" statuses with `backgroundColor: RBColors.error.withValues(alpha:0.12)` and `textColor: RBColors.error`.
 4. THE Status_Chip SHALL use `borderRadius: RBRadius.pill`, `RBTextStyles.caption` for the label, and horizontal padding of `RBSpacing.sm` (8px).
 5. THE Status_Chip SHALL not render with any dark background or glass surface — glass surface effects are prohibited on all Status_Chip instances regardless of visual hierarchy context.
 

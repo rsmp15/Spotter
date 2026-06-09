@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
-import '../theme/radius.dart';
 import '../theme/redbus_theme.dart';
 
 /// Enum to represent different visual styles of RedBus sections
@@ -371,7 +370,7 @@ class _RBCarouselSectionState extends State<RBCarouselSection> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: widget.items.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 14),
+            separatorBuilder: (_, _) => const SizedBox(width: 14),
             itemBuilder: (context, index) => widget.items[index],
           ),
         ),

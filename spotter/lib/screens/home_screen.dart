@@ -633,7 +633,15 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: (context, i) {
             final s = services[i];
             return GestureDetector(
-              onTap: () => Navigator.pushNamed(context, s.$4),
+              onTap: () {
+                if (s.$4 == AppRoutes.safetyToolkit) {
+                  RideScope.of(context).switchTab(3);
+                } else if (s.$4 == AppRoutes.activity) {
+                  RideScope.of(context).switchTab(2);
+                } else {
+                  Navigator.pushNamed(context, s.$4);
+                }
+              },
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -641,9 +649,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   border: Border.all(color: RBColors.divider),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -920,7 +929,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: ListView.separated(
                 itemCount: cities.length,
-                separatorBuilder: (_, __) => const Divider(
+                separatorBuilder: (_, _) => const Divider(
                   height: 1,
                   indent: 14,
                   color: RBColors.divider,
