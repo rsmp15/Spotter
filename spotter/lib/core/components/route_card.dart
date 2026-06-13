@@ -1,8 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../theme/spacing.dart';
-import '../theme/typography.dart';
-import '../theme/radius.dart';
 import 'glass_card.dart';
 import 'spott_avatar.dart';
 import 'trust_badge.dart';
@@ -65,16 +62,16 @@ class RouteCard extends StatelessWidget {
     final int numericTrips = tripCount ?? 47;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: SpottSpacing.md),
+      margin: const EdgeInsets.only(bottom: DSSpacing.md),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(SpottRadius.card),
+        borderRadius: BorderRadius.circular(DSRadius.card),
         border: isFeatured || isSponsored
-            ? Border.all(color: SpottColors.accentPurple.withValues(alpha: 0.4), width: 1.5)
+            ? Border.all(color: DSColors.primaryDark.withValues(alpha: 0.4), width: 1.5)
             : null,
       ),
       child: GlassCard(
         onTap: onTap,
-        padding: const EdgeInsets.all(SpottSpacing.cardInner),
+        padding: const EdgeInsets.all(DSSpacing.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -87,13 +84,13 @@ class RouteCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: SpottColors.accentPurpleSoft,
-                        borderRadius: BorderRadius.circular(SpottRadius.xs),
+                        color: DSColors.primarySoft,
+                        borderRadius: BorderRadius.circular(DSRadius.xs),
                       ),
                       child: Text(
                         isSponsored ? 'SPONSORED' : 'FEATURED',
-                        style: SpottTextStyles.overline.copyWith(
-                          color: SpottColors.accentPurple,
+                        style: DSTypography.caption.copyWith(
+                          color: DSColors.primaryDark,
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
                         ),
@@ -112,7 +109,7 @@ class RouteCard extends StatelessWidget {
                   radius: 22,
                   isVerified: verificationLevel >= 2,
                 ),
-                const SizedBox(width: SpottSpacing.md),
+                const SizedBox(width: DSSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,7 +118,7 @@ class RouteCard extends StatelessWidget {
                         children: [
                           Text(
                             driverName,
-                            style: SpottTextStyles.label,
+                            style: DSTypography.labelLarge,
                           ),
                           const SizedBox(width: 6),
                           VerificationBadge(level: verificationLevel, compact: true),
@@ -145,8 +142,8 @@ class RouteCard extends StatelessWidget {
                   children: [
                     Text(
                       costShare,
-                      style: SpottTextStyles.title.copyWith(
-                        color: SpottColors.primary,
+                      style: DSTypography.titleLarge.copyWith(
+                        color: DSColors.primary,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -155,8 +152,8 @@ class RouteCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         departureTime!,
-                        style: SpottTextStyles.caption.copyWith(
-                          color: SpottColors.textSecondary,
+                        style: DSTypography.caption.copyWith(
+                          color: DSColors.textSecondary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -166,15 +163,15 @@ class RouteCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: SpottSpacing.md),
+            const SizedBox(height: DSSpacing.md),
 
             // ── Divider ─────────────────────────────────────────────
             Container(
               height: 1,
-              color: SpottColors.divider,
+              color: DSColors.divider,
             ),
 
-            const SizedBox(height: SpottSpacing.md),
+            const SizedBox(height: DSSpacing.md),
 
             // ── Route & Location Details ────────────────────────────
             Row(
@@ -190,34 +187,34 @@ class RouteCard extends StatelessWidget {
                         height: 8,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: SpottColors.accentPurple,
+                          color: DSColors.primaryDark,
                         ),
                       ),
                       Container(
                         width: 2,
                         height: 24,
-                        color: SpottColors.border,
+                        color: DSColors.border,
                       ),
                       Container(
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: SpottColors.primary,
+                          color: DSColors.primary,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: SpottSpacing.md),
+                const SizedBox(width: DSSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         origin,
-                        style: SpottTextStyles.body.copyWith(
-                          color: SpottColors.textPrimary,
+                        style: DSTypography.body.copyWith(
+                          color: DSColors.textPrimary,
                           fontWeight: FontWeight.w500,
                         ),
                         maxLines: 1,
@@ -226,8 +223,8 @@ class RouteCard extends StatelessWidget {
                       const SizedBox(height: 12),
                       Text(
                         destination,
-                        style: SpottTextStyles.body.copyWith(
-                          color: SpottColors.textPrimary,
+                        style: DSTypography.body.copyWith(
+                          color: DSColors.textPrimary,
                           fontWeight: FontWeight.w500,
                         ),
                         maxLines: 1,
@@ -239,7 +236,7 @@ class RouteCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: SpottSpacing.md),
+            const SizedBox(height: DSSpacing.md),
 
             // ── Occupancy, Demand & Vehicle Info Row ─────────────────
             Row(
@@ -248,10 +245,10 @@ class RouteCard extends StatelessWidget {
                 if (seatsFilled != null && totalSeats != null) ...[
                   Text(
                     '$seatsFilled/$totalSeats seats filled',
-                    style: SpottTextStyles.caption.copyWith(
+                    style: DSTypography.caption.copyWith(
                       color: (totalSeats! - seatsFilled!) <= 1
-                          ? SpottColors.warning
-                          : SpottColors.textSecondary,
+                          ? DSColors.warning
+                          : DSColors.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -266,18 +263,18 @@ class RouteCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: i < seatsAvailable
-                                ? SpottColors.success
-                                : SpottColors.surface2,
+                                ? DSColors.success
+                                : DSColors.surfaceVariant,
                           ),
                         ),
                       );
                     }),
                   ),
-                  const SizedBox(width: SpottSpacing.sm),
+                  const SizedBox(width: DSSpacing.sm),
                   Text(
                     '$seatsAvailable seats left',
-                    style: SpottTextStyles.caption.copyWith(
-                      color: SpottColors.success,
+                    style: DSTypography.caption.copyWith(
+                      color: DSColors.success,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -290,13 +287,13 @@ class RouteCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: SpottColors.dangerSoft,
-                      borderRadius: BorderRadius.circular(SpottRadius.xs),
+                      color: DSColors.dangerSoft,
+                      borderRadius: BorderRadius.circular(DSRadius.xs),
                     ),
                     child: Text(
                       demandTag!,
-                      style: SpottTextStyles.caption.copyWith(
-                        color: SpottColors.primary,
+                      style: DSTypography.caption.copyWith(
+                        color: DSColors.primary,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
@@ -305,8 +302,8 @@ class RouteCard extends StatelessWidget {
                 ] else if (viewsToday != null) ...[
                   Text(
                     '•  $viewsToday viewed today',
-                    style: SpottTextStyles.caption.copyWith(
-                      color: SpottColors.textTertiary,
+                    style: DSTypography.caption.copyWith(
+                      color: DSColors.textTertiary,
                     ),
                   ),
                 ],
@@ -321,9 +318,9 @@ class RouteCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: SpottColors.surface2,
-                      borderRadius: BorderRadius.circular(SpottRadius.xs),
-                      border: Border.all(color: SpottColors.border),
+                      color: DSColors.surfaceVariant,
+                      borderRadius: BorderRadius.circular(DSRadius.xs),
+                      border: Border.all(color: DSColors.border),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -331,14 +328,14 @@ class RouteCard extends StatelessWidget {
                         Icon(
                           _vehicleIcon(vehicleType!),
                           size: 12,
-                          color: SpottColors.textSecondary,
+                          color: DSColors.textSecondary,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           vehicleType!,
-                          style: SpottTextStyles.caption.copyWith(
+                          style: DSTypography.caption.copyWith(
                             fontSize: 10,
-                            color: SpottColors.textSecondary,
+                            color: DSColors.textSecondary,
                           ),
                         ),
                       ],

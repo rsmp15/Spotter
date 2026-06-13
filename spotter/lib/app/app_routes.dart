@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/spott_models.dart';
 import '../controllers/ride_controller.dart';
-import '../core/theme/animations.dart';
+
 import '../screens/admin_review_screen.dart';
 import '../screens/cancel_ride_screen.dart';
 import '../screens/chat_screen.dart';
@@ -180,9 +180,9 @@ class AppRoutes {
       return PageRouteBuilder(
         settings: settings,
         pageBuilder: (context, animation, secondaryAnimation) => child,
-        transitionsBuilder: SpottPageTransitions.fadeSlideUp,
-        transitionDuration: SpottAnimations.medium,
-        reverseTransitionDuration: SpottAnimations.medium,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(opacity: animation, child: child),
+        transitionDuration: const Duration(milliseconds: 300),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
       );
     }
 
@@ -203,64 +203,64 @@ class AppRoutes {
         return const ChooseRoleScreen();
       case home:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger, UserRole.parcelSender],
+          allowedRoles: [UserRole.user, UserRole.rider],
           child: MainNavigationShell(initialTab: 0),
         );
       case pickup:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case destination:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case fare:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case drivers:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case driverProfile:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case confirmRide:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case payment:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case tracking:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case rideOtp:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case rideComplete:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case wallet:
         return const SettingsScreen();
       case profile:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger, UserRole.parcelSender],
+          allowedRoles: [UserRole.user, UserRole.rider],
           child: MainNavigationShell(initialTab: 3),
         );
       case chat:
@@ -271,12 +271,12 @@ class AppRoutes {
         return const CancelRideScreen();
       case rating:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SpotterOverlayShell(),
         );
       case activity:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger, UserRole.parcelSender],
+          allowedRoles: [UserRole.user, UserRole.rider],
           child: MainNavigationShell(initialTab: 2),
         );
       case notifications:
@@ -287,7 +287,7 @@ class AppRoutes {
         return const PremiumSosAlertScreen();
       case services:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger, UserRole.parcelSender],
+          allowedRoles: [UserRole.user, UserRole.rider],
           child: MainNavigationShell(initialTab: 1),
         );
       case parking:
@@ -307,7 +307,7 @@ class AppRoutes {
         );
       case intercity:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: TripSearchScreen(),
         );
       case rentals:
@@ -323,81 +323,81 @@ class AppRoutes {
         return const EmptyStateScreen();
       case kyc:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.user, UserRole.rider],
           child: KycVerificationScreen(),
         );
       case driverHome:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: DriverHomeScreen(),
         );
       case createTrip:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler, UserRole.passenger],
+          allowedRoles: [UserRole.rider, UserRole.user],
           child: CreateTripScreen(),
         );
       case jobRequests:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: JobRequestsScreen(),
         );
       case jobDetail:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: JobDetailScreen(),
         );
       case pickupTask:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: PickupTaskScreen(),
         );
       case dropTask:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: DropTaskScreen(),
         );
       case adminReview:
         return const AdminReviewScreen();
       case parcelBooking:
         return const RoleGuard(
-          allowedRoles: [UserRole.parcelSender, UserRole.passenger],
+          allowedRoles: [UserRole.user, UserRole.rider],
           child: ParcelBookingScreen(),
         );
       case parcelTracking:
         return const RoleGuard(
-          allowedRoles: [UserRole.parcelSender],
+          allowedRoles: [UserRole.user],
           child: ParcelTrackingScreen(),
         );
       case parcelComplete:
         return const RoleGuard(
-          allowedRoles: [UserRole.parcelSender],
+          allowedRoles: [UserRole.user],
           child: ParcelCompleteScreen(),
         );
       case vehicleManagement:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: VehicleManagementScreen(),
         );
       case tripSearch:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: TripSearchScreen(),
         );
       case passengerRequests:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: PassengerRequestsScreen(),
         );
       case bookingSuccess:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: BookingSuccessScreen(),
         );
       case figmaPluginSandbox:
         return const FigmaPluginSandboxScreen();
       case searchResults:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: SearchResultsScreen(),
         );
       case verificationPending:
@@ -410,27 +410,27 @@ class AppRoutes {
         return const NetworkErrorScreen();
       case tripDetails:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: TripDetailsScreen(),
         );
       case passengerTrips:
         return const RoleGuard(
-          allowedRoles: [UserRole.passenger],
+          allowedRoles: [UserRole.user],
           child: PassengerTripsScreen(),
         );
       case parcelHistory:
         return const RoleGuard(
-          allowedRoles: [UserRole.parcelSender],
+          allowedRoles: [UserRole.user],
           child: ParcelHistoryScreen(),
         );
       case travelerTrips:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: TravelerTripsScreen(),
         );
       case activeTrip:
         return const RoleGuard(
-          allowedRoles: [UserRole.traveler],
+          allowedRoles: [UserRole.rider],
           child: ActiveTripScreen(),
         );
       default:

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+
 import '../models/production_readiness_models.dart' hide UserRole;
 import '../models/ride_models.dart';
 import '../models/spott_models.dart' hide TripStatus;
@@ -13,10 +14,22 @@ enum RideLoadState { idle, loading, ready, failure }
 class RideController extends ChangeNotifier {
   final RideRepository _repository;
 
-  UserRole currentUserRole = UserRole.passenger;
+  UserRole currentUserRole = UserRole.user;
+  KycStatus kycStatus = KycStatus.notStarted;
 
   void updateUserRole(UserRole role) {
     currentUserRole = role;
+    notifyListeners();
+  }
+
+  void submitKyc() {
+    kycStatus = KycStatus.submitted;
+    notifyListeners();
+  }
+
+  void approveKyc() {
+    kycStatus = KycStatus.verified;
+    currentUserRole = UserRole.rider;
     notifyListeners();
   }
 
@@ -136,6 +149,7 @@ class RideController extends ChangeNotifier {
 
   void toggleDarkMode() {
     isDarkMode = !isDarkMode;
+    
     notifyListeners();
   }
 

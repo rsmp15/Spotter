@@ -88,8 +88,8 @@ void main() {
 
     // Verify visual seats
     expect(find.text('DRIVER'), findsOneWidget);
-    expect(find.text('1'), findsNWidgets(2)); // Stepper and visual seat '1'
-    expect(find.text('2'), findsOneWidget);
+    expect(find.text('1'), findsNWidgets(3)); // Stepper, visual seat '1', and quick pick '1'
+    expect(find.text('2'), findsNWidgets(2)); // Visual seat '2' and quick pick '2'
 
     // Scroll add button into view if needed and tap '+' to increment seats
     await tester.ensureVisible(find.byIcon(Icons.add_rounded));
@@ -98,7 +98,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Count should be 2 now
-    expect(find.text('2'), findsNWidgets(2)); // Stepper and visual seat '2'
+    expect(find.text('2'), findsNWidgets(3)); // Stepper, visual seat '2', and quick pick '2'
 
     // Scroll confirm button into view and confirm
     await tester.ensureVisible(find.text('CONFIRM SELECTION'));

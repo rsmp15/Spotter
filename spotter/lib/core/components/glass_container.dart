@@ -1,7 +1,6 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../theme/radius.dart';
 
 class GlassContainer extends StatelessWidget {
   final Widget child;
@@ -18,7 +17,7 @@ class GlassContainer extends StatelessWidget {
     super.key,
     required this.child,
     this.blurSigma = 0.0,
-    this.borderRadius = SpottRadius.card,
+    this.borderRadius = DSRadius.card,
     this.padding,
     this.margin,
     this.width,
@@ -34,11 +33,11 @@ class GlassContainer extends StatelessWidget {
     final decoration = BoxDecoration(
       color: hasBlur
           ? Colors.white.withValues(alpha: 0.8) // Frosted glass overlay
-          : SpottColors.surface1,
+          : DSColors.surface,
       borderRadius: BorderRadius.circular(borderRadius),
       border: hasBorder
           ? Border.all(
-              color: SpottColors.border,
+              color: DSColors.border,
               width: 1.0,
             )
           : null,

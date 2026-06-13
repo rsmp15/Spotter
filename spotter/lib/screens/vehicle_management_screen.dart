@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/ride_controller.dart';
@@ -6,10 +7,10 @@ import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/status_chip.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
+
+
+
+
 
 class VehicleManagementScreen extends StatefulWidget {
   const VehicleManagementScreen({super.key});
@@ -70,7 +71,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      backgroundColor: SpottColors.surface2,
+      backgroundColor: DSColors.surfaceVariant,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -83,35 +84,35 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
           builder: (context, setSheetState) {
             return Padding(
               padding: EdgeInsets.fromLTRB(
-                SpottSpacing.lg,
+                DSSpacing.lg,
                 0,
-                SpottSpacing.lg,
-                SpottSpacing.lg + MediaQuery.of(context).viewInsets.bottom,
+                DSSpacing.lg,
+                DSSpacing.lg + MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(isEdit ? 'Edit Vehicle' : 'Add Vehicle', style: SpottTextStyles.sectionTitle),
-                  const SizedBox(height: SpottSpacing.lg),
+                  Text(isEdit ? 'Edit Vehicle' : 'Add Vehicle', style: DSTypography.headline),
+                  const SizedBox(height: DSSpacing.lg),
 
-                  Text('Vehicle Type', style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: SpottSpacing.xs),
+                  Text('Vehicle Type', style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: DSSpacing.xs),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md),
+                    padding: const EdgeInsets.symmetric(horizontal: DSSpacing.md),
                     decoration: BoxDecoration(
-                      color: SpottColors.surface1,
-                      borderRadius: BorderRadius.circular(SpottRadius.md),
-                      border: Border.all(color: SpottColors.border),
+                      color: DSColors.surface,
+                      borderRadius: BorderRadius.circular(DSRadius.md),
+                      border: Border.all(color: DSColors.border),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: selectedType,
                         isExpanded: true,
-                        dropdownColor: SpottColors.surface2,
-                        style: SpottTextStyles.body.copyWith(color: SpottColors.textPrimary),
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: SpottColors.textSecondary),
+                        dropdownColor: DSColors.surfaceVariant,
+                        style: DSTypography.body.copyWith(color: DSColors.textPrimary),
+                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: DSColors.textSecondary),
                         items: ['Car', 'Bike', 'SUV', 'Auto'].map((type) {
                           return DropdownMenuItem(value: type, child: Text(type));
                         }).toList(),
@@ -121,51 +122,51 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: SpottSpacing.md),
+                  const SizedBox(height: DSSpacing.md),
 
-                  Text('Vehicle Model Name', style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: SpottSpacing.xs),
+                  Text('Vehicle Model Name', style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: DSSpacing.xs),
                   TextField(
                     controller: modelController,
-                    style: SpottTextStyles.body.copyWith(color: SpottColors.textPrimary),
+                    style: DSTypography.body.copyWith(color: DSColors.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'e.g. Honda City / Activa 6G',
                       filled: true,
-                      fillColor: SpottColors.surface1,
-                      hintStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+                      fillColor: DSColors.surface,
+                      hintStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(SpottRadius.md),
-                        borderSide: const BorderSide(color: SpottColors.border),
+                        borderRadius: BorderRadius.circular(DSRadius.md),
+                        borderSide: const BorderSide(color: DSColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(SpottRadius.md),
-                        borderSide: const BorderSide(color: SpottColors.border),
+                        borderRadius: BorderRadius.circular(DSRadius.md),
+                        borderSide: const BorderSide(color: DSColors.border),
                       ),
                     ),
                   ),
-                  const SizedBox(height: SpottSpacing.md),
+                  const SizedBox(height: DSSpacing.md),
 
-                  Text('Registration Number', style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: SpottSpacing.xs),
+                  Text('Registration Number', style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: DSSpacing.xs),
                   TextField(
                     controller: numberController,
-                    style: SpottTextStyles.body.copyWith(color: SpottColors.textPrimary),
+                    style: DSTypography.body.copyWith(color: DSColors.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'e.g. MH-12-PQ-9876',
                       filled: true,
-                      fillColor: SpottColors.surface1,
-                      hintStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+                      fillColor: DSColors.surface,
+                      hintStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(SpottRadius.md),
-                        borderSide: const BorderSide(color: SpottColors.border),
+                        borderRadius: BorderRadius.circular(DSRadius.md),
+                        borderSide: const BorderSide(color: DSColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(SpottRadius.md),
-                        borderSide: const BorderSide(color: SpottColors.border),
+                        borderRadius: BorderRadius.circular(DSRadius.md),
+                        borderSide: const BorderSide(color: DSColors.border),
                       ),
                     ),
                   ),
-                  const SizedBox(height: SpottSpacing.xl),
+                  const SizedBox(height: DSSpacing.xl),
 
                   Row(
                     children: [
@@ -180,7 +181,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                             },
                           ),
                         ),
-                        const SizedBox(width: SpottSpacing.md),
+                        const SizedBox(width: DSSpacing.md),
                       ],
                       Expanded(
                         flex: 2,
@@ -242,29 +243,29 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('My Vehicles', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('My Vehicles', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(SpottSpacing.lg),
+            padding: const EdgeInsets.all(DSSpacing.lg),
             children: [
-              Text('Add, edit, or select your active vehicle for traveler offerings.', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
-              const SizedBox(height: SpottSpacing.xl),
+              Text('Add, edit, or select your active vehicle for traveler offerings.', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+              const SizedBox(height: DSSpacing.xl),
               
               if (ride.vehicles.isEmpty)
                 GlassCard(
-                  padding: const EdgeInsets.all(SpottSpacing.xl),
+                  padding: const EdgeInsets.all(DSSpacing.xl),
                   child: Center(
                     child: Column(
                       children: [
-                        const Icon(Icons.directions_car_filled_outlined, size: 48, color: SpottColors.textSecondary),
-                        const SizedBox(height: SpottSpacing.md),
-                        Text('No vehicles added yet', style: SpottTextStyles.sectionTitle),
-                        const SizedBox(height: SpottSpacing.sm),
-                        Text('Add a vehicle below to start offering trips.', style: SpottTextStyles.caption),
+                        const Icon(Icons.directions_car_filled_outlined, size: 48, color: DSColors.textSecondary),
+                        const SizedBox(height: DSSpacing.md),
+                        Text('No vehicles added yet', style: DSTypography.headline),
+                        const SizedBox(height: DSSpacing.sm),
+                        Text('Add a vehicle below to start offering trips.', style: DSTypography.caption),
                       ],
                     ),
                   ),
@@ -273,29 +274,29 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                 ...ride.vehicles.map((vehicle) {
                   final isSelected = ride.selectedVehicleId == vehicle.id;
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: SpottSpacing.md),
+                    padding: const EdgeInsets.only(bottom: DSSpacing.md),
                     child: GlassCard(
                       onTap: () => _openVehicleFormSheet(context, vehicle),
-                      padding: const EdgeInsets.all(SpottSpacing.md),
+                      padding: const EdgeInsets.all(DSSpacing.md),
                       child: Row(
                         children: [
                           Container(
                             width: 48,
                             height: 48,
                             decoration: BoxDecoration(
-                              color: SpottColors.surface1,
-                              borderRadius: BorderRadius.circular(SpottRadius.sm),
+                              color: DSColors.surface,
+                              borderRadius: BorderRadius.circular(DSRadius.sm),
                             ),
-                            child: Icon(_getVehicleIcon(vehicle.vehicleType), color: SpottColors.accentPurple, size: 24),
+                            child: Icon(_getVehicleIcon(vehicle.vehicleType), color: DSColors.primaryDark, size: 24),
                           ),
-                          const SizedBox(width: SpottSpacing.md),
+                          const SizedBox(width: DSSpacing.md),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(vehicle.vehicleModel, style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold, color: SpottColors.textPrimary)),
+                                Text(vehicle.vehicleModel, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold, color: DSColors.textPrimary)),
                                 const SizedBox(height: 2),
-                                Text(vehicle.vehicleNumber, style: SpottTextStyles.caption),
+                                Text(vehicle.vehicleNumber, style: DSTypography.caption),
                               ],
                             ),
                           ),
@@ -306,14 +307,14 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                                 label: _getVerificationLabel(vehicle.verificationStatus),
                                 status: _getVerificationStatusType(vehicle.verificationStatus),
                               ),
-                              const SizedBox(height: SpottSpacing.sm),
+                              const SizedBox(height: DSSpacing.sm),
                               if (isSelected)
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.check_circle_rounded, color: SpottColors.success, size: 16),
+                                    const Icon(Icons.check_circle_rounded, color: DSColors.success, size: 16),
                                     const SizedBox(width: 4),
-                                    Text('Active', style: SpottTextStyles.caption.copyWith(color: SpottColors.success, fontWeight: FontWeight.bold)),
+                                    Text('Active', style: DSTypography.caption.copyWith(color: DSColors.success, fontWeight: FontWeight.bold)),
                                   ],
                                 )
                               else
@@ -324,7 +325,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                                       SnackBar(content: Text('${vehicle.vehicleModel} set as active vehicle.')),
                                     );
                                   },
-                                  child: Text('Set Active', style: SpottTextStyles.caption.copyWith(color: SpottColors.accentPurple, fontWeight: FontWeight.bold)),
+                                  child: Text('Set Active', style: DSTypography.caption.copyWith(color: DSColors.primaryDark, fontWeight: FontWeight.bold)),
                                 ),
                             ],
                           ),
@@ -337,9 +338,9 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
             ],
           ),
           Positioned(
-            bottom: SpottSpacing.lg,
-            left: SpottSpacing.lg,
-            right: SpottSpacing.lg,
+            bottom: DSSpacing.lg,
+            left: DSSpacing.lg,
+            right: DSSpacing.lg,
             child: SpottButton.primary(
               label: 'Add Vehicle',
               onPressed: () => _openVehicleFormSheet(context),

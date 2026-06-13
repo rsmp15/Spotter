@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
 import '../controllers/ride_controller.dart';
@@ -5,9 +6,9 @@ import '../models/spott_models.dart';
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
+
+
+
 
 
 class PassengerRequestsScreen extends StatelessWidget {
@@ -24,34 +25,34 @@ class PassengerRequestsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Seat Requests', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('Seat Requests', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: requests.isEmpty
           ? Center(
               child: Padding(
-                padding: const EdgeInsets.all(SpottSpacing.xl),
+                padding: const EdgeInsets.all(DSSpacing.xl),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.inbox_rounded, size: 64, color: SpottColors.textSecondary),
-                    const SizedBox(height: SpottSpacing.md),
-                    Text('No requests yet', style: SpottTextStyles.sectionTitle),
-                    const SizedBox(height: SpottSpacing.sm),
+                    const Icon(Icons.inbox_rounded, size: 64, color: DSColors.textSecondary),
+                    const SizedBox(height: DSSpacing.md),
+                    Text('No requests yet', style: DSTypography.headline),
+                    const SizedBox(height: DSSpacing.sm),
                     Text(
                       'When passengers request seats on your trip,\nthey will appear here.',
                       textAlign: TextAlign.center,
-                      style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+                      style: DSTypography.body.copyWith(color: DSColors.textSecondary),
                     ),
                   ],
                 ),
               ),
             )
           : ListView.separated(
-              padding: const EdgeInsets.all(SpottSpacing.lg),
+              padding: const EdgeInsets.all(DSSpacing.lg),
               itemCount: requests.length,
-              separatorBuilder: (context, index) => const SizedBox(height: SpottSpacing.md),
+              separatorBuilder: (context, index) => const SizedBox(height: DSSpacing.md),
               itemBuilder: (context, index) {
                 return _RequestCard(request: requests[index], ride: ride);
               },
@@ -76,7 +77,7 @@ class _RequestCard extends StatelessWidget {
     final int seats = passengerInfo['seats'] as int;
 
     return GlassCard(
-      padding: const EdgeInsets.all(SpottSpacing.md),
+      padding: const EdgeInsets.all(DSSpacing.md),
       child: Column(
         children: [
           Row(
@@ -85,39 +86,39 @@ class _RequestCard extends StatelessWidget {
                 height: 46,
                 width: 46,
                 decoration: BoxDecoration(
-                  color: SpottColors.surface1,
+                  color: DSColors.surface,
                   shape: BoxShape.circle,
-                  border: Border.all(color: SpottColors.border),
+                  border: Border.all(color: DSColors.border),
                 ),
                 child: Center(
                   child: Text(
                     name[0],
-                    style: SpottTextStyles.sectionTitle.copyWith(color: SpottColors.textPrimary),
+                    style: DSTypography.headline.copyWith(color: DSColors.textPrimary),
                   ),
                 ),
               ),
-              const SizedBox(width: SpottSpacing.md),
+              const SizedBox(width: DSSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Text(name, style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold, color: SpottColors.textPrimary)),
-                        const SizedBox(width: SpottSpacing.xs),
-                        const Icon(Icons.star_rounded, size: 16, color: SpottColors.warning),
+                        Text(name, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold, color: DSColors.textPrimary)),
+                        const SizedBox(width: DSSpacing.xs),
+                        const Icon(Icons.star_rounded, size: 16, color: DSColors.warning),
                         const SizedBox(width: 2),
-                        Text(rating.toString(), style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold)),
+                        Text(rating.toString(), style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold)),
                       ],
                     ),
                     const SizedBox(height: 2),
-                    Text('$seats seat${seats > 1 ? 's' : ''} requested', style: SpottTextStyles.caption),
+                    Text('$seats seat${seats > 1 ? 's' : ''} requested', style: DSTypography.caption),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: SpottSpacing.lg),
+          const SizedBox(height: DSSpacing.lg),
           Row(
             children: [
               Expanded(
@@ -129,14 +130,14 @@ class _RequestCard extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(width: SpottSpacing.md),
+              const SizedBox(width: DSSpacing.md),
               Expanded(
                 child: SpottButton.primary(
                   label: 'Accept',
                   onPressed: () {
                     ride.acceptRequest(request.id);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('$name accepted'), backgroundColor: SpottColors.success),
+                      SnackBar(content: Text('$name accepted'), backgroundColor: DSColors.success),
                     );
                   },
                 ),

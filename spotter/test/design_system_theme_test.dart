@@ -1,34 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spotter/core/theme/colors.dart';
+import 'package:spotter/design_system/design_system.dart';
 import 'package:spotter/helper.dart';
 
 void main() {
-  test('Helper.buildTheme outputs premium light Material 3 design tokens', () {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('Helper.buildTheme outputs canonical light Material 3 tokens', () {
     final theme = Helper.buildTheme(isDarkMode: false);
 
-    // Assert Brightness and M3 usage
     expect(theme.brightness, Brightness.light);
     expect(theme.useMaterial3, isTrue);
 
-    // Assert Colors from SpottColors
-    expect(theme.colorScheme.primary, SpottColors.primary);
-    expect(theme.colorScheme.secondary, SpottColors.primaryDark);
-    expect(theme.colorScheme.surface, SpottColors.surface1);
-    expect(theme.colorScheme.error, SpottColors.danger);
-    expect(theme.scaffoldBackgroundColor, SpottColors.background);
+    expect(theme.colorScheme.primary, DSColors.primary);
+    expect(theme.colorScheme.secondary, DSColors.accent);
+    expect(theme.colorScheme.surface, DSColors.surface);
+    expect(theme.colorScheme.error, DSColors.danger);
+    expect(theme.scaffoldBackgroundColor, DSColors.background);
 
-    // Assert Card theme properties
-    expect(theme.cardTheme.color, SpottColors.surface1);
+    expect(theme.cardTheme.color, DSColors.card);
     expect(theme.cardTheme.elevation, 0.0);
 
-    // Assert Filled Button theme properties
     final buttonStyle = theme.filledButtonTheme.style;
     expect(buttonStyle, isNotNull);
-    
-    // Test input decoration theme
+
     final inputDecorationTheme = theme.inputDecorationTheme;
     expect(inputDecorationTheme.filled, isTrue);
-    expect(inputDecorationTheme.fillColor, SpottColors.surface2);
+    expect(inputDecorationTheme.fillColor, DSColors.surfaceVariant);
+  });
+
+  test('Helper.buildTheme supports dark-ready semantic tokens', () {
+    final theme = Helper.buildTheme(isDarkMode: true);
+
+    expect(theme.brightness, Brightness.dark);
+    expect(theme.colorScheme.primary, DSPalettes.dark.primary);
+    expect(theme.colorScheme.surface, DSPalettes.dark.surface);
+    expect(theme.scaffoldBackgroundColor, DSPalettes.dark.background);
+    expect(theme.cardTheme.color, DSPalettes.dark.card);
+  });
+
+  test('DSTokenJson exports light and dark semantic tokens', () {
+    final tokens = DSTokenJson.asMap();
+    final color = tokens['color']! as Map;
+
+    expect(color.keys, containsAll(['light', 'dark']));
+    expect(DSTokenJson.encode(), contains('"primary"'));
+    expect(DSTokenJson.encode(), contains('"motion"'));
   });
 }

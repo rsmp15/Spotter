@@ -8,7 +8,7 @@ import 'premium_community_screen.dart';
 import 'premium_wallet_screen.dart';
 
 class PremiumNavigationShell extends StatefulWidget {
-  const PremiumNavigationShell({Key? key}) : super(key: key);
+  const PremiumNavigationShell({super.key});
 
   @override
   State<PremiumNavigationShell> createState() => _PremiumNavigationShellState();
@@ -39,22 +39,26 @@ class _PremiumNavigationShellState extends State<PremiumNavigationShell> {
             left: SpottTheme.spacingLarge,
             right: SpottTheme.spacingLarge,
             child: SafeArea(
-              child: Glassmorphism(
-                borderRadius: 40,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildNavItem(0, Icons.search_rounded, 'Explore'),
-                    _buildNavItem(1, Icons.route_outlined, 'Trips'),
-                    _buildCreateButton(),
-                    _buildNavItem(3, Icons.people_outline, 'Community'),
-                    _buildNavItem(
-                      4,
-                      Icons.account_balance_wallet_outlined,
-                      'Wallet',
-                    ),
-                  ],
+              child: Listener(
+                behavior: HitTestBehavior.opaque,
+                child: Glassmorphism(
+                  borderRadius: 40,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildNavItem(0, Icons.search_rounded, 'Explore'),
+                      _buildNavItem(1, Icons.route_outlined, 'Trips'),
+                      _buildCreateButton(),
+                      _buildNavItem(3, Icons.people_outline, 'Community'),
+                      _buildNavItem(
+                        4,
+                        Icons.account_balance_wallet_outlined,
+                        'Wallet',
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

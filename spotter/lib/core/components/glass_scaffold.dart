@@ -1,5 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
 
 class GlassScaffold extends StatelessWidget {
   final Widget body;
@@ -18,7 +18,7 @@ class GlassScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: DSColors.background,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,

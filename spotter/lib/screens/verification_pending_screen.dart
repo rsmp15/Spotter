@@ -1,11 +1,13 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
+import '../controllers/ride_controller.dart';
+
+
+
 
 class VerificationPendingScreen extends StatelessWidget {
   const VerificationPendingScreen({super.key});
@@ -16,20 +18,20 @@ class VerificationPendingScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Verification Pending', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('Verification Pending', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(SpottSpacing.lg),
+        padding: const EdgeInsets.all(DSSpacing.lg),
         child: Column(
           children: [
             Text(
               'Our compliance team is verifying your documents (ETA 12 min).',
-              style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+              style: DSTypography.body.copyWith(color: DSColors.textSecondary),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: SpottSpacing.xl * 2),
+            const SizedBox(height: DSSpacing.xl * 2),
 
             Center(
               child: Container(
@@ -37,11 +39,11 @@ class VerificationPendingScreen extends StatelessWidget {
                 height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: SpottColors.warning.withValues(alpha: 0.1),
-                  border: Border.all(color: SpottColors.warning.withValues(alpha: 0.5)),
+                  color: DSColors.warning.withValues(alpha: 0.1),
+                  border: Border.all(color: DSColors.warning.withValues(alpha: 0.5)),
                   boxShadow: [
                     BoxShadow(
-                      color: SpottColors.warning.withValues(alpha: 0.2),
+                      color: DSColors.warning.withValues(alpha: 0.2),
                       blurRadius: 40,
                       spreadRadius: 10,
                     ),
@@ -52,21 +54,21 @@ class VerificationPendingScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: SpottSpacing.xl * 2),
+            const SizedBox(height: DSSpacing.xl * 2),
 
             GlassCard(
-              padding: const EdgeInsets.all(SpottSpacing.xl),
+              padding: const EdgeInsets.all(DSSpacing.xl),
               child: Column(
                 children: [
                   Text(
                     'We are reviewing your ID and vehicle details.',
-                    style: SpottTextStyles.sectionTitle,
+                    style: DSTypography.headline,
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: SpottSpacing.md),
+                  const SizedBox(height: DSSpacing.md),
                   Text(
                     'Please wait for the notification to start offering trips.',
-                    style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+                    style: DSTypography.body.copyWith(color: DSColors.textSecondary),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -78,7 +80,15 @@ class VerificationPendingScreen extends StatelessWidget {
               label: 'Refresh Status',
               onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
             ),
-            const SizedBox(height: SpottSpacing.lg),
+            const SizedBox(height: DSSpacing.md),
+            SpottButton.secondary(
+              label: 'Mock Approve (Admin)',
+              onPressed: () {
+                RideScope.of(context).approveKyc();
+                Navigator.pushReplacementNamed(context, AppRoutes.home);
+              },
+            ),
+            const SizedBox(height: DSSpacing.lg),
           ],
         ),
       ),

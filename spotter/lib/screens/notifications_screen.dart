@@ -1,12 +1,13 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
+
+
+
+
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -25,19 +26,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('SPOTT', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('SPOTT', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg, vertical: SpottSpacing.md),
+        padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg, vertical: DSSpacing.md),
         children: [
           // Header Section
-          const SizedBox(height: SpottSpacing.sm),
-          Text('Notifications', style: SpottTextStyles.display.copyWith(fontSize: 40)),
-          const SizedBox(height: SpottSpacing.xs),
-          Text('Stay updated on your journeys and earnings.', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
-          const SizedBox(height: SpottSpacing.xl),
+          const SizedBox(height: DSSpacing.sm),
+          Text('Notifications', style: DSTypography.headline.copyWith(fontSize: 40)),
+          const SizedBox(height: DSSpacing.xs),
+          Text('Stay updated on your journeys and earnings.', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+          const SizedBox(height: DSSpacing.xl),
 
           // Smart Filter Chips
           SizedBox(
@@ -45,16 +46,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _filters.length,
-              separatorBuilder: (context, index) => const SizedBox(width: SpottSpacing.sm),
+              separatorBuilder: (context, index) => const SizedBox(width: DSSpacing.sm),
               itemBuilder: (context, index) {
                 final isSelected = _selectedFilterIndex == index;
                 return GestureDetector(
                   onTap: () => setState(() => _selectedFilterIndex = index),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.xl, vertical: SpottSpacing.sm),
+                    padding: const EdgeInsets.symmetric(horizontal: DSSpacing.xl, vertical: DSSpacing.sm),
                     decoration: BoxDecoration(
-                      color: isSelected ? SpottColors.primary : Colors.white.withValues(alpha:0.6),
-                      borderRadius: BorderRadius.circular(SpottRadius.pill),
+                      color: isSelected ? DSColors.primary : Colors.white.withValues(alpha:0.6),
+                      borderRadius: BorderRadius.circular(DSRadius.pill),
                       border: Border.all(
                         color: isSelected ? Colors.transparent : Colors.white.withValues(alpha:0.8),
                       ),
@@ -65,8 +66,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     alignment: Alignment.center,
                     child: Text(
                       _filters[index],
-                      style: SpottTextStyles.label.copyWith(
-                        color: isSelected ? Colors.white : SpottColors.textSecondary,
+                      style: DSTypography.labelLarge.copyWith(
+                        color: isSelected ? Colors.white : DSColors.textSecondary,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                       ),
                     ),
@@ -75,7 +76,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               },
             ),
           ),
-          const SizedBox(height: SpottSpacing.xxl),
+          const SizedBox(height: DSSpacing.xxl),
 
           // Notification Scenes
           _NotificationCard(
@@ -83,40 +84,40 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             subtitle: 'Ride update',
             time: '2 minutes ago',
             icon: Icons.check_circle_rounded,
-            iconColor: SpottColors.success,
+            iconColor: DSColors.success,
             buttonLabel: 'View Details',
             onTap: () => _showNotification(context, 'Ride update opened'),
           ),
-          const SizedBox(height: SpottSpacing.lg),
+          const SizedBox(height: DSSpacing.lg),
 
           _NotificationCard(
             title: 'Ride OTP generated',
             subtitle: 'Security update',
             time: 'Today',
             icon: Icons.password_rounded,
-            iconColor: SpottColors.primary,
+            iconColor: DSColors.primary,
             buttonLabel: 'View Details',
             onTap: () => _showNotification(context, 'Ride OTP details opened'),
           ),
-          const SizedBox(height: SpottSpacing.lg),
+          const SizedBox(height: DSSpacing.lg),
 
           _NotificationCard(
             title: 'Wallet top-up successful',
             subtitle: 'Payment received',
             time: 'Today',
             icon: Icons.account_balance_wallet_rounded,
-            iconColor: SpottColors.textSecondary, // mapped from original flutter code
+            iconColor: DSColors.textSecondary, // mapped from original flutter code
             buttonLabel: 'View Wallet',
             onTap: () => _showNotification(context, 'Wallet receipt opened'),
           ),
-          const SizedBox(height: SpottSpacing.lg),
+          const SizedBox(height: DSSpacing.lg),
 
           _NotificationCard(
             title: 'Safety contact added',
             subtitle: 'Account updated',
             time: 'Yesterday',
             icon: Icons.security_rounded,
-            iconColor: SpottColors.warning,
+            iconColor: DSColors.warning,
             buttonLabel: 'View Details',
             onTap: () => _showNotification(context, 'Safety contact opened'),
           ),
@@ -153,7 +154,7 @@ class _NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(SpottSpacing.lg),
+      padding: const EdgeInsets.all(DSSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -169,22 +170,22 @@ class _NotificationCard extends StatelessWidget {
                 ),
                 child: Icon(icon, color: iconColor, size: 24),
               ),
-              const SizedBox(width: SpottSpacing.md),
+              const SizedBox(width: DSSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: SpottTextStyles.headline.copyWith(fontSize: 18)),
+                    Text(title, style: DSTypography.headline.copyWith(fontSize: 18)),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
+                    Text(subtitle, style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
                     const SizedBox(height: 8),
-                    Text(time, style: SpottTextStyles.caption.copyWith(color: SpottColors.textSecondary.withValues(alpha:0.6))),
+                    Text(time, style: DSTypography.caption.copyWith(color: DSColors.textSecondary.withValues(alpha:0.6))),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: SpottSpacing.lg),
+          const SizedBox(height: DSSpacing.lg),
           SizedBox(
             width: double.infinity,
             child: SpottButton.secondary(

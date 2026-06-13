@@ -1,6 +1,6 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
 
 // ── Route Pattern Painter ─────────────────────────────────────────────
 /// Draws dotted curved route lines for hero search scene
@@ -178,7 +178,7 @@ class ShieldWatermark extends StatelessWidget {
     return Icon(
       Icons.shield_rounded,
       size: size,
-      color: SpottColors.success.withValues(alpha: opacity),
+      color: DSColors.success.withValues(alpha: opacity),
     );
   }
 }

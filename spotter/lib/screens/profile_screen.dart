@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import '../app/app_routes.dart';
 import '../core/components/spott_avatar.dart';
 import '../core/theme/colors.dart';
+import '../controllers/ride_controller.dart';
+import '../models/spott_models.dart';
 import '../core/theme/radius.dart';
 import '../core/theme/spacing.dart';
 import '../core/theme/typography.dart';
@@ -32,6 +34,10 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ── Rider Enrollment & Switcher Card ───────────────
+                  _buildRiderEnrollmentCard(context),
+                  const SizedBox(height: SpottSpacing.lg),
+
                   // ── 2. Trust Score Panel ───────────────────────────
                   _buildTrustScorePanel(),
                   const SizedBox(height: SpottSpacing.lg),
@@ -115,12 +121,12 @@ class ProfileScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Verified Traveler',
+              Text(
+                RideScope.of(context).currentUserRole == UserRole.rider ? 'Verified Rider' : 'User',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: SpottColors.success,
+                  color: RideScope.of(context).currentUserRole == UserRole.rider ? SpottColors.success : SpottColors.textSecondary,
                 ),
               ),
               const SizedBox(width: 6),
@@ -201,6 +207,111 @@ class ProfileScreen extends StatelessWidget {
               Icons.shield_rounded,
               color: SpottColors.success,
               size: 28,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRiderEnrollmentCard(BuildContext context) {
+    final ride = RideScope.of(context);
+    final isRider = ride.currentUserRole == UserRole.rider;
+    final kyc = ride.kycStatus;
+
+    String title;
+    String subtitle;
+    String buttonText;
+    VoidCallback onPressed;
+    Color cardColor;
+    Color buttonColor;
+    IconData icon;
+
+    if (isRider) {
+      title = 'Rider Mode Active';
+      subtitle = 'You can now share rides and manage incoming requests. Switch to Passenger view if you want to book.';
+      buttonText = 'Switch to Passenger View';
+      onPressed = () => ride.updateUserRole(UserRole.user);
+      cardColor = SpottColors.surface1;
+      buttonColor = SpottColors.textPrimary;
+      icon = Icons.directions_car_rounded;
+    } else {
+      if (kyc == KycStatus.verified) {
+        title = 'Identity Verified';
+        subtitle = 'Your KYC verification is complete! Switch to Rider mode to start offering your trips.';
+        buttonText = 'Switch to Rider View';
+        onPressed = () => ride.updateUserRole(UserRole.rider);
+        cardColor = SpottColors.successSoft;
+        buttonColor = SpottColors.success;
+        icon = Icons.verified_user_rounded;
+      } else if (kyc == KycStatus.submitted) {
+        title = 'Verification Pending';
+        subtitle = 'Your documents are being reviewed. We will notify you once you are approved to share rides.';
+        buttonText = 'Check Status';
+        onPressed = () => Navigator.pushNamed(context, AppRoutes.verificationPending);
+        cardColor = SpottColors.surface1;
+        buttonColor = SpottColors.primary;
+        icon = Icons.pending_rounded;
+      } else {
+        title = 'Become a Rider';
+        subtitle = 'Complete identity verification to share your rides, recover travel costs, and build community.';
+        buttonText = 'Verify & Share Rides';
+        onPressed = () => Navigator.pushNamed(context, AppRoutes.kyc);
+        cardColor = SpottColors.accentPurpleSoft;
+        buttonColor = SpottColors.accentPurple;
+        icon = Icons.add_road_rounded;
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(SpottSpacing.lg),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(SpottRadius.primaryCard),
+        border: Border.all(color: SpottColors.border),
+        boxShadow: SpottShadows.elevation1,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: buttonColor, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                title.toUpperCase(),
+                style: SpottTextStyles.overline.copyWith(
+                  color: buttonColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            subtitle,
+            style: SpottTextStyles.body.copyWith(
+              color: SpottColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(SpottRadius.button),
+                ),
+              ),
+              child: Text(
+                buttonText,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
@@ -600,12 +711,14 @@ class ProfileScreen extends StatelessWidget {
               backgroundColor: SpottColors.success,
               foregroundColor: Colors.white,
               elevation: 0,
+              minimumSize: const Size(0, 36),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             ),
             child: const Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   'Details',

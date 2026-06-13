@@ -1,9 +1,6 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../theme/colors.dart';
-import '../theme/radius.dart';
-import '../theme/spacing.dart';
-import '../theme/shadows.dart';
 import '../theme/animations.dart';
 import '../theme/gradients.dart';
 import 'glass_container.dart';
@@ -135,8 +132,8 @@ class _SpottButtonState extends State<SpottButton>
         width: widget.isFullWidth ? double.infinity : null,
         height: _height,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(SpottRadius.button),
-          color: isDisabled ? SpottColors.disabled : null,
+          borderRadius: BorderRadius.circular(DSRadius.button),
+          color: isDisabled ? DSColors.border : null,
           gradient: isDisabled ? null : _gradient,
           boxShadow: isDisabled ? null : _shadow,
         ),
@@ -147,9 +144,9 @@ class _SpottButtonState extends State<SpottButton>
               HapticFeedback.lightImpact();
               widget.onPressed?.call();
             },
-            borderRadius: BorderRadius.circular(SpottRadius.button),
+            borderRadius: BorderRadius.circular(DSRadius.button),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: widget.isFullWidth ? 0 : SpottSpacing.xl),
+              padding: EdgeInsets.symmetric(horizontal: widget.isFullWidth ? 0 : DSSpacing.xl),
               child: Center(
                 widthFactor: widget.isFullWidth ? null : 1.0,
                 child: _buildContent(),
@@ -192,7 +189,7 @@ class _SpottButtonState extends State<SpottButton>
         return SpottGradients.accent;
       case SpottButtonVariant.danger:
         return const LinearGradient(
-          colors: [SpottColors.danger, Color(0xFFC41830)],
+          colors: [DSColors.danger, Color(0xFFC41830)],
         );
       default:
         return SpottGradients.primary;
@@ -202,11 +199,11 @@ class _SpottButtonState extends State<SpottButton>
   List<BoxShadow>? get _shadow {
     switch (widget.variant) {
       case SpottButtonVariant.primary:
-        return SpottShadows.glowPrimary;
+        return DSShadows.elevation2;
       case SpottButtonVariant.secondary:
-        return SpottShadows.glowPurple;
+        return DSShadows.elevation2;
       case SpottButtonVariant.danger:
-        return SpottShadows.glowPrimary;
+        return DSShadows.elevation2;
       default:
         return null;
     }
@@ -216,7 +213,7 @@ class _SpottButtonState extends State<SpottButton>
     return GlassContainer(
       height: _height,
       width: widget.isFullWidth ? double.infinity : null,
-      borderRadius: SpottRadius.button,
+      borderRadius: DSRadius.button,
       hasBorder: true,
       child: Material(
         color: Colors.transparent,
@@ -225,9 +222,9 @@ class _SpottButtonState extends State<SpottButton>
             HapticFeedback.lightImpact();
             widget.onPressed?.call();
           },
-          borderRadius: BorderRadius.circular(SpottRadius.button),
+          borderRadius: BorderRadius.circular(DSRadius.button),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: widget.isFullWidth ? 0 : SpottSpacing.xl),
+            padding: EdgeInsets.symmetric(horizontal: widget.isFullWidth ? 0 : DSSpacing.xl),
             child: Center(
               widthFactor: widget.isFullWidth ? null : 1.0,
               child: _buildContent(),
@@ -245,8 +242,8 @@ class _SpottButtonState extends State<SpottButton>
     final bool isDisabled = widget.onPressed == null || widget.isLoading;
 
     final Color contentColor = widget.variant == SpottButtonVariant.ghost
-        ? (isDisabled ? SpottColors.disabledText : SpottColors.textPrimary)
-        : (isDisabled ? SpottColors.disabledText : Colors.white);
+        ? (isDisabled ? DSColors.border : DSColors.textPrimary)
+        : (isDisabled ? DSColors.border : Colors.white);
 
     if (widget.isLoading) {
       return SizedBox(
@@ -265,7 +262,7 @@ class _SpottButtonState extends State<SpottButton>
         mainAxisSize: MainAxisSize.min,
         children: [
           widget.icon!,
-          const SizedBox(width: SpottSpacing.sm),
+          const SizedBox(width: DSSpacing.sm),
           Text(
             widget.label,
             style: TextStyle(
@@ -294,14 +291,14 @@ class _SpottButtonState extends State<SpottButton>
     final double fontSize =
         widget.size == SpottButtonSize.small ? 14.0 : 16.0;
 
-    final Color contentColor = isDisabled ? SpottColors.disabledText : SpottColors.primary;
+    final Color contentColor = isDisabled ? DSColors.border : DSColors.primary;
 
     Widget child = widget.icon != null
         ? Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               widget.icon!,
-              const SizedBox(width: SpottSpacing.sm),
+              const SizedBox(width: DSSpacing.sm),
               Text(
                 widget.label,
                 style: TextStyle(
@@ -328,9 +325,9 @@ class _SpottButtonState extends State<SpottButton>
         HapticFeedback.lightImpact();
         widget.onPressed?.call();
       },
-      borderRadius: BorderRadius.circular(SpottRadius.button),
+      borderRadius: BorderRadius.circular(DSRadius.button),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.sm),
+        padding: const EdgeInsets.symmetric(horizontal: DSSpacing.md, vertical: DSSpacing.sm),
         child: widget.isFullWidth
             ? SizedBox(
                 width: double.infinity,

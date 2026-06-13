@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
 import '../app/app_routes.dart';
@@ -7,10 +8,10 @@ import '../models/spott_models.dart' as spott;
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
+
+
+
+
 import '../widgets/premium/premium_selectors.dart';
 
 class CreateTripScreen extends StatefulWidget {
@@ -63,8 +64,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Offer a Trip', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('Offer a Trip', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: Stack(
@@ -74,25 +75,25 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
             children: [
               // Header Section
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg),
+                padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: SpottSpacing.sm),
-                    Text('Offer Your Trip', style: SpottTextStyles.display.copyWith(fontSize: 40)),
-                    const SizedBox(height: SpottSpacing.xs),
-                    Text('Recover fuel costs and travel together.', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
-                    const SizedBox(height: SpottSpacing.xl),
+                    const SizedBox(height: DSSpacing.sm),
+                    Text('Offer Your Trip', style: DSTypography.headline.copyWith(fontSize: 40)),
+                    const SizedBox(height: DSSpacing.xs),
+                    Text('Recover fuel costs and travel together.', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+                    const SizedBox(height: DSSpacing.xl),
                   ],
                 ),
               ),
 
               // Hero Illustration
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg),
+                margin: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
                 height: 240,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(SpottRadius.lg),
+                  borderRadius: BorderRadius.circular(DSRadius.lg),
                   image: const DecorationImage(
                     image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuDzmjjpgD0roYcmddNYxGI144s2clVXmjXKPd6PqVvNeAZ8AEeObpGgmfX6Af5AeMgKiarDaGn58_dTOmYYbyrHYKjmvPuIBWySDcwRUDg2ZKBHKMI_ZLBhE-lN9tkBrHEaIgXN9rw1_9aKBYQlZy9iBMcI5V5l59XRXQI04uVV_iOpg2xdpmAEiSf5um10kQlCJltPi1XZQITwGBSbToXjm0vOY-rhkRchHPKxKGbw5xsO1VO0mtHi35Jhx25DehJW6MQgHieWFyQ1'),
                     fit: BoxFit.cover,
@@ -105,7 +106,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(SpottRadius.lg),
+                        borderRadius: BorderRadius.circular(DSRadius.lg),
                         gradient: LinearGradient(
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
@@ -114,24 +115,24 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                       ),
                     ),
                     Positioned(
-                      bottom: SpottSpacing.lg,
-                      right: SpottSpacing.lg,
+                      bottom: DSSpacing.lg,
+                      right: DSSpacing.lg,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg, vertical: SpottSpacing.sm),
+                        padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg, vertical: DSSpacing.sm),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha:0.9),
-                          borderRadius: BorderRadius.circular(SpottRadius.pill),
+                          borderRadius: BorderRadius.circular(DSRadius.pill),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.payments_rounded, color: SpottColors.primary, size: 20),
-                            const SizedBox(width: SpottSpacing.sm),
+                            const Icon(Icons.payments_rounded, color: DSColors.primary, size: 20),
+                            const SizedBox(width: DSSpacing.sm),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('Average Earning', style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold, fontSize: 10)),
-                                Text('₹850', style: SpottTextStyles.titleSmall.copyWith(color: SpottColors.primary, fontWeight: FontWeight.bold)),
+                                Text('Average Earning', style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold, fontSize: 10)),
+                                Text('₹850', style: DSTypography.titleLarge.copyWith(color: DSColors.primary, fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ],
@@ -146,9 +147,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               Transform.translate(
                 offset: const Offset(0, -40),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg),
+                  padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
                   child: GlassCard(
-                    padding: const EdgeInsets.all(SpottSpacing.xl),
+                    padding: const EdgeInsets.all(DSSpacing.xl),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -160,23 +161,23 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                                 children: [
                                   Container(
                                     width: 32, height: 32,
-                                    decoration: BoxDecoration(color: SpottColors.surface1, shape: BoxShape.circle),
+                                    decoration: BoxDecoration(color: DSColors.surface, shape: BoxShape.circle),
                                     child: const Icon(Icons.circle_outlined, size: 16),
                                   ),
-                                  Expanded(child: Container(width: 2, color: SpottColors.borderSubtle)),
+                                  Expanded(child: Container(width: 2, color: DSColors.borderSubtle)),
                                   Container(
                                     width: 32, height: 32,
-                                    decoration: const BoxDecoration(color: SpottColors.primary, shape: BoxShape.circle),
+                                    decoration: const BoxDecoration(color: DSColors.primary, shape: BoxShape.circle),
                                     child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 16),
                                   ),
                                 ],
                               ),
-                              const SizedBox(width: SpottSpacing.md),
+                              const SizedBox(width: DSSpacing.md),
                               Expanded(
                                 child: Column(
                                   children: [
                                     _buildTextField(label: 'Leaving From', controller: _fromController),
-                                    const SizedBox(height: SpottSpacing.lg),
+                                    const SizedBox(height: DSSpacing.lg),
                                     _buildTextField(label: 'Going To', controller: _toController),
                                   ],
                                 ),
@@ -184,9 +185,9 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: SpottSpacing.lg),
-                        const Divider(color: SpottColors.borderSubtle),
-                        const SizedBox(height: SpottSpacing.lg),
+                        const SizedBox(height: DSSpacing.lg),
+                        const Divider(color: DSColors.borderSubtle),
+                        const SizedBox(height: DSSpacing.lg),
 
                         // Details Grid
                         Row(
@@ -202,13 +203,13 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                                     initialDate: _departureDate,
                                     firstDate: DateTime.now(),
                                     lastDate: DateTime.now().add(const Duration(days: 365)),
-                                    primaryColor: SpottColors.primary,
+                                    primaryColor: DSColors.primary,
                                   );
                                   if (picked != null) setState(() => _departureDate = picked);
                                 },
                               ),
                             ),
-                            const SizedBox(width: SpottSpacing.md),
+                            const SizedBox(width: DSSpacing.md),
                             Expanded(
                               child: _buildTouchableInput(
                                 label: 'Departure Time',
@@ -222,7 +223,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: SpottSpacing.md),
+                        const SizedBox(height: DSSpacing.md),
                         Row(
                           children: [
                             Expanded(
@@ -235,7 +236,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                                     context,
                                     initialSeats: _availableSeats,
                                     maxSeats: 6,
-                                    primaryColor: SpottColors.primary,
+                                    primaryColor: DSColors.primary,
                                     title: 'Available Seats',
                                     subtitle: 'Choose how many empty seats you have',
                                   );
@@ -245,30 +246,30 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                                 },
                               ),
                             ),
-                            const SizedBox(width: SpottSpacing.md),
+                            const SizedBox(width: DSSpacing.md),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Price per Seat', style: SpottTextStyles.label.copyWith(color: SpottColors.textSecondary, letterSpacing: 1.1)),
-                                  const SizedBox(height: SpottSpacing.xs),
+                                  Text('Price per Seat', style: DSTypography.labelLarge.copyWith(color: DSColors.textSecondary, letterSpacing: 1.1)),
+                                  const SizedBox(height: DSSpacing.xs),
                                   Container(
                                     height: 56,
                                     decoration: BoxDecoration(
                                       color: Colors.white,
-                                      border: Border.all(color: SpottColors.borderSubtle),
-                                      borderRadius: BorderRadius.circular(SpottRadius.md),
+                                      border: Border.all(color: DSColors.borderSubtle),
+                                      borderRadius: BorderRadius.circular(DSRadius.md),
                                     ),
                                     child: TextField(
                                       controller: _priceController,
                                       keyboardType: TextInputType.number,
                                       textAlign: TextAlign.center,
-                                      style: SpottTextStyles.headline.copyWith(fontSize: 20),
+                                      style: DSTypography.headline.copyWith(fontSize: 20),
                                       onChanged: (_) => setState((){}), // trigger rebuild to update earnings
                                       decoration: InputDecoration(
                                         prefixIcon: const Padding(
                                           padding: EdgeInsets.only(left: 16.0, top: 14),
-                                          child: Text('₹', style: TextStyle(fontSize: 18, color: SpottColors.textSecondary)),
+                                          child: Text('₹', style: TextStyle(fontSize: 18, color: DSColors.textSecondary)),
                                         ),
                                         border: InputBorder.none,
                                         contentPadding: const EdgeInsets.only(top: 10),
@@ -280,40 +281,40 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: SpottSpacing.lg),
-                        const Divider(color: SpottColors.borderSubtle),
-                        const SizedBox(height: SpottSpacing.lg),
+                        const SizedBox(height: DSSpacing.lg),
+                        const Divider(color: DSColors.borderSubtle),
+                        const SizedBox(height: DSSpacing.lg),
 
                         // Vehicle Selection
-                        Text('Your Vehicle', style: SpottTextStyles.label.copyWith(color: SpottColors.textSecondary, letterSpacing: 1.1)),
-                        const SizedBox(height: SpottSpacing.sm),
+                        Text('Your Vehicle', style: DSTypography.labelLarge.copyWith(color: DSColors.textSecondary, letterSpacing: 1.1)),
+                        const SizedBox(height: DSSpacing.sm),
                         InkWell(
                           onTap: () async {
                             // Show vehicle selection logic, keeping it simple
                             Navigator.pushNamed(context, AppRoutes.vehicleManagement);
                           },
                           child: Container(
-                            padding: const EdgeInsets.all(SpottSpacing.md),
+                            padding: const EdgeInsets.all(DSSpacing.md),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              border: Border.all(color: SpottColors.borderSubtle),
-                              borderRadius: BorderRadius.circular(SpottRadius.md),
+                              border: Border.all(color: DSColors.borderSubtle),
+                              borderRadius: BorderRadius.circular(DSRadius.md),
                             ),
                             child: Row(
                               children: [
                                 Container(
                                   width: 48, height: 48,
-                                  decoration: BoxDecoration(color: SpottColors.surface1, borderRadius: BorderRadius.circular(SpottRadius.sm)),
-                                  child: const Icon(Icons.directions_car_rounded, color: SpottColors.primary, size: 28),
+                                  decoration: BoxDecoration(color: DSColors.surface, borderRadius: BorderRadius.circular(DSRadius.sm)),
+                                  child: const Icon(Icons.directions_car_rounded, color: DSColors.primary, size: 28),
                                 ),
-                                const SizedBox(width: SpottSpacing.md),
+                                const SizedBox(width: DSSpacing.md),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         ride.vehicles.firstWhere((v) => v.id == _selectedVehicleId, orElse: () => ride.vehicles.isNotEmpty ? ride.vehicles.first : spott.Vehicle(id: '', userId: '', vehicleModel: 'Add Vehicle', vehicleType: 'Car', vehicleNumber: '', verificationStatus: spott.VerificationStatus.pending)).vehicleModel,
-                                        style: SpottTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold),
+                                        style: DSTypography.titleLarge.copyWith(fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(height: 4),
                                       Row(
@@ -326,12 +327,12 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                                     ],
                                   ),
                                 ),
-                                const Icon(Icons.chevron_right_rounded, color: SpottColors.textSecondary),
+                                const Icon(Icons.chevron_right_rounded, color: DSColors.textSecondary),
                               ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: SpottSpacing.xl),
+                        const SizedBox(height: DSSpacing.xl),
 
                         // Trust Badges
                         SingleChildScrollView(
@@ -339,40 +340,40 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                           child: Row(
                             children: [
                               _buildTrustBadge(Icons.verified_user_rounded, 'Govt ID Verified'),
-                              const SizedBox(width: SpottSpacing.sm),
+                              const SizedBox(width: DSSpacing.sm),
                               _buildTrustBadge(Icons.directions_car_rounded, 'Vehicle Verified'),
-                              const SizedBox(width: SpottSpacing.sm),
+                              const SizedBox(width: DSSpacing.sm),
                               _buildTrustBadge(Icons.smartphone_rounded, 'Phone Verified'),
                             ],
                           ),
                         ),
-                        const SizedBox(height: SpottSpacing.xl),
+                        const SizedBox(height: DSSpacing.xl),
                         
                         // Extra flutter toggles
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Parcels allowed', style: SpottTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
+                            Text('Parcels allowed', style: DSTypography.titleLarge.copyWith(fontWeight: FontWeight.bold)),
                             Switch(
                               value: _parcelAllowed,
                               onChanged: (v) => setState(() => _parcelAllowed = v),
-                              activeThumbColor: SpottColors.primary,
+                              activeThumbColor: DSColors.primary,
                             ),
                           ],
                         ),
-                        const SizedBox(height: SpottSpacing.lg),
+                        const SizedBox(height: DSSpacing.lg),
 
                         // Earnings Preview
                         Container(
-                          padding: const EdgeInsets.all(SpottSpacing.lg),
+                          padding: const EdgeInsets.all(DSSpacing.lg),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [SpottColors.primary.withValues(alpha:0.1), SpottColors.surface1],
+                              colors: [DSColors.primary.withValues(alpha:0.1), DSColors.surface],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(SpottRadius.md),
-                            border: Border.all(color: SpottColors.primary.withValues(alpha:0.2)),
+                            borderRadius: BorderRadius.circular(DSRadius.md),
+                            border: Border.all(color: DSColors.primary.withValues(alpha:0.2)),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -380,15 +381,15 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Estimated Earnings', style: SpottTextStyles.label.copyWith(color: SpottColors.primary, letterSpacing: 1.1)),
+                                  Text('Estimated Earnings', style: DSTypography.labelLarge.copyWith(color: DSColors.primary, letterSpacing: 1.1)),
                                   const SizedBox(height: 4),
-                                  Text('₹$estimatedEarnings', style: SpottTextStyles.headline.copyWith(fontSize: 28)),
+                                  Text('₹$estimatedEarnings', style: DSTypography.headline.copyWith(fontSize: 28)),
                                 ],
                               ),
                               Container(
                                 width: 48, height: 48,
                                 decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                                child: const Icon(Icons.account_balance_wallet_rounded, color: SpottColors.primary),
+                                child: const Icon(Icons.account_balance_wallet_rounded, color: DSColors.primary),
                               ),
                             ],
                           ),
@@ -401,7 +402,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
               
               // Only verified travelers can publish (informative)
               const Center(
-                child: Text('Only verified travelers can publish rides', style: TextStyle(color: SpottColors.textSecondary, fontSize: 12)),
+                child: Text('Only verified travelers can publish rides', style: TextStyle(color: DSColors.textSecondary, fontSize: 12)),
               ),
               const SizedBox(height: 20),
             ],
@@ -409,13 +410,13 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
           
           // Publish CTA
           Positioned(
-            bottom: SpottSpacing.lg,
-            left: SpottSpacing.lg,
-            right: SpottSpacing.lg,
+            bottom: DSSpacing.lg,
+            left: DSSpacing.lg,
+            right: DSSpacing.lg,
             child: Container(
               decoration: BoxDecoration(
                 boxShadow: [
-                  BoxShadow(color: SpottColors.primary.withValues(alpha:0.2), blurRadius: 20, offset: const Offset(0, 10)),
+                  BoxShadow(color: DSColors.primary.withValues(alpha:0.2), blurRadius: 20, offset: const Offset(0, 10)),
                 ],
               ),
               child: SpottButton.primary(
@@ -433,26 +434,26 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: SpottTextStyles.label.copyWith(color: SpottColors.textSecondary, letterSpacing: 1.1)),
-        const SizedBox(height: SpottSpacing.xs),
+        Text(label, style: DSTypography.labelLarge.copyWith(color: DSColors.textSecondary, letterSpacing: 1.1)),
+        const SizedBox(height: DSSpacing.xs),
         TextField(
           controller: controller,
-          style: SpottTextStyles.body,
+          style: DSTypography.body,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.md),
+            contentPadding: const EdgeInsets.symmetric(horizontal: DSSpacing.md, vertical: DSSpacing.md),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(SpottRadius.md),
-              borderSide: const BorderSide(color: SpottColors.borderSubtle),
+              borderRadius: BorderRadius.circular(DSRadius.md),
+              borderSide: const BorderSide(color: DSColors.borderSubtle),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(SpottRadius.md),
-              borderSide: const BorderSide(color: SpottColors.borderSubtle),
+              borderRadius: BorderRadius.circular(DSRadius.md),
+              borderSide: const BorderSide(color: DSColors.borderSubtle),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(SpottRadius.md),
-              borderSide: const BorderSide(color: SpottColors.primary),
+              borderRadius: BorderRadius.circular(DSRadius.md),
+              borderSide: const BorderSide(color: DSColors.primary),
             ),
           ),
         ),
@@ -464,23 +465,23 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: SpottTextStyles.label.copyWith(color: SpottColors.textSecondary, letterSpacing: 1.1)),
-        const SizedBox(height: SpottSpacing.xs),
+        Text(label, style: DSTypography.labelLarge.copyWith(color: DSColors.textSecondary, letterSpacing: 1.1)),
+        const SizedBox(height: DSSpacing.xs),
         InkWell(
           onTap: onTap,
           child: Container(
             height: 56,
-            padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: DSSpacing.md),
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: SpottColors.borderSubtle),
-              borderRadius: BorderRadius.circular(SpottRadius.md),
+              border: Border.all(color: DSColors.borderSubtle),
+              borderRadius: BorderRadius.circular(DSRadius.md),
             ),
             child: Row(
               children: [
-                Icon(icon, color: SpottColors.textSecondary, size: 20),
-                const SizedBox(width: SpottSpacing.sm),
-                Text(value, style: SpottTextStyles.body),
+                Icon(icon, color: DSColors.textSecondary, size: 20),
+                const SizedBox(width: DSSpacing.sm),
+                Text(value, style: DSTypography.body),
               ],
             ),
           ),
@@ -493,26 +494,26 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: SpottColors.surface1,
+        color: DSColors.surface,
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Text(label.toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: SpottColors.textSecondary)),
+      child: Text(label.toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: DSColors.textSecondary)),
     );
   }
 
   Widget _buildTrustBadge(IconData icon, String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: DSSpacing.md, vertical: 6),
       decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(SpottRadius.pill),
-        border: Border.all(color: SpottColors.borderSubtle),
+        color: DSColors.surface,
+        borderRadius: BorderRadius.circular(DSRadius.pill),
+        border: Border.all(color: DSColors.borderSubtle),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: SpottColors.primary),
+          Icon(icon, size: 16, color: DSColors.primary),
           const SizedBox(width: 4),
-          Text(label, style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold)),
+          Text(label, style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -553,7 +554,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     ride.addTrip(newTrip);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Trip published successfully!'), backgroundColor: SpottColors.success),
+      const SnackBar(content: Text('Trip published successfully!'), backgroundColor: DSColors.success),
     );
 
     Navigator.pushReplacementNamed(context, AppRoutes.home);

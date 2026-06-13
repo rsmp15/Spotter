@@ -1,13 +1,14 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../core/components/skeleton_route_card.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/shadows.dart';
-import '../core/theme/typography.dart';
+
+
+
+
 import '../core/components/premium_chips.dart';
 import '../widgets/premium/premium_selectors.dart';
 
@@ -68,7 +69,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
     final ride = RideScope.of(context);
 
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: DSColors.background,
       body: Column(
         children: [
           _buildHeader(context),
@@ -97,7 +98,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
   // ══════════════════════════════════════════════════════════════════
   Widget _buildHeader(BuildContext context) {
     return Container(
-      color: SpottColors.primary,
+      color: DSColors.primary,
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -112,7 +113,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
               ),
               Text(
                 'Find a Trip',
-                style: SpottTextStyles.headline.copyWith(
+                style: DSTypography.headline.copyWith(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
@@ -133,31 +134,31 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(SpottRadius.card),
-        boxShadow: SpottShadows.elevation2,
-        border: Border.all(color: SpottColors.border),
+        borderRadius: BorderRadius.circular(DSRadius.card),
+        boxShadow: DSShadows.elevation2,
+        border: Border.all(color: DSColors.border),
       ),
       child: Column(
         children: [
           // FROM / TO
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: SpottColors.border),
-              borderRadius: BorderRadius.circular(SpottRadius.lg),
-              color: SpottColors.surface2,
+              border: Border.all(color: DSColors.border),
+              borderRadius: BorderRadius.circular(DSRadius.lg),
+              color: DSColors.surfaceVariant,
             ),
             child: Column(
               children: [
                 _buildFieldRow(
                   icon: Icons.radio_button_checked_rounded,
-                  iconColor: SpottColors.success,
+                  iconColor: DSColors.success,
                   label: 'Leaving from',
                   controller: _sourceController,
                 ),
                 Stack(
                   alignment: Alignment.centerRight,
                   children: [
-                    const Divider(height: 1, color: SpottColors.divider),
+                    const Divider(height: 1, color: DSColors.divider),
                     Padding(
                       padding: const EdgeInsets.only(right: 12),
                       child: GestureDetector(
@@ -169,12 +170,12 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                             color: Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: SpottColors.primary, width: 1.5),
-                            boxShadow: SpottShadows.elevation1,
+                                color: DSColors.primary, width: 1.5),
+                            boxShadow: DSShadows.elevation1,
                           ),
                           child: const Icon(
                             Icons.swap_vert_rounded,
-                            color: SpottColors.primary,
+                            color: DSColors.primary,
                             size: 18,
                           ),
                         ),
@@ -184,7 +185,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                 ),
                 _buildFieldRow(
                   icon: Icons.location_on_rounded,
-                  iconColor: SpottColors.primary,
+                  iconColor: DSColors.primary,
                   label: 'Going to',
                   controller: _destController,
                 ),
@@ -221,7 +222,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                       initialDate: initDate,
                       firstDate: DateTime.now(),
                       lastDate: DateTime.now().add(const Duration(days: 365)),
-                      primaryColor: SpottColors.primary,
+                      primaryColor: DSColors.primary,
                     );
                     if (date != null) {
                       setState(() =>
@@ -243,7 +244,7 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                       context,
                       initialSeats: currentVal,
                       maxSeats: 4,
-                      primaryColor: SpottColors.primary,
+                      primaryColor: DSColors.primary,
                       title: 'Select Seats',
                       subtitle: 'Choose how many seats to book',
                     );
@@ -267,13 +268,13 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                 _triggerSearch();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: SpottColors.primary,
+                backgroundColor: DSColors.primary,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(SpottRadius.button),
+                  borderRadius: BorderRadius.circular(DSRadius.button),
                 ),
-                textStyle: SpottTextStyles.label.copyWith(
+                textStyle: DSTypography.labelLarge.copyWith(
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
                 ),
@@ -304,17 +305,17 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
               children: [
                 Text(
                   label,
-                  style: SpottTextStyles.caption.copyWith(
-                    color: SpottColors.textTertiary,
+                  style: DSTypography.caption.copyWith(
+                    color: DSColors.textTertiary,
                     fontSize: 10,
                   ),
                 ),
                 const SizedBox(height: 2),
                 TextField(
                   controller: controller,
-                  style: SpottTextStyles.body.copyWith(
+                  style: DSTypography.body.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: SpottColors.textPrimary,
+                    color: DSColors.textPrimary,
                   ),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -338,17 +339,17 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(SpottRadius.lg),
+      borderRadius: BorderRadius.circular(DSRadius.lg),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          border: Border.all(color: SpottColors.border),
-          borderRadius: BorderRadius.circular(SpottRadius.lg),
-          color: SpottColors.surface2,
+          border: Border.all(color: DSColors.border),
+          borderRadius: BorderRadius.circular(DSRadius.lg),
+          color: DSColors.surfaceVariant,
         ),
         child: Row(
           children: [
-            Icon(icon, color: SpottColors.primary, size: 16),
+            Icon(icon, color: DSColors.primary, size: 16),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -356,17 +357,17 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                 children: [
                   Text(
                     label,
-                    style: SpottTextStyles.caption.copyWith(
-                      color: SpottColors.textTertiary,
+                    style: DSTypography.caption.copyWith(
+                      color: DSColors.textTertiary,
                       fontSize: 10,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     value,
-                    style: SpottTextStyles.body.copyWith(
+                    style: DSTypography.body.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: SpottColors.textPrimary,
+                      color: DSColors.textPrimary,
                       fontSize: 13,
                     ),
                     maxLines: 1,
@@ -432,12 +433,12 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
           child: Column(
             children: [
               const Icon(Icons.search_rounded,
-                  size: 48, color: SpottColors.border),
+                  size: 48, color: DSColors.border),
               const SizedBox(height: 12),
               Text(
                 'Enter route and tap Search.',
-                style: SpottTextStyles.body.copyWith(
-                  color: SpottColors.textSecondary,
+                style: DSTypography.body.copyWith(
+                  color: DSColors.textSecondary,
                 ),
               ),
             ],
@@ -453,20 +454,20 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
           child: Column(
             children: [
               const Icon(Icons.search_off_rounded,
-                  size: 48, color: SpottColors.warning),
+                  size: 48, color: DSColors.warning),
               const SizedBox(height: 12),
               Text(
                 'No rides found for this route.',
-                style: SpottTextStyles.body.copyWith(
+                style: DSTypography.body.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: SpottColors.textPrimary,
+                  color: DSColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'Try a different date or route.',
-                style: SpottTextStyles.caption.copyWith(
-                  color: SpottColors.textSecondary,
+                style: DSTypography.caption.copyWith(
+                  color: DSColors.textSecondary,
                 ),
               ),
             ],
@@ -486,9 +487,9 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
               children: [
                 Text(
                   '${ride.activeTrips.length} rides found',
-                  style: SpottTextStyles.label.copyWith(
+                  style: DSTypography.labelLarge.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: SpottColors.textPrimary,
+                    color: DSColors.textPrimary,
                   ),
                 ),
                 GestureDetector(
@@ -496,9 +497,9 @@ class _TripSearchScreenState extends State<TripSearchScreen> {
                       Navigator.pushNamed(context, AppRoutes.searchResults),
                   child: Text(
                     'View All',
-                    style: SpottTextStyles.label.copyWith(
+                    style: DSTypography.labelLarge.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: SpottColors.primary,
+                      color: DSColors.primary,
                     ),
                   ),
                 ),
@@ -576,9 +577,9 @@ class _ResultCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(SpottRadius.card),
-          boxShadow: SpottShadows.elevation1,
-          border: Border.all(color: SpottColors.border),
+          borderRadius: BorderRadius.circular(DSRadius.card),
+          boxShadow: DSShadows.elevation1,
+          border: Border.all(color: DSColors.border),
         ),
         child: Column(
           children: [
@@ -592,32 +593,32 @@ class _ResultCard extends StatelessWidget {
                     children: [
                       Text(
                         departureTime,
-                        style: SpottTextStyles.body.copyWith(
+                        style: DSTypography.body.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: SpottColors.textPrimary,
+                          color: DSColors.textPrimary,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Column(
                           children: [
-                            Container(width: 1.5, height: 8, color: SpottColors.border),
+                            Container(width: 1.5, height: 8, color: DSColors.border),
                             Text(
                               duration,
-                              style: SpottTextStyles.caption.copyWith(
+                              style: DSTypography.caption.copyWith(
                                 fontSize: 9,
-                                color: SpottColors.textSecondary,
+                                color: DSColors.textSecondary,
                               ),
                             ),
-                            Container(width: 1.5, height: 8, color: SpottColors.border),
+                            Container(width: 1.5, height: 8, color: DSColors.border),
                           ],
                         ),
                       ),
                       Text(
                         arrivalTime,
-                        style: SpottTextStyles.body.copyWith(
+                        style: DSTypography.body.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: SpottColors.textPrimary,
+                          color: DSColors.textPrimary,
                         ),
                       ),
                     ],
@@ -630,23 +631,23 @@ class _ResultCard extends StatelessWidget {
                       children: [
                         Text(
                           driverName,
-                          style: SpottTextStyles.body.copyWith(
+                          style: DSTypography.body.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: SpottColors.textPrimary,
+                            color: DSColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           vehicleInfo,
-                          style: SpottTextStyles.caption.copyWith(
-                            color: SpottColors.textSecondary,
+                          style: DSTypography.caption.copyWith(
+                            color: DSColors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           destination,
-                          style: SpottTextStyles.caption.copyWith(
-                            color: SpottColors.textTertiary,
+                          style: DSTypography.caption.copyWith(
+                            color: DSColors.textTertiary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -655,18 +656,18 @@ class _ResultCard extends StatelessWidget {
                         Row(
                           children: [
                             const Icon(Icons.star_rounded,
-                                color: SpottColors.warning, size: 14),
+                                color: DSColors.warning, size: 14),
                             const SizedBox(width: 2),
                             Text(
                               rating,
-                              style: SpottTextStyles.caption.copyWith(
+                              style: DSTypography.caption.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: SpottColors.textPrimary,
+                                color: DSColors.textPrimary,
                               ),
                             ),
                             const SizedBox(width: 8),
                             const Icon(Icons.verified_rounded,
-                                color: SpottColors.info, size: 14),
+                                color: DSColors.info, size: 14),
                           ],
                         ),
                       ],
@@ -678,15 +679,15 @@ class _ResultCard extends StatelessWidget {
                     children: [
                       Text(
                         price,
-                        style: SpottTextStyles.title.copyWith(
+                        style: DSTypography.titleLarge.copyWith(
                           fontWeight: FontWeight.w800,
-                          color: SpottColors.primary,
+                          color: DSColors.primary,
                         ),
                       ),
                       Text(
                         '/seat',
-                        style: SpottTextStyles.caption.copyWith(
-                          color: SpottColors.textSecondary,
+                        style: DSTypography.caption.copyWith(
+                          color: DSColors.textSecondary,
                         ),
                       ),
                     ],
@@ -697,10 +698,10 @@ class _ResultCard extends StatelessWidget {
             // Bottom bar
             Container(
               decoration: const BoxDecoration(
-                color: SpottColors.surface2,
+                color: DSColors.surfaceVariant,
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(SpottRadius.card),
-                  bottomRight: Radius.circular(SpottRadius.card),
+                  bottomLeft: Radius.circular(DSRadius.card),
+                  bottomRight: Radius.circular(DSRadius.card),
                 ),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -710,25 +711,25 @@ class _ResultCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: SpottColors.warningSoft,
-                        borderRadius: BorderRadius.circular(SpottRadius.xs),
-                        border: Border.all(color: SpottColors.warning.withValues(alpha: 0.3)),
+                        color: DSColors.warningSoft,
+                        borderRadius: BorderRadius.circular(DSRadius.xs),
+                        border: Border.all(color: DSColors.warning.withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         'Fast filling',
-                        style: SpottTextStyles.caption.copyWith(
+                        style: DSTypography.caption.copyWith(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: SpottColors.warning,
+                          color: DSColors.warning,
                         ),
                       ),
                     ),
                   const Spacer(),
                   Text(
                     '$seatsLeft seats left',
-                    style: SpottTextStyles.caption.copyWith(
+                    style: DSTypography.caption.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: SpottColors.success,
+                      color: DSColors.success,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -737,14 +738,15 @@ class _ResultCard extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: onBook,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: SpottColors.primary,
+                        minimumSize: const Size(60, 32),
+                        backgroundColor: DSColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(SpottRadius.sm),
+                          borderRadius: BorderRadius.circular(DSRadius.sm),
                         ),
-                        textStyle: SpottTextStyles.caption.copyWith(
+                        textStyle: DSTypography.caption.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),

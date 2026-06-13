@@ -1,8 +1,6 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../theme/colors.dart';
-import '../theme/radius.dart';
-import '../theme/typography.dart';
 import '../theme/animations.dart';
 
 class PremiumFilterChip extends StatelessWidget {
@@ -27,23 +25,23 @@ class PremiumFilterChip extends StatelessWidget {
         onTap();
       },
       child: AnimatedContainer(
-        duration: SpottAnimations.fast,
+        duration: const Duration(milliseconds: 150),
         curve: SpottCurves.standard,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         constraints: const BoxConstraints(minHeight: 38),
         decoration: BoxDecoration(
           color: isSelected
-              ? SpottColors.primary.withValues(alpha: 0.08)
-              : SpottColors.surface1,
-          borderRadius: BorderRadius.circular(SpottRadius.pill),
+              ? DSColors.primary.withValues(alpha: 0.08)
+              : DSColors.surface,
+          borderRadius: BorderRadius.circular(DSRadius.pill),
           border: Border.all(
-            color: isSelected ? SpottColors.primary : SpottColors.border,
+            color: isSelected ? DSColors.primary : DSColors.border,
             width: isSelected ? 1.5 : 1.0,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: SpottColors.primary.withValues(alpha: 0.04),
+                    color: DSColors.primary.withValues(alpha: 0.04),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -59,8 +57,8 @@ class PremiumFilterChip extends StatelessWidget {
             ],
             Text(
               label,
-              style: SpottTextStyles.label.copyWith(
-                color: isSelected ? SpottColors.primary : SpottColors.textSecondary,
+              style: DSTypography.labelLarge.copyWith(
+                color: isSelected ? DSColors.primary : DSColors.textSecondary,
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
               ),

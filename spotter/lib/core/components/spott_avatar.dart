@@ -1,5 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
 import '../theme/gradients.dart';
 
 class SpottAvatar extends StatelessWidget {
@@ -32,13 +32,13 @@ class SpottAvatar extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: isPremium ? SpottGradients.premium : null,
             border: !isPremium
-                ? Border.all(color: SpottColors.surface3, width: 2.0)
+                ? Border.all(color: DSColors.surface, width: 2.0)
                 : null,
           ),
           child: CircleAvatar(
             radius: radius,
             backgroundImage: NetworkImage(imageUrl),
-            backgroundColor: SpottColors.surface2,
+            backgroundColor: DSColors.surfaceVariant,
             onBackgroundImageError: (exception, stackTrace) {},
             child: _buildFallback(),
           ),
@@ -53,12 +53,12 @@ class SpottAvatar extends StatelessWidget {
               width: 14,
               height: 14,
               decoration: BoxDecoration(
-                color: SpottColors.success,
+                color: DSColors.success,
                 shape: BoxShape.circle,
-                border: Border.all(color: SpottColors.background, width: 2.5),
+                border: Border.all(color: DSColors.background, width: 2.5),
                 boxShadow: [
                   BoxShadow(
-                    color: SpottColors.success.withValues(alpha: 0.4),
+                    color: DSColors.success.withValues(alpha: 0.4),
                     blurRadius: 6,
                   ),
                 ],
@@ -77,10 +77,10 @@ class SpottAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: SpottGradients.trust,
                 shape: BoxShape.circle,
-                border: Border.all(color: SpottColors.background, width: 2.0),
+                border: Border.all(color: DSColors.background, width: 2.0),
                 boxShadow: [
                   BoxShadow(
-                    color: SpottColors.success.withValues(alpha: 0.3),
+                    color: DSColors.success.withValues(alpha: 0.3),
                     blurRadius: 4,
                   ),
                 ],
@@ -99,9 +99,9 @@ class SpottAvatar extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: SpottColors.surface1,
+                  color: DSColors.surface,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: SpottColors.border),
+                  border: Border.all(color: DSColors.border),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.2),
@@ -113,14 +113,14 @@ class SpottAvatar extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star_rounded, size: 10, color: SpottColors.warning),
+                    const Icon(Icons.star_rounded, size: 10, color: DSColors.warning),
                     const SizedBox(width: 2),
                     Text(
                       rating!,
                       style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: SpottColors.textPrimary,
+                        color: DSColors.textPrimary,
                       ),
                     ),
                   ],

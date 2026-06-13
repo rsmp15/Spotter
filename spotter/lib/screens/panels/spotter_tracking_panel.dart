@@ -5,8 +5,8 @@ import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
-import '../../core/theme/colors.dart';
-import '../../core/theme/redbus_theme.dart';
+
+import 'package:spotter/design_system/design_system.dart';
 
 class SpotterTrackingPanel extends StatelessWidget {
   const SpotterTrackingPanel({super.key});
@@ -22,7 +22,7 @@ class SpotterTrackingPanel extends StatelessWidget {
     Widget content = Container(
       decoration: BoxDecoration(
         color: isDark
-            ? SpottColors.surface2.withValues(alpha: 0.95)
+            ? DSColors.surfaceVariant.withValues(alpha: 0.95)
             : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
@@ -30,7 +30,7 @@ class SpotterTrackingPanel extends StatelessWidget {
         ),
         border: isDark
             ? Border.all(
-                color: SpottColors.border,
+                color: DSColors.border,
                 width: 1.5,
               )
             : null,
@@ -62,7 +62,7 @@ class SpotterTrackingPanel extends StatelessWidget {
                     Text(
                       'Live tracking',
                       style: TextStyle(
-                        color: isDark ? Colors.white : SpottColors.textPrimary,
+                        color: isDark ? Colors.white : DSColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                       ),
@@ -120,7 +120,7 @@ class SpotterTrackingPanel extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  '${driver.vehicle} • ★ ${driver.rating}',
+                                  '${driver.vehicle} â€¢ â˜… ${driver.rating}',
                                   style: TextStyle(
                                     color: isDark
                                         ? Colors.grey[400]
@@ -171,7 +171,7 @@ class SpotterTrackingPanel extends StatelessWidget {
                   height: 48,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: RBColors.primary,
+                      backgroundColor: DSColors.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -385,22 +385,22 @@ class _ResponsiveRideContextCard extends StatelessWidget {
         InfoRow(
           label: 'Route',
           value: route,
-          valueColor: isDark ? Colors.white : SpottColors.textPrimary,
+          valueColor: isDark ? Colors.white : DSColors.textPrimary,
         ),
         InfoRow(
           label: 'Fare',
           value: fare,
-          valueColor: isDark ? const Color(0xFF38BDF8) : SpottColors.primary,
+          valueColor: isDark ? const Color(0xFF38BDF8) : DSColors.primary,
         ),
         InfoRow(
           label: 'Driver',
           value: driver,
-          valueColor: isDark ? Colors.white : SpottColors.textPrimary,
+          valueColor: isDark ? Colors.white : DSColors.textPrimary,
         ),
         InfoRow(
           label: 'Status',
           value: status,
-          valueColor: isDark ? Colors.white : SpottColors.textPrimary,
+          valueColor: isDark ? Colors.white : DSColors.textPrimary,
         ),
       ],
     );

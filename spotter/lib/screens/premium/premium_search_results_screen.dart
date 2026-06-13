@@ -5,7 +5,7 @@ import '../../widgets/premium/trip_result_card.dart';
 import 'premium_trip_details_screen.dart';
 
 class PremiumSearchResultsScreen extends StatelessWidget {
-  const PremiumSearchResultsScreen({Key? key}) : super(key: key);
+  const PremiumSearchResultsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

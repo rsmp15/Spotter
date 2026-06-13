@@ -1,10 +1,11 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../core/components/spott_avatar.dart';
-import '../core/theme/colors.dart';
+
 import '../theme/spott_theme.dart';
 
 class LiveTrackingScreen extends StatefulWidget {
@@ -495,7 +496,7 @@ class _MapGridPainter extends CustomPainter {
     canvas.drawPath(highwayPath, highwayPaint);
 
     final trafficPaint = Paint()
-      ..color = SpottColors.warning
+      ..color = DSColors.warning
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
 

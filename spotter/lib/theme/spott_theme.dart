@@ -1,52 +1,55 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/shadows.dart';
-import '../core/theme/typography.dart';
+
+
+
+
+
 
 class SpottTheme {
   // Brand Colors mapped to canonical tokens
-  static const Color primary = SpottColors.primary;
-  static const Color primaryLight = SpottColors.primaryLight;
+  static const Color primary = DSColors.primary;
+  static const Color primaryLight = DSColors.primaryLight;
 
   // Backgrounds & Surfaces
-  static const Color background = SpottColors.background;
-  static const Color surface = SpottColors.surface1;
-  static const Color card = SpottColors.surface2;
-  static final Color glassmorphismColor = SpottColors.overlayPressed.withValues(alpha: 0.1);
+  static const Color background = DSColors.background;
+  static const Color surface = DSColors.surface;
+  static const Color card = DSColors.surfaceVariant;
+  static final Color glassmorphismColor = Color(0x1A000000).withValues(alpha: 0.1);
 
   // Text Colors
-  static const Color textPrimary = SpottColors.textPrimary;
-  static const Color textSecondary = SpottColors.textSecondary;
+  static const Color textPrimary = DSColors.textPrimary;
+  static const Color textSecondary = DSColors.textSecondary;
 
   // Status Colors
-  static const Color success = SpottColors.success;
-  static const Color warning = SpottColors.warning;
+  static const Color success = DSColors.success;
+  static const Color warning = DSColors.warning;
 
   // Radii
-  static const double radiusSmall = SpottRadius.sm;
-  static const double radiusMedium = SpottRadius.lg;
-  static const double radiusLarge = SpottRadius.xl;
-  static const double radiusXLarge = SpottRadius.xxl;
+  static const double radiusSmall = DSRadius.sm;
+  static const double radiusMedium = DSRadius.lg;
+  static const double radiusLarge = DSRadius.xl;
+  static const double radiusXLarge = DSRadius.xxl;
 
   static BorderRadius get borderRadiusMedium =>
-      BorderRadius.circular(SpottRadius.lg);
+      BorderRadius.circular(DSRadius.lg);
   static BorderRadius get borderRadiusLarge =>
-      BorderRadius.circular(SpottRadius.xl);
+      BorderRadius.circular(DSRadius.xl);
   static BorderRadius get borderRadiusXLarge =>
-      BorderRadius.circular(SpottRadius.xxl);
+      BorderRadius.circular(DSRadius.xxl);
 
   // Padding & Spacing
-  static const double spacingSmall = SpottSpacing.sm;
-  static const double spacingMedium = SpottSpacing.md;
-  static const double spacingLarge = SpottSpacing.lg;
-  static const double spacingXLarge = SpottSpacing.xl;
+  static const double spacingSmall = DSSpacing.sm;
+  static const double spacingMedium = DSSpacing.md;
+  static const double spacingLarge = DSSpacing.lg;
+  static const double spacingXLarge = DSSpacing.xl;
 
   // Shadows
-  static List<BoxShadow> get premiumShadow => SpottShadows.elevation2;
-  static List<BoxShadow> get glowingShadow => SpottShadows.glowPrimary;
+  static List<BoxShadow> get premiumShadow => DSShadows.elevation2;
+  static List<BoxShadow> get glowingShadow => DSShadows.elevation2;
 
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
@@ -63,17 +66,20 @@ class SpottTheme {
 
   // Typography mapped to canonical text styles
   static TextTheme get textTheme {
-    return GoogleFonts.interTextTheme().copyWith(
-      displayLarge: SpottTextStyles.displayLarge.copyWith(color: textPrimary),
-      displayMedium: SpottTextStyles.display.copyWith(color: textPrimary),
-      headlineLarge: SpottTextStyles.display.copyWith(color: textPrimary),
-      headlineMedium: SpottTextStyles.headline.copyWith(color: textPrimary),
-      titleLarge: SpottTextStyles.title.copyWith(color: textPrimary),
-      titleMedium: SpottTextStyles.titleSmall.copyWith(color: textPrimary),
-      bodyLarge: SpottTextStyles.bodyLarge.copyWith(color: textSecondary),
-      bodyMedium: SpottTextStyles.body.copyWith(color: textSecondary),
-      labelLarge: SpottTextStyles.label.copyWith(color: textPrimary),
-      labelMedium: SpottTextStyles.caption.copyWith(color: textSecondary),
+    return (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')
+            ? const TextTheme()
+            : GoogleFonts.interTextTheme())
+        .copyWith(
+      displayLarge: DSTypography.displayLarge.copyWith(color: textPrimary),
+      displayMedium: DSTypography.headline.copyWith(color: textPrimary),
+      headlineLarge: DSTypography.headline.copyWith(color: textPrimary),
+      headlineMedium: DSTypography.headline.copyWith(color: textPrimary),
+      titleLarge: DSTypography.titleLarge.copyWith(color: textPrimary),
+      titleMedium: DSTypography.titleLarge.copyWith(color: textPrimary),
+      bodyLarge: DSTypography.bodyLarge.copyWith(color: textSecondary),
+      bodyMedium: DSTypography.body.copyWith(color: textSecondary),
+      labelLarge: DSTypography.labelLarge.copyWith(color: textPrimary),
+      labelMedium: DSTypography.caption.copyWith(color: textSecondary),
     );
   }
 }

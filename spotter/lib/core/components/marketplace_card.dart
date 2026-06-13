@@ -1,7 +1,6 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../theme/colors.dart';
-import '../theme/spacing.dart';
 import '../theme/animations.dart';
 
 class MarketplaceCard extends StatefulWidget {
@@ -14,7 +13,7 @@ class MarketplaceCard extends StatefulWidget {
     super.key,
     required this.child,
     this.onTap,
-    this.padding = const EdgeInsets.all(SpottSpacing.md),
+    this.padding = const EdgeInsets.all(DSSpacing.md),
     this.borderRadius = 16,
   });
 
@@ -32,7 +31,7 @@ class _MarketplaceCardState extends State<MarketplaceCard>
     super.initState();
     _pressController = AnimationController(
       vsync: this,
-      duration: SpottAnimations.instant,
+      duration: DSMotion.instant,
     );
     _scaleAnim = Tween<double>(begin: 1.0, end: 0.98).animate(
       CurvedAnimation(parent: _pressController, curve: SpottCurves.decelerate),
@@ -50,10 +49,10 @@ class _MarketplaceCardState extends State<MarketplaceCard>
     final card = Container(
       padding: widget.padding,
       decoration: BoxDecoration(
-        color: SpottColors.cardSurface,
+        color: DSColors.card,
         borderRadius: BorderRadius.circular(widget.borderRadius),
         border: Border.all(
-          color: SpottColors.border,
+          color: DSColors.border,
         ),
       ),
       child: widget.child,
@@ -61,7 +60,7 @@ class _MarketplaceCardState extends State<MarketplaceCard>
 
     if (widget.onTap != null) {
       return Padding(
-        padding: const EdgeInsets.only(bottom: SpottSpacing.md),
+        padding: const EdgeInsets.only(bottom: DSSpacing.md),
         child: AnimatedBuilder(
           animation: _pressController,
           builder: (context, child) {
@@ -88,7 +87,7 @@ class _MarketplaceCardState extends State<MarketplaceCard>
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: SpottSpacing.md),
+      padding: const EdgeInsets.only(bottom: DSSpacing.md),
       child: card,
     );
   }

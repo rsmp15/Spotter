@@ -4,7 +4,7 @@ import '../../widgets/premium/glassmorphism.dart';
 import '../../widgets/premium/premium_button.dart';
 
 class PremiumWalletScreen extends StatelessWidget {
-  const PremiumWalletScreen({Key? key}) : super(key: key);
+  const PremiumWalletScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -49,7 +49,7 @@ class _AnimatedEntranceState extends State<AnimatedEntrance>
 
     // Stagger delay
     Future.delayed(
-      Duration(milliseconds: widget.delay * SpottAnimations.stagger.inMilliseconds),
+      Duration(milliseconds: widget.delay * const Duration(milliseconds: 50).inMilliseconds),
       () {
         if (mounted) _controller.forward();
       },

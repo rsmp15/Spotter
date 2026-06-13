@@ -1,5 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/spacing.dart';
 import 'shimmer_loading.dart';
 import 'glass_card.dart';
 
@@ -9,14 +9,14 @@ class SkeletonRouteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      padding: const EdgeInsets.all(SpottSpacing.cardInner),
+      padding: const EdgeInsets.all(DSSpacing.card),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               const ShimmerLoading.circle(radius: 22),
-              const SizedBox(width: SpottSpacing.md),
+              const SizedBox(width: DSSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,9 +36,9 @@ class SkeletonRouteCard extends StatelessWidget {
               const ShimmerLoading(height: 20, width: 60),
             ],
           ),
-          const SizedBox(height: SpottSpacing.md),
+          const SizedBox(height: DSSpacing.md),
           const Divider(height: 1),
-          const SizedBox(height: SpottSpacing.md),
+          const SizedBox(height: DSSpacing.md),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -49,7 +49,7 @@ class SkeletonRouteCard extends StatelessWidget {
                   ShimmerLoading.circle(radius: 4),
                 ],
               ),
-              const SizedBox(width: SpottSpacing.md),
+              const SizedBox(width: DSSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +62,7 @@ class SkeletonRouteCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: SpottSpacing.md),
+          const SizedBox(height: DSSpacing.md),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
@@ -82,11 +82,11 @@ class SkeletonTravelerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      padding: const EdgeInsets.all(SpottSpacing.md),
+      padding: const EdgeInsets.all(DSSpacing.md),
       child: Row(
         children: [
           const ShimmerLoading.circle(radius: 24),
-          const SizedBox(width: SpottSpacing.md),
+          const SizedBox(width: DSSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

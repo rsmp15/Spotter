@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../helper.dart';
-import '../core/theme/colors.dart';
+
 import '../models/ride_models.dart';
 
 // Import our panel views
@@ -118,7 +119,7 @@ class _SpotterOverlayShellState extends State<SpotterOverlayShell>
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: SpottColors.background,
+      backgroundColor: DSColors.background,
       drawer: const _HomeMenuDrawer(),
       bottomNavigationBar: showBottomNavBar
           ? FloatingBottomNav(
@@ -189,11 +190,11 @@ class _SpotterOverlayShellState extends State<SpotterOverlayShell>
                     padding: const EdgeInsets.all(2.0),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: SpottColors.textPrimary, width: 1.5),
+                      border: Border.all(color: DSColors.textPrimary, width: 1.5),
                     ),
                     child: CircleAvatar(
                       radius: 18,
-                      backgroundColor: SpottColors.textPrimary,
+                      backgroundColor: DSColors.textPrimary,
                       backgroundImage:
                           WidgetsBinding.instance.toString().contains('Test')
                           ? null
@@ -248,7 +249,7 @@ class _SpotterOverlayShellState extends State<SpotterOverlayShell>
                         // Search Icon
                         const Icon(
                           Icons.search_rounded,
-                          color: SpottColors.textPrimary,
+                          color: DSColors.textPrimary,
                           size: 24,
                         ),
                         const SizedBox(width: 12),
@@ -288,7 +289,7 @@ class _SpotterOverlayShellState extends State<SpotterOverlayShell>
                           constraints: const BoxConstraints(),
                           icon: const Icon(
                             Icons.tune_rounded,
-                            color: SpottColors.textPrimary,
+                            color: DSColors.textPrimary,
                             size: 20,
                           ),
                           onPressed: () {
@@ -418,7 +419,7 @@ class _SpotterOverlayShellState extends State<SpotterOverlayShell>
                     child: IconButton(
                       icon: Icon(
                         Icons.my_location_rounded,
-                        color: ride.isDarkMode ? SpottColors.textPrimary : Colors.black,
+                        color: ride.isDarkMode ? DSColors.textPrimary : Colors.black,
                         size: 20,
                       ),
                       onPressed: () {
@@ -583,7 +584,7 @@ class MockMapPainter extends CustomPainter {
     // 2. Draw modern high-density grid lines
     final gridPaint = Paint()
       ..color = isDarkMode
-          ? SpottColors.textPrimary.withValues(alpha: 0.05)
+          ? DSColors.textPrimary.withValues(alpha: 0.05)
           : const Color(0xFF94A3B8).withValues(alpha: 0.15)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
@@ -629,7 +630,7 @@ class MockMapPainter extends CustomPainter {
     // Draw flowing neon traffic particles (simulating moving lights)
     if (isDarkMode) {
       final trafficPaint = Paint()
-        ..color = SpottColors.textPrimary.withValues(alpha: 0.3)
+        ..color = DSColors.textPrimary.withValues(alpha: 0.3)
         ..strokeWidth = 2.0
         ..style = PaintingStyle.stroke;
       canvas.drawPath(path, trafficPaint);
@@ -654,7 +655,7 @@ class MockMapPainter extends CustomPainter {
       canvas.drawPath(
         routePath,
         Paint()
-          ..color = SpottColors.textPrimary.withValues(alpha: 0.25)
+          ..color = DSColors.textPrimary.withValues(alpha: 0.25)
           ..strokeWidth = 10
           ..strokeCap = StrokeCap.round
           ..style = PaintingStyle.stroke,
@@ -664,7 +665,7 @@ class MockMapPainter extends CustomPainter {
       canvas.drawPath(
         routePath,
         Paint()
-          ..color = SpottColors.textPrimary
+          ..color = DSColors.textPrimary
           ..strokeWidth = 4.5
           ..strokeCap = StrokeCap.round
           ..style = PaintingStyle.stroke,
@@ -764,7 +765,7 @@ class MockMapPainter extends CustomPainter {
         Offset(size.width * 0.35, size.height * 0.35),
         "₹40/hr",
         isActive: true,
-        bgColor: SpottColors.textPrimary,
+        bgColor: DSColors.textPrimary,
         textColor: Colors.white,
       );
 
@@ -786,7 +787,7 @@ class MockMapPainter extends CustomPainter {
         isActive: false,
         bgColor: isDarkMode ? const Color(0xFF201F1F) : Colors.white,
         textColor: isDarkMode ? Colors.white : Colors.black,
-        borderColor: SpottColors.textPrimary,
+        borderColor: DSColors.textPrimary,
       );
     }
 
@@ -806,7 +807,7 @@ class MockMapPainter extends CustomPainter {
       );
 
       // Solid Location Dot
-      canvas.drawCircle(locationOffset, 8, Paint()..color = SpottColors.textPrimary);
+      canvas.drawCircle(locationOffset, 8, Paint()..color = DSColors.textPrimary);
       // Clean white ring
       canvas.drawCircle(
         locationOffset,
@@ -880,7 +881,7 @@ class MockMapPainter extends CustomPainter {
         carPos,
         15 + 5 * math.sin(animationValue * 4 * math.pi),
         Paint()
-          ..color = SpottColors.textPrimary.withValues(alpha: 0.25)
+          ..color = DSColors.textPrimary.withValues(alpha: 0.25)
           ..strokeWidth = 2.0
           ..style = PaintingStyle.stroke,
       );
@@ -957,7 +958,7 @@ class MockMapPainter extends CustomPainter {
       position,
       4.5,
       Paint()
-        ..color = isActive ? SpottColors.textPrimary : Colors.white
+        ..color = isActive ? DSColors.textPrimary : Colors.white
         ..style = PaintingStyle.fill,
     );
     canvas.drawCircle(

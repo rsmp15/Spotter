@@ -1,9 +1,8 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../models/spott_models.dart';
-import '../theme/colors.dart';
-import '../theme/shadows.dart';
 
 class FloatingBottomNav extends StatelessWidget {
   final UserRole role;
@@ -24,12 +23,12 @@ class FloatingBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = role == UserRole.passenger ? _passengerTabs : _travelerTabs;
+    final items = role == UserRole.user ? _passengerTabs : _travelerTabs;
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: SpottShadows.bottomBarShadow,
+        boxShadow: DSShadows.elevation3,
       ),
       child: SafeArea(
         top: false,
@@ -63,7 +62,7 @@ class FloatingBottomNav extends StatelessWidget {
                         height: 32,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? SpottColors.primarySoft
+                              ? DSColors.primarySoft
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -91,8 +90,8 @@ class FloatingBottomNav extends StatelessWidget {
                                             ? item.svgIcon!.activeSvg
                                             : item.svgIcon!.inactiveSvg,
                                         isSelected
-                                            ? SpottColors.primary
-                                            : SpottColors.textTertiary,
+                                            ? DSColors.primary
+                                            : DSColors.textTertiary,
                                       ),
                                       width: svgSize,
                                       height: svgSize,
@@ -103,8 +102,8 @@ class FloatingBottomNav extends StatelessWidget {
                                   item.icon,
                                   size: 22,
                                   color: isSelected
-                                      ? SpottColors.primary
-                                      : SpottColors.textTertiary,
+                                      ? DSColors.primary
+                                      : DSColors.textTertiary,
                                 ),
                         ),
                       ),
@@ -117,8 +116,8 @@ class FloatingBottomNav extends StatelessWidget {
                           fontSize: 10,
                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: isSelected
-                              ? SpottColors.primary
-                              : SpottColors.textTertiary,
+                              ? DSColors.primary
+                              : DSColors.textTertiary,
                         ),
                       ),
                     ],

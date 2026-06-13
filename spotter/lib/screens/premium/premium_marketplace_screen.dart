@@ -5,7 +5,7 @@ import '../../widgets/premium/glassmorphism.dart';
 
 
 class PremiumMarketplaceScreen extends StatelessWidget {
-  const PremiumMarketplaceScreen({Key? key}) : super(key: key);
+  const PremiumMarketplaceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

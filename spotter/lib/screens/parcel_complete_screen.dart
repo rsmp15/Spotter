@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
@@ -5,10 +6,10 @@ import '../controllers/ride_controller.dart';
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
+
+
+
+
 
 class ParcelCompleteScreen extends StatefulWidget {
   const ParcelCompleteScreen({super.key});
@@ -30,17 +31,17 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Delivery Receipt', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('Delivery Receipt', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(SpottSpacing.lg),
+            padding: const EdgeInsets.all(DSSpacing.lg),
             children: [
-              Text('Package successfully delivered!', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
-              const SizedBox(height: SpottSpacing.xl),
+              Text('Package successfully delivered!', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+              const SizedBox(height: DSSpacing.xl),
 
               // Success Avatar Glow
               Center(
@@ -49,7 +50,7 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
                   height: 90,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: SpottColors.success.withValues(alpha: 0.1),
+                    color: DSColors.success.withValues(alpha: 0.1),
                   ),
                   child: Center(
                     child: Container(
@@ -57,72 +58,72 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
                       height: 64,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: SpottColors.success,
+                        color: DSColors.success,
                       ),
                       child: const Icon(Icons.done_all_rounded, color: Colors.white, size: 32),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: SpottSpacing.xl),
+              const SizedBox(height: DSSpacing.xl),
 
               // Receipt Summary Box
               GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.xl),
+                padding: const EdgeInsets.all(DSSpacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Transaction Summary', style: SpottTextStyles.sectionTitle),
-                    const SizedBox(height: SpottSpacing.lg),
+                    Text('Transaction Summary', style: DSTypography.headline),
+                    const SizedBox(height: DSSpacing.lg),
                     _buildInfoRow('Sender', package?.senderName ?? 'Ritesh M'),
-                    const SizedBox(height: SpottSpacing.sm),
+                    const SizedBox(height: DSSpacing.sm),
                     _buildInfoRow('Receiver', package?.receiverName ?? 'Rahul Sharma'),
-                    const SizedBox(height: SpottSpacing.sm),
+                    const SizedBox(height: DSSpacing.sm),
                     _buildInfoRow(
                       'Category',
                       package == null
                           ? 'Documents'
                           : package.category.name.replaceAll('documents', 'Documents / Keys').replaceAll('collegeItems', 'College Items'),
                     ),
-                    const SizedBox(height: SpottSpacing.sm),
+                    const SizedBox(height: DSSpacing.sm),
                     _buildInfoRow(
                       'Weight class',
                       package == null ? 'Light' : package.size.name.toUpperCase(),
                     ),
-                    const SizedBox(height: SpottSpacing.sm),
+                    const SizedBox(height: DSSpacing.sm),
                     _buildInfoRow('Vehicle type', driver.vehicle.split(' - ')[0]),
-                    const SizedBox(height: SpottSpacing.md),
-                    const Divider(color: SpottColors.border),
-                    const SizedBox(height: SpottSpacing.md),
-                    _buildInfoRow('Amount Charged', package?.fareLabel ?? '₹45', valueColor: SpottColors.success),
+                    const SizedBox(height: DSSpacing.md),
+                    const Divider(color: DSColors.border),
+                    const SizedBox(height: DSSpacing.md),
+                    _buildInfoRow('Amount Charged', package?.fareLabel ?? '₹45', valueColor: DSColors.success),
                   ],
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               // Photo Proof placeholder Box
               GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.xl),
+                padding: const EdgeInsets.all(DSSpacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Proof of Delivery (Photo)', style: SpottTextStyles.sectionTitle),
-                    const SizedBox(height: SpottSpacing.md),
+                    Text('Proof of Delivery (Photo)', style: DSTypography.headline),
+                    const SizedBox(height: DSSpacing.md),
                     Container(
                       height: 120,
                       decoration: BoxDecoration(
-                        color: SpottColors.surface1,
-                        borderRadius: BorderRadius.circular(SpottRadius.md),
-                        border: Border.all(color: SpottColors.border),
+                        color: DSColors.surface,
+                        borderRadius: BorderRadius.circular(DSRadius.md),
+                        border: Border.all(color: DSColors.border),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.photo_library_outlined, size: 32, color: SpottColors.textSecondary),
-                          const SizedBox(height: SpottSpacing.xs),
+                          const Icon(Icons.photo_library_outlined, size: 32, color: DSColors.textSecondary),
+                          const SizedBox(height: DSSpacing.xs),
                           Text(
                             'Verification Photo Uploaded by ${driver.name}',
-                            style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold),
+                            style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -130,15 +131,15 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               // Private Driver Partner rating Star selector
               GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.xl),
+                padding: const EdgeInsets.all(DSSpacing.xl),
                 child: Column(
                   children: [
-                    Text('Rate ${driver.name}', style: SpottTextStyles.sectionTitle),
-                    const SizedBox(height: SpottSpacing.md),
+                    Text('Rate ${driver.name}', style: DSTypography.headline),
+                    const SizedBox(height: DSSpacing.md),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(5, (index) {
@@ -146,7 +147,7 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
                         return IconButton(
                           icon: Icon(
                             starPos <= _userRating ? Icons.star_rounded : Icons.star_border_rounded,
-                            color: SpottColors.warning,
+                            color: DSColors.warning,
                             size: 36,
                           ),
                           onPressed: () {
@@ -164,9 +165,9 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
             ],
           ),
           Positioned(
-            bottom: SpottSpacing.lg,
-            left: SpottSpacing.lg,
-            right: SpottSpacing.lg,
+            bottom: DSSpacing.lg,
+            left: DSSpacing.lg,
+            right: DSSpacing.lg,
             child: SpottButton.primary(
               label: 'Return to Home',
               onPressed: () {
@@ -184,12 +185,12 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: SpottTextStyles.body),
+        Text(label, style: DSTypography.body),
         Text(
           value,
-          style: SpottTextStyles.body.copyWith(
+          style: DSTypography.body.copyWith(
             fontWeight: FontWeight.bold,
-            color: valueColor ?? SpottColors.textPrimary,
+            color: valueColor ?? DSColors.textPrimary,
           ),
         ),
       ],

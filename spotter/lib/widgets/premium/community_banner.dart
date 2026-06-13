@@ -3,7 +3,7 @@ import '../../theme/spott_theme.dart';
 import 'glassmorphism.dart';
 
 class CommunityBanner extends StatelessWidget {
-  const CommunityBanner({Key? key}) : super(key: key);
+  const CommunityBanner({super.key});
 
   @override
   Widget build(BuildContext context) {

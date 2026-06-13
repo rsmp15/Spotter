@@ -1,7 +1,8 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:spotter/helper.dart';
-import 'core/theme/colors.dart';
+
 
 class WhiteTextField extends StatelessWidget {
   final String labelText;
@@ -72,18 +73,18 @@ class WhiteTextField extends StatelessWidget {
 
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: SpottColors.border, width: 1.0),
+            borderSide: BorderSide(color: DSColors.border, width: 1.0),
           ),
  
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: SpottColors.border, width: 1.0),
+            borderSide: BorderSide(color: DSColors.border, width: 1.0),
           ),
  
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: const BorderSide(
-              color: SpottColors.primary,
+              color: DSColors.primary,
               width: 1.5,
             ),
           ),

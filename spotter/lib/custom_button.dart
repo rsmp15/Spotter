@@ -1,7 +1,8 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'helper.dart';
-import 'core/theme/colors.dart';
+
 
 class CustomButton extends StatelessWidget {
   final Widget? targetScreen;
@@ -64,13 +65,13 @@ class CustomButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: SpottColors.border, width: 1.5),
+            border: Border.all(color: DSColors.border, width: 1.5),
           ),
           child: Center(
             child: Text(
               label,
               style: const TextStyle(
-                color: SpottColors.textPrimary,
+                color: DSColors.textPrimary,
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),

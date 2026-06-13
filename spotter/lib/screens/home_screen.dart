@@ -1,14 +1,15 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../app/app_assets.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../models/spott_models.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/shadows.dart';
-import '../core/theme/typography.dart';
+
+
+
+
+
 import '../widgets/premium/premium_selectors.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       initialDate: _selectedDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
-      primaryColor: SpottColors.primary,
+      primaryColor: DSColors.primary,
     );
     if (picked != null) setState(() => _selectedDate = picked);
   }
@@ -62,23 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-
-    // Redirect Travelers to driverHome
-    if (ride.currentUserRole == UserRole.traveler) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, AppRoutes.driverHome);
-      });
-      return const Scaffold(
-        backgroundColor: SpottColors.background,
-        body: Center(
-          child: CircularProgressIndicator(color: SpottColors.primary),
-        ),
-      );
-    }
+    // HomeScreen is now universal for both User and Rider, no traveler redirect.
 
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: DSColors.background,
       body: Column(
         children: [
           _buildHeader(context),
@@ -101,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // 3. Offers & Deals Section
                 SliverToBoxAdapter(
                   child: _SectionContainer(
-                    backgroundColor: SpottColors.primarySoft,
+                    backgroundColor: DSColors.primarySoft,
                     child: _buildOffersSection(),
                   ),
                 ),
@@ -116,18 +104,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 // 5. Marketplace / Parcel Banner
                 SliverToBoxAdapter(
                   child: _SectionContainer(
-                    backgroundColor: SpottColors.surface2,
+                    backgroundColor: DSColors.surfaceVariant,
                     child: _buildParcelBanner(context),
                   ),
                 ),
 
                 // 6. Community / Become a Traveler Banner
-                SliverToBoxAdapter(
-                  child: _SectionContainer(
-                    backgroundColor: SpottColors.primarySoft,
-                    child: _buildTravelerBanner(context),
+                if (RideScope.of(context).currentUserRole != UserRole.rider)
+                  SliverToBoxAdapter(
+                    child: _SectionContainer(
+                      backgroundColor: DSColors.primarySoft,
+                      child: _buildTravelerBanner(context),
+                    ),
                   ),
-                ),
 
                 // 7. Why choose Spotter
                 SliverToBoxAdapter(
@@ -135,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 const SliverToBoxAdapter(
-                  child: SizedBox(height: SpottSpacing.pageBottom),
+                  child: SizedBox(height: 120.0),
                 ),
               ],
             ),
@@ -150,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // ══════════════════════════════════════════════════════════════════
   Widget _buildHeader(BuildContext context) {
     return Container(
-      color: SpottColors.primary,
+      color: DSColors.primary,
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -167,14 +156,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: const Icon(
                   Icons.directions_car_rounded,
-                  color: SpottColors.primary,
+                  color: DSColors.primary,
                   size: 20,
                 ),
               ),
               const SizedBox(width: 12),
               Text(
                 'spotter',
-                style: SpottTextStyles.headline.copyWith(
+                style: DSTypography.headline.copyWith(
                   fontSize: 22,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
@@ -215,11 +204,11 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [SpottColors.primary, SpottColors.primaryDark],
+          colors: [DSColors.primary, DSColors.primaryDark],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(SpottRadius.xxl)),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(DSRadius.xxl)),
       ),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       child: Column(
@@ -229,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () => Navigator.pushNamed(context, AppRoutes.tripSearch),
             child: Text(
               'Where to?',
-              style: SpottTextStyles.displayLarge.copyWith(
+              style: DSTypography.displayLarge.copyWith(
                 fontSize: 28,
                 fontWeight: FontWeight.w900,
                 color: Colors.white,
@@ -290,9 +279,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(SpottRadius.card),
-        boxShadow: SpottShadows.elevation3,
-        border: Border.all(color: SpottColors.border),
+        borderRadius: BorderRadius.circular(DSRadius.card),
+        boxShadow: DSShadows.elevation3,
+        border: Border.all(color: DSColors.border),
       ),
       child: Column(
         children: [
@@ -303,15 +292,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 // FROM / TO box
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: SpottColors.border),
-                    borderRadius: BorderRadius.circular(SpottRadius.lg),
-                    color: SpottColors.surface2,
+                    border: Border.all(color: DSColors.border),
+                    borderRadius: BorderRadius.circular(DSRadius.lg),
+                    color: DSColors.surfaceVariant,
                   ),
                   child: Column(
                     children: [
                       _CityRow(
                         icon: Icons.radio_button_checked_rounded,
-                        iconColor: SpottColors.success,
+                        iconColor: DSColors.success,
                         label: 'From',
                         city: _from,
                         onTap: () => _showCityPicker(context, isFrom: true),
@@ -320,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Stack(
                         alignment: Alignment.centerRight,
                         children: [
-                          const Divider(height: 1, color: SpottColors.divider),
+                          const Divider(height: 1, color: DSColors.divider),
                           Padding(
                             padding: const EdgeInsets.only(right: 16),
                             child: GestureDetector(
@@ -332,12 +321,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                      color: SpottColors.primary, width: 1.5),
-                                  boxShadow: SpottShadows.elevation1,
+                                      color: DSColors.primary, width: 1.5),
+                                  boxShadow: DSShadows.elevation1,
                                 ),
                                 child: const Icon(
                                   Icons.swap_vert_rounded,
-                                  color: SpottColors.primary,
+                                  color: DSColors.primary,
                                   size: 20,
                                 ),
                               ),
@@ -347,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       _CityRow(
                         icon: Icons.location_on_rounded,
-                        iconColor: SpottColors.primary,
+                        iconColor: DSColors.primary,
                         label: 'To',
                         city: _to,
                         onTap: () => _showCityPicker(context, isFrom: false),
@@ -380,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             initialSeats: _passengers,
                             maxSeats: 4,
-                            primaryColor: SpottColors.primary,
+                            primaryColor: DSColors.primary,
                             title: 'Select Seats',
                             subtitle: 'Choose how many seats to book',
                           );
@@ -405,13 +394,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.pushNamed(context, AppRoutes.tripSearch);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: SpottColors.primary,
+                      backgroundColor: DSColors.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(SpottRadius.button),
+                        borderRadius: BorderRadius.circular(DSRadius.button),
                       ),
-                      textStyle: SpottTextStyles.label.copyWith(
+                      textStyle: DSTypography.labelLarge.copyWith(
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
                       ),
@@ -436,12 +425,12 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           'Offers & Deals',
-          style: SpottTextStyles.headline.copyWith(fontWeight: FontWeight.bold),
+          style: DSTypography.headline.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
           'Get best deals and discounts',
-          style: SpottTextStyles.caption.copyWith(color: SpottColors.textSecondary),
+          style: DSTypography.caption.copyWith(color: DSColors.textSecondary),
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -451,21 +440,21 @@ class _HomeScreenState extends State<HomeScreen> {
             physics: const BouncingScrollPhysics(),
             children: const [
               _OfferCard(
-                color: SpottColors.offerRed,
+                color: Color(0xFFE53935),
                 title: 'Flat 20% OFF',
                 subtitle: 'Use code: SPOTT20',
                 icon: Icons.local_offer_rounded,
               ),
               SizedBox(width: 12),
               _OfferCard(
-                color: SpottColors.offerBlue,
+                color: Color(0xFF1976D2),
                 title: 'First Ride Free',
                 subtitle: 'New users only',
                 icon: Icons.card_giftcard_rounded,
               ),
               SizedBox(width: 12),
               _OfferCard(
-                color: SpottColors.offerGreen,
+                color: Color(0xFF43A047),
                 title: 'Refer & Earn',
                 subtitle: '₹100 per referral',
                 icon: Icons.share_rounded,
@@ -494,12 +483,12 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           'Popular Routes',
-          style: SpottTextStyles.headline.copyWith(fontWeight: FontWeight.bold),
+          style: DSTypography.headline.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
           'Top traveled routes near you',
-          style: SpottTextStyles.caption.copyWith(color: SpottColors.textSecondary),
+          style: DSTypography.caption.copyWith(color: DSColors.textSecondary),
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -518,9 +507,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(SpottRadius.lg),
-                    border: Border.all(color: SpottColors.border),
-                    boxShadow: SpottShadows.elevation1,
+                    borderRadius: BorderRadius.circular(DSRadius.lg),
+                    border: Border.all(color: DSColors.border),
+                    boxShadow: DSShadows.elevation1,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -530,21 +519,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text(
                             r.$1,
-                            style: SpottTextStyles.label.copyWith(
+                            style: DSTypography.labelLarge.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: SpottColors.textPrimary,
+                              color: DSColors.textPrimary,
                             ),
                           ),
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 4),
                             child: Icon(Icons.arrow_forward_rounded,
-                                size: 12, color: SpottColors.textTertiary),
+                                size: 12, color: DSColors.textTertiary),
                           ),
                           Text(
                             r.$2,
-                            style: SpottTextStyles.label.copyWith(
+                            style: DSTypography.labelLarge.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: SpottColors.textPrimary,
+                              color: DSColors.textPrimary,
                             ),
                           ),
                         ],
@@ -554,15 +543,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Text(
                             r.$3,
-                            style: SpottTextStyles.caption.copyWith(
+                            style: DSTypography.caption.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: SpottColors.primary,
+                              color: DSColors.primary,
                             ),
                           ),
                           Text(
                             ' · ${r.$4}',
-                            style: SpottTextStyles.caption.copyWith(
-                              color: SpottColors.textSecondary,
+                            style: DSTypography.caption.copyWith(
+                              color: DSColors.textSecondary,
                             ),
                           ),
                         ],
@@ -584,17 +573,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildSuggestionsGrid(BuildContext context) {
     final services = [
       (Icons.directions_car_rounded, 'Ride Share',
-          SpottColors.primary, AppRoutes.tripSearch),
+          DSColors.primary, AppRoutes.tripSearch),
       (Icons.inventory_2_rounded, 'Send Parcel',
-          SpottColors.offerPurple, AppRoutes.parcelBooking),
+          Color(0xFF8E24AA), AppRoutes.parcelBooking),
       (Icons.add_road_rounded, 'Offer Trip',
-          SpottColors.offerBlue, AppRoutes.createTrip),
+          Color(0xFF1976D2), AppRoutes.createTrip),
       (Icons.route_rounded, 'Activity',
-          SpottColors.offerGreen, AppRoutes.activity),
+          Color(0xFF43A047), AppRoutes.activity),
       (Icons.safety_check_rounded, 'Safety',
-          SpottColors.warning, AppRoutes.safetyToolkit),
+          DSColors.warning, AppRoutes.safetyToolkit),
       (Icons.support_agent_rounded, 'Support',
-          SpottColors.info, AppRoutes.support),
+          DSColors.info, AppRoutes.support),
     ];
 
     return Column(
@@ -602,12 +591,12 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           'Suggestions',
-          style: SpottTextStyles.headline.copyWith(fontWeight: FontWeight.bold),
+          style: DSTypography.headline.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
           'Quick actions and co-travel services',
-          style: SpottTextStyles.caption.copyWith(color: SpottColors.textSecondary),
+          style: DSTypography.caption.copyWith(color: DSColors.textSecondary),
         ),
         const SizedBox(height: 16),
         GridView.builder(
@@ -641,6 +630,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pushNamed(context, AppRoutes.safetyToolkit);
                 } else if (s.$4 == AppRoutes.activity) {
                   RideScope.of(context).switchTab(2);
+                } else if (s.$4 == AppRoutes.createTrip) {
+                  _handleOfferTrip(context);
                 } else {
                   Navigator.pushNamed(context, s.$4);
                 }
@@ -648,9 +639,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(SpottRadius.card),
-                  border: Border.all(color: SpottColors.border),
-                  boxShadow: SpottShadows.elevation1,
+                  borderRadius: BorderRadius.circular(DSRadius.card),
+                  border: Border.all(color: DSColors.border),
+                  boxShadow: DSShadows.elevation1,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -672,9 +663,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 8),
                     Text(
                       s.$2,
-                      style: SpottTextStyles.caption.copyWith(
+                      style: DSTypography.caption.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: SpottColors.textPrimary,
+                        color: DSColors.textPrimary,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -702,7 +693,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Icon(
               Icons.inventory_2_rounded,
               size: 90,
-              color: SpottColors.offerPurple.withValues(alpha: 0.08),
+              color: Color(0xFF8E24AA).withValues(alpha: 0.08),
             ),
           ),
           Column(
@@ -711,8 +702,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: SpottColors.offerPurple.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(SpottRadius.xs),
+                  color: Color(0xFF8E24AA).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(DSRadius.xs),
                 ),
                 child: const Text(
                   'PARCEL DELIVERY',
@@ -720,7 +711,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontFamily: 'Inter',
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: SpottColors.offerPurple,
+                    color: Color(0xFF8E24AA),
                     letterSpacing: 1.2,
                   ),
                 ),
@@ -728,16 +719,16 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               Text(
                 'Send Parcels from ₹99',
-                style: SpottTextStyles.title.copyWith(
+                style: DSTypography.titleLarge.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: SpottColors.textPrimary,
+                  color: DSColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'Fast peer-to-peer dispatch via verified travelers.',
-                style: SpottTextStyles.body.copyWith(
-                  color: SpottColors.textSecondary,
+                style: DSTypography.body.copyWith(
+                  color: DSColors.textSecondary,
                   fontSize: 13,
                 ),
               ),
@@ -746,14 +737,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () =>
                     Navigator.pushNamed(context, AppRoutes.parcelBooking),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: SpottColors.offerPurple,
+                  backgroundColor: Color(0xFF8E24AA),
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(SpottRadius.sm),
+                    borderRadius: BorderRadius.circular(DSRadius.sm),
                   ),
-                  textStyle: SpottTextStyles.label.copyWith(fontWeight: FontWeight.bold),
+                  textStyle: DSTypography.labelLarge.copyWith(fontWeight: FontWeight.bold),
                 ),
                 child: const Text('Send Parcel Now'),
               ),
@@ -769,7 +760,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // ══════════════════════════════════════════════════════════════════
   Widget _buildTravelerBanner(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.createTrip),
+      onTap: () => _handleOfferTrip(context),
       child: Row(
         children: [
           Expanded(
@@ -777,33 +768,32 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Become a Traveler',
-                  style: SpottTextStyles.title.copyWith(
+                  'Become a Rider',
+                  style: DSTypography.titleLarge.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: SpottColors.offerBlue,
+                    color: Color(0xFF1976D2),
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   'Earn ₹800 avg per trip. Offer empty seats.',
-                  style: SpottTextStyles.body.copyWith(
-                    color: SpottColors.textSecondary,
+                  style: DSTypography.body.copyWith(
+                    color: DSColors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () =>
-                      Navigator.pushNamed(context, AppRoutes.createTrip),
+                  onPressed: () => _handleOfferTrip(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: SpottColors.offerBlue,
+                    backgroundColor: Color(0xFF1976D2),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(SpottRadius.sm),
+                      borderRadius: BorderRadius.circular(DSRadius.sm),
                     ),
-                    textStyle: SpottTextStyles.label.copyWith(fontWeight: FontWeight.bold),
+                    textStyle: DSTypography.labelLarge.copyWith(fontWeight: FontWeight.bold),
                   ),
                   child: const Text('Start Earning'),
                 ),
@@ -820,6 +810,99 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _handleOfferTrip(BuildContext context) {
+    final ride = RideScope.of(context);
+    if (ride.currentUserRole == UserRole.rider) {
+      Navigator.pushNamed(context, AppRoutes.createTrip);
+    } else {
+      _showKycPromptBottomSheet(context);
+    }
+  }
+
+  void _showKycPromptBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Icon(
+                Icons.verified_user_rounded,
+                color: DSColors.primary,
+                size: 56,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Become a Rider',
+                style: DSTypography.headline.copyWith(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'To offer and share rides, you need to complete a quick identity verification (KYC).',
+                textAlign: TextAlign.center,
+                style: DSTypography.body.copyWith(color: DSColors.textSecondary),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: DSColors.border),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text('Maybe Later', style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, AppRoutes.kyc);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: DSColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text('Start KYC', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   // ══════════════════════════════════════════════════════════════════
   // WHY SPOTTER SECTION
   // ══════════════════════════════════════════════════════════════════
@@ -830,7 +913,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(
             'Why choose Spotter?',
-            style: SpottTextStyles.title.copyWith(fontWeight: FontWeight.bold),
+            style: DSTypography.titleLarge.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           const _WhyRow(
@@ -875,7 +958,7 @@ class _HomeScreenState extends State<HomeScreen> {
         height: MediaQuery.of(context).size.height * 0.65,
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(SpottRadius.bottomSheet)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(DSRadius.bottomSheet)),
         ),
         child: Column(
           children: [
@@ -884,7 +967,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: SpottColors.border,
+                color: DSColors.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -892,29 +975,29 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(14),
               child: Text(
                 isFrom ? 'Select Origin City' : 'Select Destination City',
-                style: SpottTextStyles.title.copyWith(
+                style: DSTypography.titleLarge.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: SpottColors.textPrimary,
+                  color: DSColors.textPrimary,
                 ),
               ),
             ),
-            const Divider(height: 1, color: SpottColors.divider),
+            const Divider(height: 1, color: DSColors.divider),
             Expanded(
               child: ListView.separated(
                 itemCount: cities.length,
                 separatorBuilder: (_, _) => const Divider(
                   height: 1,
                   indent: 14,
-                  color: SpottColors.divider,
+                  color: DSColors.divider,
                 ),
                 itemBuilder: (_, i) => ListTile(
                   leading: const Icon(Icons.location_city_rounded,
-                      color: SpottColors.textTertiary, size: 20),
+                      color: DSColors.textTertiary, size: 20),
                   title: Text(
                     cities[i],
-                    style: SpottTextStyles.body.copyWith(
+                    style: DSTypography.body.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: SpottColors.textPrimary,
+                      color: DSColors.textPrimary,
                     ),
                   ),
                   onTap: () {
@@ -957,10 +1040,10 @@ class _SectionContainer extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: backgroundColor ?? SpottColors.surface1,
-        borderRadius: BorderRadius.circular(SpottRadius.card),
-        border: Border.all(color: SpottColors.border),
-        boxShadow: SpottShadows.elevation1,
+        color: backgroundColor ?? DSColors.surface,
+        borderRadius: BorderRadius.circular(DSRadius.card),
+        border: Border.all(color: DSColors.border),
+        boxShadow: DSShadows.elevation1,
       ),
       child: child,
     );
@@ -998,16 +1081,16 @@ class _CityRow extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: SpottTextStyles.caption.copyWith(
-                      color: SpottColors.textTertiary,
+                    style: DSTypography.caption.copyWith(
+                      color: DSColors.textTertiary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     city,
-                    style: SpottTextStyles.title.copyWith(
+                    style: DSTypography.titleLarge.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: SpottColors.textPrimary,
+                      color: DSColors.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -1016,7 +1099,7 @@ class _CityRow extends StatelessWidget {
               ),
             ),
             const Icon(Icons.keyboard_arrow_down_rounded,
-                color: SpottColors.textTertiary, size: 20),
+                color: DSColors.textTertiary, size: 20),
           ],
         ),
       ),
@@ -1041,17 +1124,17 @@ class _InputBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(SpottRadius.lg),
+      borderRadius: BorderRadius.circular(DSRadius.lg),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: SpottColors.surface2,
-          border: Border.all(color: SpottColors.border),
-          borderRadius: BorderRadius.circular(SpottRadius.lg),
+          color: DSColors.surfaceVariant,
+          border: Border.all(color: DSColors.border),
+          borderRadius: BorderRadius.circular(DSRadius.lg),
         ),
         child: Row(
           children: [
-            Icon(icon, color: SpottColors.primary, size: 16),
+            Icon(icon, color: DSColors.primary, size: 16),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -1059,17 +1142,17 @@ class _InputBox extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: SpottTextStyles.caption.copyWith(
-                      color: SpottColors.textTertiary,
+                    style: DSTypography.caption.copyWith(
+                      color: DSColors.textTertiary,
                       fontSize: 10,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     value,
-                    style: SpottTextStyles.body.copyWith(
+                    style: DSTypography.body.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: SpottColors.textPrimary,
+                      color: DSColors.textPrimary,
                       fontSize: 13,
                     ),
                     maxLines: 1,
@@ -1109,8 +1192,8 @@ class _OfferCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(SpottRadius.lg),
-        boxShadow: SpottShadows.elevation1,
+        borderRadius: BorderRadius.circular(DSRadius.lg),
+        boxShadow: DSShadows.elevation1,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1169,10 +1252,10 @@ class _WhyRow extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: const BoxDecoration(
-            color: SpottColors.primarySoft,
+            color: DSColors.primarySoft,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: SpottColors.primary, size: 18),
+          child: Icon(icon, color: DSColors.primary, size: 18),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -1181,15 +1264,15 @@ class _WhyRow extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: SpottTextStyles.body.copyWith(
+                style: DSTypography.body.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: SpottColors.textPrimary,
+                  color: DSColors.textPrimary,
                 ),
               ),
               Text(
                 subtitle,
-                style: SpottTextStyles.caption.copyWith(
-                  color: SpottColors.textSecondary,
+                style: DSTypography.caption.copyWith(
+                  color: DSColors.textSecondary,
                 ),
               ),
             ],

@@ -1,11 +1,12 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import '../app/app_routes.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/shadows.dart';
-import '../core/theme/typography.dart';
+
+
+
+
 import '../core/components/spott_buttons.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
@@ -60,7 +61,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: DSColors.background,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -72,29 +73,29 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.maybePop(context),
-                    icon: const Icon(Icons.arrow_back, color: SpottColors.textPrimary),
+                    icon: const Icon(Icons.arrow_back, color: DSColors.textPrimary),
                     style: IconButton.styleFrom(
-                      backgroundColor: SpottColors.surface1,
+                      backgroundColor: DSColors.surface,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(999),
-                        side: const BorderSide(color: SpottColors.border),
+                        side: const BorderSide(color: DSColors.border),
                       ),
                     ),
                   ),
                   const SizedBox(height: 26),
                   Text(
                     'Verify your number',
-                    style: SpottTextStyles.displayLarge.copyWith(
+                    style: DSTypography.displayLarge.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: SpottColors.textPrimary,
+                      color: DSColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'OTP sent to +91 98765 43210',
-                    style: SpottTextStyles.body.copyWith(
-                      color: SpottColors.textSecondary,
+                    style: DSTypography.body.copyWith(
+                      color: DSColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -121,24 +122,24 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           height: 56,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: SpottColors.surface1,
-                            borderRadius: BorderRadius.circular(SpottRadius.md),
+                            color: DSColors.surface,
+                            borderRadius: BorderRadius.circular(DSRadius.md),
                             border: Border.all(
                               color: isCurrent
-                                  ? SpottColors.primary
-                                  : SpottColors.border,
+                                  ? DSColors.primary
+                                  : DSColors.border,
                               width: isCurrent ? 2.0 : 1.0,
                             ),
-                            boxShadow: isCurrent ? SpottShadows.glowPrimary : null,
+                            boxShadow: isCurrent ? DSShadows.elevation2 : null,
                           ),
                           child: Text(
                             char.isNotEmpty ? char : '•',
-                            style: SpottTextStyles.display.copyWith(
+                            style: DSTypography.headline.copyWith(
                               fontFamily: 'RobotoMono',
                               fontWeight: FontWeight.bold,
                               color: char.isNotEmpty
-                                  ? SpottColors.textPrimary
-                                  : SpottColors.textMuted,
+                                  ? DSColors.textPrimary
+                                  : DSColors.textMuted,
                             ),
                           ),
                         );
@@ -182,10 +183,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: SpottColors.surface1,
-                      borderRadius: BorderRadius.circular(SpottRadius.card),
-                      border: Border.all(color: SpottColors.border),
-                      boxShadow: SpottShadows.elevation1,
+                      color: DSColors.surface,
+                      borderRadius: BorderRadius.circular(DSRadius.card),
+                      border: Border.all(color: DSColors.border),
+                      boxShadow: DSShadows.elevation1,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,8 +194,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       children: [
                         Text(
                           'Did not receive the OTP?',
-                          style: SpottTextStyles.body.copyWith(
-                            color: SpottColors.textPrimary,
+                          style: DSTypography.body.copyWith(
+                            color: DSColors.textPrimary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -210,16 +211,16 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                           content: Text('OTP resent successfully'),
-                                          backgroundColor: SpottColors.success,
+                                          backgroundColor: DSColors.success,
                                         ),
                                       );
                                     },
                               child: Text(
                                 'Resend OTP',
-                                style: SpottTextStyles.body.copyWith(
+                                style: DSTypography.body.copyWith(
                                   color: _secondsRemaining > 0
-                                      ? SpottColors.disabledText
-                                      : SpottColors.primary,
+                                      ? DSColors.border
+                                      : DSColors.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -228,10 +229,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                               _secondsRemaining > 0
                                   ? 'Expires in 00:${_secondsRemaining.toString().padLeft(2, '0')}'
                                   : 'Code expired',
-                              style: SpottTextStyles.caption.copyWith(
+                              style: DSTypography.caption.copyWith(
                                 color: _secondsRemaining > 0
-                                    ? SpottColors.textSecondary
-                                    : SpottColors.danger,
+                                    ? DSColors.textSecondary
+                                    : DSColors.danger,
                                 fontWeight: _secondsRemaining > 0
                                     ? FontWeight.normal
                                     : FontWeight.bold,
@@ -258,7 +259,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         context,
       ).showSnackBar(const SnackBar(
         content: Text('Enter the 6 digit OTP'),
-        backgroundColor: SpottColors.danger,
+        backgroundColor: DSColors.danger,
       ));
       return;
     }

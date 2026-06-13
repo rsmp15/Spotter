@@ -1,7 +1,6 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../theme/radius.dart';
-import '../theme/spacing.dart';
 import '../theme/animations.dart';
 import 'glass_container.dart';
 
@@ -16,9 +15,9 @@ class GlassCard extends StatefulWidget {
     super.key,
     required this.child,
     this.onTap,
-    this.padding = const EdgeInsets.all(SpottSpacing.md),
+    this.padding = const EdgeInsets.all(DSSpacing.md),
     this.gradient,
-    this.borderRadius = SpottRadius.card,
+    this.borderRadius = DSRadius.card,
   });
 
   @override
@@ -35,7 +34,7 @@ class _GlassCardState extends State<GlassCard>
     super.initState();
     _pressController = AnimationController(
       vsync: this,
-      duration: SpottAnimations.instant,
+      duration: DSMotion.instant,
     );
     _scaleAnim = Tween<double>(begin: 1.0, end: 0.97).animate(
       CurvedAnimation(parent: _pressController, curve: SpottCurves.decelerate),
@@ -59,7 +58,7 @@ class _GlassCardState extends State<GlassCard>
 
     if (widget.onTap != null) {
       return Padding(
-        padding: const EdgeInsets.only(bottom: SpottSpacing.md),
+        padding: const EdgeInsets.only(bottom: DSSpacing.md),
         child: AnimatedBuilder(
           animation: _pressController,
           builder: (context, child) {
@@ -86,7 +85,7 @@ class _GlassCardState extends State<GlassCard>
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: SpottSpacing.md),
+      padding: const EdgeInsets.only(bottom: DSSpacing.md),
       child: card,
     );
   }

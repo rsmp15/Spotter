@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/redbus_theme.dart';
+
+
+
+
+import 'package:spotter/design_system/design_system.dart';
 import '../core/components/redbus_sections.dart';
 import '../spotter_widgets.dart';
 
@@ -15,7 +15,7 @@ class ServicesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: DSColors.background,
       drawer: const SpotterMenuDrawer(),
       body: Column(
         children: [
@@ -105,7 +105,7 @@ class ServicesScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: SpottSpacing.pageBottom)),
+                const SliverToBoxAdapter(child: SizedBox(height: 120.0)),
               ],
             ),
           ),
@@ -114,10 +114,10 @@ class ServicesScreen extends StatelessWidget {
     );
   }
 
-  // ── 1. Red Header ──────────────────────────────────────────────────
+  // â”€â”€ 1. Red Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildRedHeader(BuildContext context) {
     return Container(
-      color: SpottColors.primary,
+      color: DSColors.primary,
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -165,7 +165,7 @@ class ServicesScreen extends StatelessWidget {
     );
   }
 
-  // ── 2. Hero Search ──────────────────────────────────────────────────
+  // â”€â”€ 2. Hero Search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildHeroSearch(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,7 +175,7 @@ class ServicesScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 32, 
               fontWeight: FontWeight.w900, 
-              color: SpottColors.textPrimary, 
+              color: DSColors.textPrimary, 
               height: 1.1,
               fontFamily: 'Inter',
             ),
@@ -184,7 +184,7 @@ class ServicesScreen extends StatelessWidget {
               TextSpan(
                 text: 'next?',
                 style: TextStyle(
-                  color: SpottColors.primary, 
+                  color: DSColors.primary, 
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -197,17 +197,17 @@ class ServicesScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: SpottColors.textSecondary,
+            color: DSColors.textSecondary,
             fontFamily: 'Inter',
           ),
         ),
-        const SizedBox(height: SpottSpacing.lg),
+        const SizedBox(height: DSSpacing.lg),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: SpottColors.border),
+            border: Border.all(color: DSColors.border),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.03),
@@ -219,19 +219,20 @@ class ServicesScreen extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 12),
-              const Icon(Icons.search_rounded, color: SpottColors.textSecondary),
+              const Icon(Icons.search_rounded, color: DSColors.textSecondary),
               const SizedBox(width: 12),
               const Expanded(
                 child: Text(
                   'Search destinations...',
-                  style: TextStyle(color: SpottColors.textSecondary, fontSize: 16),
+                  style: TextStyle(color: DSColors.textSecondary, fontSize: 16),
                 ),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pushNamed(context, AppRoutes.tripSearch),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: SpottColors.primary,
+                  backgroundColor: DSColors.primary,
                   foregroundColor: Colors.white,
+                  minimumSize: const Size(88, 48),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -247,7 +248,7 @@ class ServicesScreen extends StatelessWidget {
     );
   }
 
-  // ── 3. Marketplace Categories ──────────────────────────────────────
+  // â”€â”€ 3. Marketplace Categories â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildMarketplaceCategories(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,38 +264,38 @@ class ServicesScreen extends StatelessWidget {
               child: _CategoryGridItem(
                 title: 'Ride Sharing',
                 icon: Icons.directions_car_rounded,
-                accentColor: SpottColors.primary,
+                accentColor: DSColors.primary,
                 onTap: () => Navigator.pushNamed(context, AppRoutes.tripSearch),
               ),
             ),
-            const SizedBox(width: SpottSpacing.md),
+            const SizedBox(width: DSSpacing.md),
             Expanded(
               child: _CategoryGridItem(
                 title: 'Delivery',
                 icon: Icons.local_shipping_rounded,
-                accentColor: SpottColors.accentPurple,
+                accentColor: DSColors.primaryDark,
                 onTap: () => Navigator.pushNamed(context, AppRoutes.parcelBooking),
               ),
             ),
           ],
         ),
-        const SizedBox(height: SpottSpacing.md),
+        const SizedBox(height: DSSpacing.md),
         Row(
           children: [
             Expanded(
               child: _CategoryGridItem(
                 title: 'Travel',
                 icon: Icons.flight_takeoff_rounded,
-                accentColor: SpottColors.primary,
+                accentColor: DSColors.primary,
                 onTap: () => Navigator.pushNamed(context, AppRoutes.createTrip),
               ),
             ),
-            const SizedBox(width: SpottSpacing.md),
+            const SizedBox(width: DSSpacing.md),
             Expanded(
               child: _CategoryGridItem(
                 title: 'Community',
                 icon: Icons.forum_rounded,
-                accentColor: SpottColors.success,
+                accentColor: DSColors.success,
                 onTap: () => Navigator.pushNamed(context, AppRoutes.activity),
               ),
             ),
@@ -304,7 +305,7 @@ class ServicesScreen extends StatelessWidget {
     );
   }
 
-  // ── 4. Featured Services Carousel ──────────────────────────────────
+  // â”€â”€ 4. Featured Services Carousel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildFeaturedServices(BuildContext context) {
     return RBCarouselSection(
       title: 'Featured Offers',
@@ -342,9 +343,9 @@ class ServicesScreen extends StatelessWidget {
     return Container(
       width: 250,
       decoration: BoxDecoration(
-        color: SpottColors.glassSurface,
+        color: DSColors.glass,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: SpottColors.borderSubtle),
+        border: Border.all(color: DSColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,7 +374,7 @@ class ServicesScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.6),
-                    borderRadius: BorderRadius.circular(SpottRadius.pill),
+                    borderRadius: BorderRadius.circular(DSRadius.pill),
                   ),
                   child: Text(
                     tag,
@@ -394,15 +395,15 @@ class ServicesScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: SpottTextStyles.titleSmall.copyWith(
+                  style: DSTypography.titleLarge.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: SpottTextStyles.caption.copyWith(
-                    color: SpottColors.textSecondary,
+                  style: DSTypography.caption.copyWith(
+                    color: DSColors.textSecondary,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -413,10 +414,10 @@ class ServicesScreen extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: onTap,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: SpottColors.textPrimary,
-                      side: const BorderSide(color: SpottColors.borderSubtle),
+                      foregroundColor: DSColors.textPrimary,
+                      side: const BorderSide(color: DSColors.borderSubtle),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(SpottRadius.button),
+                        borderRadius: BorderRadius.circular(DSRadius.button),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
@@ -431,7 +432,7 @@ class ServicesScreen extends StatelessWidget {
     );
   }
 
-  // ── 5. Recent Activity ─────────────────────────────────────────────
+  // â”€â”€ 5. Recent Activity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildRecentActivity(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,17 +444,17 @@ class ServicesScreen extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            color: SpottColors.glassSurface,
+            color: DSColors.glass,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: SpottColors.borderSubtle),
+            border: Border.all(color: DSColors.borderSubtle),
           ),
           child: Column(
             children: [
               _ActivityStatusTile(
-                title: 'Pune → Mumbai',
+                title: 'Pune â†’ Mumbai',
                 time: 'Tomorrow, 9:00 AM',
                 status: 'Upcoming',
-                statusColor: SpottColors.primary,
+                statusColor: DSColors.primary,
                 icon: Icons.directions_car_rounded,
                 isLast: false,
               ),
@@ -461,7 +462,7 @@ class ServicesScreen extends StatelessWidget {
                 title: 'Parcel Delivery',
                 time: 'Delivered yesterday',
                 status: 'Completed',
-                statusColor: SpottColors.success,
+                statusColor: DSColors.success,
                 icon: Icons.check_circle_rounded,
                 isLast: true,
               ),
@@ -472,7 +473,7 @@ class ServicesScreen extends StatelessWidget {
     );
   }
 
-  // ── 6. Earn With SPOTT ─────────────────────────────────────────────
+  // â”€â”€ 6. Earn With SPOTT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildEarnWithSpott(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,7 +486,7 @@ class ServicesScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: SpottColors.borderSubtle),
+            border: Border.all(color: DSColors.borderSubtle),
           ),
           child: Column(
             children: [
@@ -493,7 +494,7 @@ class ServicesScreen extends StatelessWidget {
                 context,
                 title: 'Offer Empty Seats',
                 subtitle: 'Share your vehicle and save fuel.',
-                extraText: '₹800/trip',
+                extraText: 'â‚¹800/trip',
                 icon: Icons.airline_seat_recline_normal_rounded,
                 onTap: () => Navigator.pushNamed(context, AppRoutes.createTrip),
                 isLast: false,
@@ -502,7 +503,7 @@ class ServicesScreen extends StatelessWidget {
                 context,
                 title: 'Parcel Dispatch',
                 subtitle: 'Deliver packages along your route.',
-                extraText: '₹300 extra',
+                extraText: 'â‚¹300 extra',
                 icon: Icons.local_shipping_rounded,
                 onTap: () => Navigator.pushNamed(context, AppRoutes.kyc),
                 isLast: false,
@@ -511,7 +512,7 @@ class ServicesScreen extends StatelessWidget {
                 context,
                 title: 'Refer Friends',
                 subtitle: 'Share SPOTT and earn.',
-                extraText: '₹100 bonus',
+                extraText: 'â‚¹100 bonus',
                 icon: Icons.card_giftcard_rounded,
                 onTap: () {},
                 isLast: true,
@@ -538,7 +539,7 @@ class ServicesScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: isLast ? null : Border(
-            bottom: BorderSide(color: SpottColors.borderSubtle),
+            bottom: BorderSide(color: DSColors.borderSubtle),
           ),
         ),
         child: Row(
@@ -546,10 +547,10 @@ class ServicesScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: SpottColors.surface2,
+                color: DSColors.surfaceVariant,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: SpottColors.primary, size: 22),
+              child: Icon(icon, color: DSColors.primary, size: 22),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -558,15 +559,15 @@ class ServicesScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: SpottTextStyles.titleSmall.copyWith(
+                    style: DSTypography.titleLarge.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: SpottTextStyles.caption.copyWith(
-                      color: SpottColors.textSecondary,
+                    style: DSTypography.caption.copyWith(
+                      color: DSColors.textSecondary,
                     ),
                   ),
                 ],
@@ -577,8 +578,8 @@ class ServicesScreen extends StatelessWidget {
               children: [
                 Text(
                   extraText,
-                  style: SpottTextStyles.label.copyWith(
-                    color: SpottColors.success,
+                  style: DSTypography.labelLarge.copyWith(
+                    color: DSColors.success,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -586,7 +587,7 @@ class ServicesScreen extends StatelessWidget {
                 const Icon(
                   Icons.chevron_right_rounded,
                   size: 16,
-                  color: SpottColors.textSecondary,
+                  color: DSColors.textSecondary,
                 ),
               ],
             ),
@@ -596,7 +597,7 @@ class ServicesScreen extends StatelessWidget {
     );
   }
 
-  // ── 7. Utilities ───────────────────────────────────────────────────
+  // â”€â”€ 7. Utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildUtilitiesSection(BuildContext context) {
     return RBSectionContainer(
       style: RBSectionStyle.floating,
@@ -604,7 +605,7 @@ class ServicesScreen extends StatelessWidget {
         children: [
           Text(
             'Utilities',
-            style: SpottTextStyles.headline.copyWith(
+            style: DSTypography.headline.copyWith(
               color: const Color(0xFF141b2b),
               fontSize: 20,
             ),
@@ -632,13 +633,13 @@ class ServicesScreen extends StatelessWidget {
               _UtilityCircularButton(
                 icon: Icons.notifications_rounded,
                 label: 'Alerts',
-                color: SpottColors.primary,
+                color: DSColors.primary,
                 onTap: () {},
               ),
               _UtilityCircularButton(
                 icon: Icons.card_giftcard_rounded,
                 label: 'Invite',
-                color: SpottColors.primary,
+                color: DSColors.primary,
                 onTap: () {},
               ),
               _UtilityCircularButton(
@@ -660,7 +661,7 @@ class ServicesScreen extends StatelessWidget {
     );
   }
 
-  // ── 8. Premium Banner ──────────────────────────────────────────────
+  // â”€â”€ 8. Premium Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Widget _buildPremiumBanner(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -693,7 +694,7 @@ class ServicesScreen extends StatelessWidget {
         const SizedBox(height: 12),
         Text(
           'Priority matching, zero platform fees, and VIP support.',
-          style: SpottTextStyles.body.copyWith(
+          style: DSTypography.body.copyWith(
             color: Colors.white.withValues(alpha: 0.7),
           ),
         ),
@@ -705,7 +706,7 @@ class ServicesScreen extends StatelessWidget {
             foregroundColor: Colors.black,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SpottRadius.button),
+              borderRadius: BorderRadius.circular(DSRadius.button),
             ),
             elevation: 0,
           ),
@@ -719,7 +720,7 @@ class ServicesScreen extends StatelessWidget {
   }
 }
 
-// ── Helpers ────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _CategoryGridItem extends StatelessWidget {
   final String title;
@@ -742,9 +743,9 @@ class _CategoryGridItem extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         height: 110,
         decoration: BoxDecoration(
-          color: SpottColors.glassSurface,
+          color: DSColors.glass,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: SpottColors.borderSubtle),
+          border: Border.all(color: DSColors.borderSubtle),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -760,7 +761,7 @@ class _CategoryGridItem extends StatelessWidget {
             const Spacer(),
             Text(
               title,
-              style: SpottTextStyles.label.copyWith(
+              style: DSTypography.labelLarge.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
               ),
@@ -795,7 +796,7 @@ class _ActivityStatusTile extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: isLast ? null : Border(
-          bottom: BorderSide(color: SpottColors.borderSubtle),
+          bottom: BorderSide(color: DSColors.borderSubtle),
         ),
       ),
       child: Row(
@@ -803,10 +804,10 @@ class _ActivityStatusTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: SpottColors.surface2,
+              color: DSColors.surfaceVariant,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: SpottColors.textSecondary, size: 18),
+            child: Icon(icon, color: DSColors.textSecondary, size: 18),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -815,15 +816,15 @@ class _ActivityStatusTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: SpottTextStyles.titleSmall.copyWith(
+                  style: DSTypography.titleLarge.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   time,
-                  style: SpottTextStyles.caption.copyWith(
-                    color: SpottColors.textSecondary,
+                  style: DSTypography.caption.copyWith(
+                    color: DSColors.textSecondary,
                   ),
                 ),
               ],
@@ -837,7 +838,7 @@ class _ActivityStatusTile extends StatelessWidget {
             ),
             child: Text(
               status,
-              style: SpottTextStyles.label.copyWith(
+              style: DSTypography.labelLarge.copyWith(
                 color: statusColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 11,
@@ -885,7 +886,7 @@ class _UtilityCircularButton extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: RBColors.textDark,
+              color: DSColors.textPrimary,
             ),
           ),
         ],

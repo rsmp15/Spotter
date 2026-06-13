@@ -1,9 +1,10 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../helper.dart';
-import '../core/theme/colors.dart';
+
 import '../spotter_widgets.dart';
 
 class RideCompleteScreen extends StatelessWidget {
@@ -20,11 +21,11 @@ class RideCompleteScreen extends StatelessWidget {
         const Center(
           child: CircleAvatar(
             radius: 84,
-            backgroundColor: SpottColors.surface2,
+            backgroundColor: DSColors.surfaceVariant,
             child: Text(
               'DONE',
               style: TextStyle(
-                color: SpottColors.textPrimary,
+                color: DSColors.textPrimary,
                 fontSize: 32,
                 fontWeight: FontWeight.w700,
               ),

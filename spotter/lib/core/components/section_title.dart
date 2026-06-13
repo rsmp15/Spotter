@@ -1,7 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/typography.dart';
-import '../theme/spacing.dart';
-import '../theme/colors.dart';
 
 class SectionTitle extends StatelessWidget {
   final String title;
@@ -20,7 +18,7 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: SpottSpacing.md),
+      padding: const EdgeInsets.only(bottom: DSSpacing.md),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -29,12 +27,12 @@ class SectionTitle extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(title, style: SpottTextStyles.sectionTitle),
+                Text(title, style: DSTypography.headline),
                 if (subtitle != null) ...[
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,
-                    style: SpottTextStyles.caption.copyWith(color: SpottColors.textTertiary),
+                    style: DSTypography.caption.copyWith(color: DSColors.textTertiary),
                   ),
                 ],
               ],
@@ -44,7 +42,7 @@ class SectionTitle extends StatelessWidget {
             TextButton(
               onPressed: onAction,
               style: TextButton.styleFrom(
-                foregroundColor: SpottColors.primary,
+                foregroundColor: DSColors.primary,
                 textStyle: const TextStyle(fontWeight: FontWeight.bold),
               ),
               child: Text(actionLabel!),

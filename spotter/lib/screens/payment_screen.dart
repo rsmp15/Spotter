@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
 import '../app/app_routes.dart';
@@ -5,10 +6,10 @@ import '../controllers/ride_controller.dart';
 import '../helper.dart';
 import '../models/ride_models.dart';
 import '../spotter_widgets.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/animations.dart';
+
+
+
+
 
 class PaymentScreen extends StatelessWidget {
   const PaymentScreen({super.key});
@@ -78,19 +79,19 @@ class _PaymentTile extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(SpottRadius.card),
+          borderRadius: BorderRadius.circular(DSRadius.card),
           child: AnimatedContainer(
-            duration: SpottAnimations.fast,
-            curve: SpottCurves.standard,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInOut,
             height: 72,
             padding: const EdgeInsets.symmetric(horizontal: 18),
             decoration: BoxDecoration(
               color: selected
-                  ? SpottColors.primary.withValues(alpha: 0.04)
-                  : SpottColors.surface1,
-              borderRadius: BorderRadius.circular(SpottRadius.card),
+                  ? DSColors.primary.withValues(alpha: 0.04)
+                  : DSColors.surface,
+              borderRadius: BorderRadius.circular(DSRadius.card),
               border: Border.all(
-                color: selected ? SpottColors.primary : SpottColors.border,
+                color: selected ? DSColors.primary : DSColors.border,
                 width: selected ? 2.0 : 1.0,
               ),
               boxShadow: [
@@ -110,33 +111,33 @@ class _PaymentTile extends StatelessWidget {
                     children: [
                       Text(
                         method.label,
-                        style: SpottTextStyles.titleSmall.copyWith(
-                          color: SpottColors.textPrimary,
+                        style: DSTypography.titleLarge.copyWith(
+                          color: DSColors.textPrimary,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         method.detail,
-                        style: SpottTextStyles.caption.copyWith(
-                          color: SpottColors.textSecondary,
+                        style: DSTypography.caption.copyWith(
+                          color: DSColors.textSecondary,
                         ),
                       ),
                     ],
                   ),
                 ),
                 AnimatedSwitcher(
-                  duration: SpottAnimations.instant,
+                  duration: DSMotion.instant,
                   child: selected
                       ? const Icon(
                           Icons.check_circle_rounded,
-                          color: SpottColors.primary,
+                          color: DSColors.primary,
                           size: 22,
                           key: ValueKey('selected'),
                         )
                       : const Icon(
                           Icons.radio_button_off_rounded,
-                          color: SpottColors.textMuted,
+                          color: DSColors.textMuted,
                           size: 22,
                           key: ValueKey('unselected'),
                         ),

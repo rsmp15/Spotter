@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../controllers/ride_controller.dart';
 import '../models/spott_models.dart';
 import '../core/components/floating_bottom_nav.dart';
+import '../design_system/design_system.dart';
 
 // Passenger Screens
 import 'home_screen.dart';
@@ -32,7 +33,12 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     if (widget.initialTab != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          RideScope.of(context).switchTab(widget.initialTab!);
+          final ride = RideScope.of(context);
+          int tab = widget.initialTab!;
+          if (tab == 3 && ride.currentUserRole == UserRole.rider) {
+            tab = 4;
+          }
+          ride.switchTab(tab);
         }
       });
     }
@@ -44,7 +50,12 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     if (widget.initialTab != null && widget.initialTab != oldWidget.initialTab) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          RideScope.of(context).switchTab(widget.initialTab!);
+          final ride = RideScope.of(context);
+          int tab = widget.initialTab!;
+          if (tab == 3 && ride.currentUserRole == UserRole.rider) {
+            tab = 4;
+          }
+          ride.switchTab(tab);
         }
       });
     }
@@ -55,14 +66,14 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     final ride = RideScope.of(context);
     final role = ride.currentUserRole;
 
-    final List<Widget> passengerScreens = const [
+    final List<Widget> userScreens = const [
       HomeScreen(),
       ServicesScreen(),
       ActivityScreen(), // Passenger Trips
       ProfileScreen(),
     ];
 
-    final List<Widget> travelerScreens = const [
+    final List<Widget> riderScreens = const [
       DriverHomeScreen(),
       PassengerRequestsScreen(),
       TravelerTripsScreen(),
@@ -70,44 +81,62 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       ProfileScreen(),
     ];
 
-    final screens = role == UserRole.passenger ? passengerScreens : travelerScreens;
+    final screens = role == UserRole.user ? userScreens : riderScreens;
 
     // Ensure index doesn't crash if it exceeds length
     final safeIndex = ride.activeTabIndex < screens.length ? ride.activeTabIndex : 0;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: DSColors.background,
       body: Stack(
         children: [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            switchInCurve: Curves.easeOut,
-            switchOutCurve: Curves.easeIn,
-            transitionBuilder: (child, animation) {
-              return FadeTransition(
-                opacity: animation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0.0, 0.05),
-                    end: Offset.zero,
-                  ).animate(animation),
-                  child: child,
-                ),
-              );
-            },
-            child: KeyedSubtree(
-              key: ValueKey<int>(safeIndex),
-              child: screens[safeIndex],
+          Positioned.fill(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              switchInCurve: Curves.easeOut,
+              switchOutCurve: Curves.easeIn,
+              layoutBuilder: (currentChild, previousChildren) {
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    for (final child in previousChildren)
+                      IgnorePointer(
+                        ignoring: true,
+                        child: child,
+                      ),
+                    ?currentChild,
+                  ],
+                );
+              },
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.0, 0.05),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  ),
+                );
+              },
+              child: KeyedSubtree(
+                key: ValueKey<int>(safeIndex),
+                child: screens[safeIndex],
+              ),
             ),
           ),
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: FloatingBottomNav(
-              role: role,
-              currentIndex: safeIndex,
-              onTap: (index) => ride.switchTab(index),
+            child: Listener(
+              behavior: HitTestBehavior.opaque,
+              child: FloatingBottomNav(
+                role: role,
+                currentIndex: safeIndex,
+                onTap: (index) => ride.switchTab(index),
+              ),
             ),
           ),
         ],

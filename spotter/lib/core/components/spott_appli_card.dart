@@ -1,10 +1,6 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../theme/radius.dart';
-import '../theme/spacing.dart';
-import '../theme/typography.dart';
-import '../theme/shadows.dart';
 import 'spott_avatar.dart';
 
 class SpottAppliCard extends StatelessWidget {
@@ -46,16 +42,16 @@ class SpottAppliCard extends StatelessWidget {
     return Container(
       width: 320,
       decoration: BoxDecoration(
-        color: SpottColors.surface1, // Solid Surface #111318 as per rules
-        borderRadius: BorderRadius.circular(SpottRadius.primaryCard), // 24px
+        color: DSColors.surface, // Solid Surface #111318 as per rules
+        borderRadius: BorderRadius.circular(DSRadius.card), // 24px
         border: Border.all(
-          color: SpottColors.border,
+          color: DSColors.border,
           width: 1.0,
         ), // 1px border #222530
-        boxShadow: SpottShadows.elevation2,
+        boxShadow: DSShadows.elevation2,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(SpottRadius.primaryCard),
+        borderRadius: BorderRadius.circular(DSRadius.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -80,7 +76,7 @@ class SpottAppliCard extends StatelessWidget {
                           ),
                           child: const Icon(
                             Icons.landscape_rounded,
-                            color: SpottColors.textTertiary,
+                            color: DSColors.textTertiary,
                             size: 48,
                           ),
                         );
@@ -105,24 +101,24 @@ class SpottAppliCard extends StatelessWidget {
 
                   // Overlay Translucent Chips
                   Positioned(
-                    top: SpottSpacing.sm,
-                    left: SpottSpacing.sm,
+                    top: DSSpacing.sm,
+                    left: DSSpacing.sm,
                     child: Row(
                       children: [
                         _buildTranslucentChip(
                           label: 'OPEN',
-                          color: SpottColors.success,
+                          color: DSColors.success,
                         ),
                         const SizedBox(width: 6),
                         _buildTranslucentChip(
                           label: 'VERIFIED',
-                          color: SpottColors.success,
+                          color: DSColors.success,
                           icon: Icons.verified_user_rounded,
                         ),
                         const SizedBox(width: 6),
                         _buildTranslucentChip(
                           label: 'POPULAR',
-                          color: SpottColors.accentPurple,
+                          color: DSColors.primaryDark,
                         ),
                       ],
                     ),
@@ -131,12 +127,12 @@ class SpottAppliCard extends StatelessWidget {
                   // Floating Avatar overlayed on bottom right
                   Positioned(
                     bottom: -16,
-                    right: SpottSpacing.md,
+                    right: DSSpacing.md,
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: SpottColors.surface1,
+                          color: DSColors.surface,
                           width: 3.5,
                         ),
                       ),
@@ -150,11 +146,11 @@ class SpottAppliCard extends StatelessWidget {
 
                   // Price Tag Overlay
                   Positioned(
-                    bottom: SpottSpacing.sm,
-                    left: SpottSpacing.sm,
+                    bottom: DSSpacing.sm,
+                    left: DSSpacing.sm,
                     child: Text(
                       price,
-                      style: SpottTextStyles.headline.copyWith(
+                      style: DSTypography.headline.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
@@ -167,10 +163,10 @@ class SpottAppliCard extends StatelessWidget {
             // ── Middle Area ──────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                SpottSpacing.md,
-                SpottSpacing.lg,
-                SpottSpacing.md,
-                SpottSpacing.md,
+                DSSpacing.md,
+                DSSpacing.lg,
+                DSSpacing.md,
+                DSSpacing.md,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +174,7 @@ class SpottAppliCard extends StatelessWidget {
                   // Title / Route
                   Text(
                     route,
-                    style: SpottTextStyles.title.copyWith(
+                    style: DSTypography.titleLarge.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 19,
                     ),
@@ -190,14 +186,14 @@ class SpottAppliCard extends StatelessWidget {
                   // Subtitle (Traveler Name & Vehicle Details)
                   Text(
                     'by $travelerName • $vehicleInfo',
-                    style: SpottTextStyles.body.copyWith(
-                      color: SpottColors.textSecondary,
+                    style: DSTypography.body.copyWith(
+                      color: DSColors.textSecondary,
                       fontSize: 12,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: SpottSpacing.md),
+                  const SizedBox(height: DSSpacing.md),
 
                   // Reputation & Trust Indicators (Head of Design specifications)
                   Row(
@@ -209,13 +205,13 @@ class SpottAppliCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: SpottColors.successSoft,
+                          color: DSColors.successSoft,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           '$trustScore Trust Score',
-                          style: SpottTextStyles.caption.copyWith(
-                            color: SpottColors.success,
+                          style: DSTypography.caption.copyWith(
+                            color: DSColors.success,
                             fontWeight: FontWeight.bold,
                             fontSize: 11,
                           ),
@@ -226,8 +222,8 @@ class SpottAppliCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           '• $tripsCompleted trips • $responseRate resp.',
-                          style: SpottTextStyles.caption.copyWith(
-                            color: SpottColors.textSecondary,
+                          style: DSTypography.caption.copyWith(
+                            color: DSColors.textSecondary,
                             fontSize: 11,
                           ),
                           maxLines: 1,
@@ -236,15 +232,15 @@ class SpottAppliCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: SpottSpacing.md),
+                  const SizedBox(height: DSSpacing.md),
 
                   // Stats Row: Trips, Travelers, Savings
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: SpottColors.surface2, // Solid Secondary Surface
+                      color: DSColors.surfaceVariant, // Solid Secondary Surface
                       borderRadius: BorderRadius.circular(
-                        SpottRadius.secondaryCard,
+                        DSRadius.card,
                       ),
                     ),
                     child: Row(
@@ -267,9 +263,9 @@ class SpottAppliCard extends StatelessWidget {
             // ── Bottom CTAs ──────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.only(
-                left: SpottSpacing.md,
-                right: SpottSpacing.md,
-                bottom: SpottSpacing.md,
+                left: DSSpacing.md,
+                right: DSSpacing.md,
+                bottom: DSSpacing.md,
               ),
               child: Row(
                 children: [
@@ -278,40 +274,40 @@ class SpottAppliCard extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: onShowInterest,
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: SpottColors.textPrimary,
-                        side: const BorderSide(color: SpottColors.border),
+                        foregroundColor: DSColors.textPrimary,
+                        side: const BorderSide(color: DSColors.border),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                            SpottRadius.button,
+                            DSRadius.button,
                           ), // 18px
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: Text(
                         'Show Interest',
-                        style: SpottTextStyles.label.copyWith(fontSize: 13),
+                        style: DSTypography.labelLarge.copyWith(fontSize: 13),
                       ),
                     ),
                   ),
-                  const SizedBox(width: SpottSpacing.sm),
+                  const SizedBox(width: DSSpacing.sm),
                   // Primary: View Details (Pinterest Red Brand CTA)
                   Expanded(
                     child: ElevatedButton(
                       onPressed: onViewDetails,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: SpottColors.primary, // Brand CTA Red
+                        backgroundColor: DSColors.primary, // Brand CTA Red
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                            SpottRadius.button,
+                            DSRadius.button,
                           ), // 18px
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: Text(
                         'View Details',
-                        style: SpottTextStyles.label.copyWith(
+                        style: DSTypography.labelLarge.copyWith(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
@@ -333,14 +329,14 @@ class SpottAppliCard extends StatelessWidget {
     IconData? icon,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(SpottRadius.pill),
+      borderRadius: BorderRadius.circular(DSRadius.pill),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(SpottRadius.pill),
+            borderRadius: BorderRadius.circular(DSRadius.pill),
             border: Border.all(
               color: color.withValues(alpha: 0.35),
               width: 0.8,
@@ -374,15 +370,15 @@ class SpottAppliCard extends StatelessWidget {
       children: [
         Text(
           title,
-          style: SpottTextStyles.caption.copyWith(
+          style: DSTypography.caption.copyWith(
             fontSize: 10,
-            color: SpottColors.textSecondary,
+            color: DSColors.textSecondary,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: SpottTextStyles.label.copyWith(
+          style: DSTypography.labelLarge.copyWith(
             fontSize: 12,
             fontWeight: FontWeight.bold,
           ),
@@ -392,6 +388,6 @@ class SpottAppliCard extends StatelessWidget {
   }
 
   Widget _buildDivider() {
-    return Container(width: 1, height: 24, color: SpottColors.border);
+    return Container(width: 1, height: 24, color: DSColors.border);
   }
 }

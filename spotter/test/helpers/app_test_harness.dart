@@ -12,6 +12,7 @@ Future<RideController> pumpSpotterRoute(
   String routeName, {
   RideRepository? repository,
   RemoteConfigRepository? remoteConfigRepository,
+  UserRole? overrideRole,
 }) async {
   tester.view.physicalSize = const Size(800, 1200);
   tester.view.devicePixelRatio = 1;
@@ -20,8 +21,9 @@ Future<RideController> pumpSpotterRoute(
 
   final controller = RideController(repository: repository);
   
-  // Set initial role dynamically depending on the route name to allow direct testing of role-restricted screens
-  if (routeName == AppRoutes.driverHome ||
+  if (overrideRole != null) {
+    controller.currentUserRole = overrideRole;
+  } else if (routeName == AppRoutes.driverHome ||
       routeName == AppRoutes.kyc ||
       routeName == AppRoutes.createTrip ||
       routeName == AppRoutes.jobRequests ||
@@ -30,11 +32,11 @@ Future<RideController> pumpSpotterRoute(
       routeName == AppRoutes.dropTask ||
       routeName == AppRoutes.passengerRequests ||
       routeName == AppRoutes.vehicleManagement) {
-    controller.currentUserRole = UserRole.traveler;
+    controller.currentUserRole = UserRole.rider;
   } else if (routeName == AppRoutes.parcelBooking ||
       routeName == AppRoutes.parcelTracking ||
       routeName == AppRoutes.parcelComplete) {
-    controller.currentUserRole = UserRole.parcelSender;
+    controller.currentUserRole = UserRole.user;
   }
 
   await controller.initialize();

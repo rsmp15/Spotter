@@ -1,7 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../theme/typography.dart';
-import '../theme/radius.dart';
 
 enum VerificationLevel {
   mobile(1, 'Mobile Verified', Icons.phone_android_rounded),
@@ -42,10 +40,10 @@ class VerificationBadge extends StatelessWidget {
         vertical: compact ? 2 : 4,
       ),
       decoration: BoxDecoration(
-        color: SpottColors.trustVerified.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(SpottRadius.xs),
+        color: DSColors.success.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(DSRadius.xs),
         border: Border.all(
-          color: SpottColors.trustVerified.withValues(alpha: 0.15),
+          color: DSColors.success.withValues(alpha: 0.15),
           width: 1,
         ),
       ),
@@ -55,7 +53,7 @@ class VerificationBadge extends StatelessWidget {
           Icon(
             highest.icon,
             size: compact ? 11 : 13,
-            color: SpottColors.trustVerified,
+            color: DSColors.success,
           ),
           const SizedBox(width: 4),
           Text(
@@ -63,7 +61,7 @@ class VerificationBadge extends StatelessWidget {
             style: TextStyle(
               fontSize: compact ? 10 : 11,
               fontWeight: FontWeight.w600,
-              color: SpottColors.trustVerified,
+              color: DSColors.success,
               fontFamily: 'Inter',
             ),
           ),
@@ -95,19 +93,19 @@ class VerificationStack extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: isVerified ? SpottColors.trustVerified.withValues(alpha: 0.08) : SpottColors.surface3,
+                color: isVerified ? DSColors.success.withValues(alpha: 0.08) : DSColors.surface,
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isVerified
-                      ? SpottColors.trustVerified.withValues(alpha: 0.2)
-                      : SpottColors.border,
+                      ? DSColors.success.withValues(alpha: 0.2)
+                      : DSColors.border,
                   width: 1,
                 ),
               ),
               child: Icon(
                 isVerified ? Icons.check_rounded : v.icon,
                 size: 11,
-                color: isVerified ? SpottColors.trustVerified : SpottColors.textTertiary,
+                color: isVerified ? DSColors.success : DSColors.textTertiary,
               ),
             ),
           ),
@@ -140,8 +138,8 @@ class ReputationScoreRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = SpottTextStyles.caption.copyWith(
-      color: SpottColors.textSecondary,
+    final style = DSTypography.caption.copyWith(
+      color: DSColors.textSecondary,
       fontWeight: FontWeight.w500,
     );
 
@@ -150,7 +148,7 @@ class ReputationScoreRow extends StatelessWidget {
       child: Text(
         '•',
         style: TextStyle(
-          color: SpottColors.textTertiary.withValues(alpha: 0.5),
+          color: DSColors.textTertiary.withValues(alpha: 0.5),
           fontSize: 10,
         ),
       ),
@@ -163,20 +161,20 @@ class ReputationScoreRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
           decoration: BoxDecoration(
-            color: SpottColors.warningSoft,
-            borderRadius: BorderRadius.circular(SpottRadius.xs),
+            color: DSColors.warningSoft,
+            borderRadius: BorderRadius.circular(DSRadius.xs),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.star_rounded, size: 12, color: SpottColors.warning),
+              const Icon(Icons.star_rounded, size: 12, color: DSColors.warning),
               const SizedBox(width: 2),
               Text(
                 rating.toStringAsFixed(1),
                 style: const TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: SpottColors.warning,
+                  color: DSColors.warning,
                 ),
               ),
             ],
@@ -197,12 +195,12 @@ class ReputationScoreRow extends StatelessWidget {
 
         if (safetyScore != null && !compact) ...[
           divider,
-          Text('Score: $safetyScore/100', style: style.copyWith(color: SpottColors.success)),
+          Text('Score: $safetyScore/100', style: style.copyWith(color: DSColors.success)),
         ],
 
         if (memberSince != null && !compact) ...[
           divider,
-          Text('Since $memberSince', style: style.copyWith(color: SpottColors.textTertiary)),
+          Text('Since $memberSince', style: style.copyWith(color: DSColors.textTertiary)),
         ]
       ],
     );
@@ -238,20 +236,20 @@ class TrustBadge extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: SpottColors.warningSoft,
-              borderRadius: BorderRadius.circular(SpottRadius.xs),
+              color: DSColors.warningSoft,
+              borderRadius: BorderRadius.circular(DSRadius.xs),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.star_rounded, size: 11, color: SpottColors.warning),
+                const Icon(Icons.star_rounded, size: 11, color: DSColors.warning),
                 const SizedBox(width: 2),
                 Text(
                   rating!,
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: SpottColors.warning,
+                    color: DSColors.warning,
                   ),
                 ),
               ],
@@ -262,8 +260,8 @@ class TrustBadge extends StatelessWidget {
         if (tripCount != null && !compact)
           Text(
             '$tripCount trips',
-            style: SpottTextStyles.caption.copyWith(
-              color: SpottColors.textTertiary,
+            style: DSTypography.caption.copyWith(
+              color: DSColors.textTertiary,
               fontSize: 10,
             ),
           ),

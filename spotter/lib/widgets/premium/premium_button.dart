@@ -9,13 +9,13 @@ class PremiumButton extends StatefulWidget {
   final bool isLoading;
 
   const PremiumButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.isPrimary = true,
     this.icon,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   State<PremiumButton> createState() => _PremiumButtonState();

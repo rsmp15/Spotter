@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
@@ -5,10 +6,10 @@ import '../models/ride_models.dart';
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
+
+
+
+
 
 class ParcelBookingScreen extends StatefulWidget {
   const ParcelBookingScreen({super.key});
@@ -56,8 +57,8 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Send a Package', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('Send a Package', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: Stack(
@@ -65,27 +66,27 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
           Form(
             key: _formKey,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(SpottSpacing.lg),
+              padding: const EdgeInsets.all(DSSpacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                Text('Same-day delivery via verified travelers on their route.', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
-                const SizedBox(height: SpottSpacing.xl),
+                Text('Same-day delivery via verified travelers on their route.', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+                const SizedBox(height: DSSpacing.xl),
 
                 // Sender Details Card
                 GlassCard(
-                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  padding: const EdgeInsets.all(DSSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Sender Details (You)', style: SpottTextStyles.sectionTitle),
-                      const SizedBox(height: SpottSpacing.md),
+                      Text('Sender Details (You)', style: DSTypography.headline),
+                      const SizedBox(height: DSSpacing.md),
                       _buildTextField(
                         controller: _senderNameController,
                         label: 'Sender Name',
                         validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       ),
-                      const SizedBox(height: SpottSpacing.md),
+                      const SizedBox(height: DSSpacing.md),
                       _buildTextField(
                         controller: _senderPhoneController,
                         label: 'Sender Phone',
@@ -95,23 +96,23 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: SpottSpacing.md),
+                const SizedBox(height: DSSpacing.md),
 
                 // Receiver Details Card
                 GlassCard(
-                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  padding: const EdgeInsets.all(DSSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Receiver Details', style: SpottTextStyles.sectionTitle),
-                      const SizedBox(height: SpottSpacing.md),
+                      Text('Receiver Details', style: DSTypography.headline),
+                      const SizedBox(height: DSSpacing.md),
                       _buildTextField(
                         controller: _receiverNameController,
                         label: 'Receiver Name',
                         hint: 'e.g. Rahul Sharma',
                         validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       ),
-                      const SizedBox(height: SpottSpacing.md),
+                      const SizedBox(height: DSSpacing.md),
                       _buildTextField(
                         controller: _receiverPhoneController,
                         label: 'Receiver Phone',
@@ -122,19 +123,19 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: SpottSpacing.md),
+                const SizedBox(height: DSSpacing.md),
 
                 // Category Picker Card
                 GlassCard(
-                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  padding: const EdgeInsets.all(DSSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Package Category', style: SpottTextStyles.sectionTitle),
-                      const SizedBox(height: SpottSpacing.md),
+                      Text('Package Category', style: DSTypography.headline),
+                      const SizedBox(height: DSSpacing.md),
                       Wrap(
-                        spacing: SpottSpacing.sm,
-                        runSpacing: SpottSpacing.sm,
+                        spacing: DSSpacing.sm,
+                        runSpacing: DSSpacing.sm,
                         children: [
                           _buildChip(
                             label: 'Documents / Keys',
@@ -161,16 +162,16 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: SpottSpacing.md),
+                const SizedBox(height: DSSpacing.md),
 
                 // Size Picker Card
                 GlassCard(
-                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  padding: const EdgeInsets.all(DSSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Package Size & Weight', style: SpottTextStyles.sectionTitle),
-                      const SizedBox(height: SpottSpacing.md),
+                      Text('Package Size & Weight', style: DSTypography.headline),
+                      const SizedBox(height: DSSpacing.md),
                       Row(
                         children: [
                           Expanded(
@@ -181,7 +182,7 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                               onTap: () => setState(() => _selectedSize = ParcelSizeClass.light),
                             ),
                           ),
-                          const SizedBox(width: SpottSpacing.sm),
+                          const SizedBox(width: DSSpacing.sm),
                           Expanded(
                             child: _buildSelectorTile(
                               title: 'Medium',
@@ -190,7 +191,7 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                               onTap: () => setState(() => _selectedSize = ParcelSizeClass.medium),
                             ),
                           ),
-                          const SizedBox(width: SpottSpacing.sm),
+                          const SizedBox(width: DSSpacing.sm),
                           Expanded(
                             child: _buildSelectorTile(
                               title: 'Heavy',
@@ -204,52 +205,52 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: SpottSpacing.md),
+                const SizedBox(height: DSSpacing.md),
 
                 // Safety Declaration and Photo Card
                 GlassCard(
-                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  padding: const EdgeInsets.all(DSSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Package Verification & Safety', style: SpottTextStyles.sectionTitle),
-                      const SizedBox(height: SpottSpacing.md),
+                      Text('Package Verification & Safety', style: DSTypography.headline),
+                      const SizedBox(height: DSSpacing.md),
                       GestureDetector(
                         onTap: () {
                           setState(() => _uploadedPhoto = true);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Package photo uploaded successfully'), backgroundColor: SpottColors.success),
+                            const SnackBar(content: Text('Package photo uploaded successfully'), backgroundColor: DSColors.success),
                           );
                         },
                         child: Container(
                           width: double.infinity,
                           height: 100,
                           decoration: BoxDecoration(
-                            color: SpottColors.surface1,
-                            borderRadius: BorderRadius.circular(SpottRadius.md),
-                            border: Border.all(color: SpottColors.border),
+                            color: DSColors.surface,
+                            borderRadius: BorderRadius.circular(DSRadius.md),
+                            border: Border.all(color: DSColors.border),
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 _uploadedPhoto ? Icons.check_circle_rounded : Icons.camera_alt_rounded,
-                                color: _uploadedPhoto ? SpottColors.success : SpottColors.textSecondary,
+                                color: _uploadedPhoto ? DSColors.success : DSColors.textSecondary,
                                 size: 28,
                               ),
-                              const SizedBox(height: SpottSpacing.xs),
+                              const SizedBox(height: DSSpacing.xs),
                               Text(
                                 _uploadedPhoto ? 'Package Photo Verified' : 'Upload Package Photo',
-                                style: SpottTextStyles.caption.copyWith(
+                                style: DSTypography.caption.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: _uploadedPhoto ? SpottColors.success : SpottColors.textSecondary,
+                                  color: _uploadedPhoto ? DSColors.success : DSColors.textSecondary,
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: SpottSpacing.md),
+                      const SizedBox(height: DSSpacing.md),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -258,7 +259,7 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                             width: 24,
                             child: Checkbox(
                               value: _declaredSafety,
-                              activeColor: SpottColors.primary,
+                              activeColor: DSColors.primary,
                               checkColor: Colors.white,
                               onChanged: (val) {
                                 if (val != null) {
@@ -267,11 +268,11 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                               },
                             ),
                           ),
-                          const SizedBox(width: SpottSpacing.sm),
+                          const SizedBox(width: DSSpacing.sm),
                           Expanded(
                             child: Text(
                               'I declare that this package does not contain any illegal, dangerous, or restricted items as per local laws.',
-                              style: SpottTextStyles.caption,
+                              style: DSTypography.caption,
                             ),
                           ),
                         ],
@@ -279,78 +280,78 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: SpottSpacing.md),
+                const SizedBox(height: DSSpacing.md),
 
                 // Delivery Mode / Vehicle selection Card
                 GlassCard(
-                  padding: const EdgeInsets.all(SpottSpacing.md),
+                  padding: const EdgeInsets.all(DSSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Private Vehicle Partner Mode', style: SpottTextStyles.sectionTitle),
-                      const SizedBox(height: SpottSpacing.md),
+                      Text('Private Vehicle Partner Mode', style: DSTypography.headline),
+                      const SizedBox(height: DSSpacing.md),
                       Row(
                         children: [
                           Expanded(
                             child: InkWell(
                               onTap: () => setState(() => _selectedVehicleClass = 'Bike'),
-                              borderRadius: BorderRadius.circular(SpottRadius.md),
+                              borderRadius: BorderRadius.circular(DSRadius.md),
                               child: Container(
-                                padding: const EdgeInsets.all(SpottSpacing.md),
+                                padding: const EdgeInsets.all(DSSpacing.md),
                                 decoration: BoxDecoration(
-                                  color: _selectedVehicleClass == 'Bike' ? SpottColors.primary.withValues(alpha: 0.15) : SpottColors.surface1,
-                                  borderRadius: BorderRadius.circular(SpottRadius.md),
-                                  border: Border.all(color: _selectedVehicleClass == 'Bike' ? SpottColors.primary : SpottColors.border),
+                                  color: _selectedVehicleClass == 'Bike' ? DSColors.primary.withValues(alpha: 0.15) : DSColors.surface,
+                                  borderRadius: BorderRadius.circular(DSRadius.md),
+                                  border: Border.all(color: _selectedVehicleClass == 'Bike' ? DSColors.primary : DSColors.border),
                                 ),
                                 child: Column(
                                   children: [
                                     Icon(
                                       Icons.two_wheeler_rounded,
-                                      color: _selectedVehicleClass == 'Bike' ? SpottColors.primary : SpottColors.textSecondary,
+                                      color: _selectedVehicleClass == 'Bike' ? DSColors.primary : DSColors.textSecondary,
                                       size: 28,
                                     ),
-                                    const SizedBox(height: SpottSpacing.xs),
+                                    const SizedBox(height: DSSpacing.xs),
                                     Text(
                                       'Private Bike',
-                                      style: SpottTextStyles.body.copyWith(
+                                      style: DSTypography.body.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        color: _selectedVehicleClass == 'Bike' ? SpottColors.primary : SpottColors.textPrimary,
+                                        color: _selectedVehicleClass == 'Bike' ? DSColors.primary : DSColors.textPrimary,
                                       ),
                                     ),
-                                    Text('Fastest • Small items', style: SpottTextStyles.caption),
+                                    Text('Fastest • Small items', style: DSTypography.caption),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: SpottSpacing.md),
+                          const SizedBox(width: DSSpacing.md),
                           Expanded(
                             child: InkWell(
                               onTap: () => setState(() => _selectedVehicleClass = 'Car'),
-                              borderRadius: BorderRadius.circular(SpottRadius.md),
+                              borderRadius: BorderRadius.circular(DSRadius.md),
                               child: Container(
-                                padding: const EdgeInsets.all(SpottSpacing.md),
+                                padding: const EdgeInsets.all(DSSpacing.md),
                                 decoration: BoxDecoration(
-                                  color: _selectedVehicleClass == 'Car' ? SpottColors.primary.withValues(alpha: 0.15) : SpottColors.surface1,
-                                  borderRadius: BorderRadius.circular(SpottRadius.md),
-                                  border: Border.all(color: _selectedVehicleClass == 'Car' ? SpottColors.primary : SpottColors.border),
+                                  color: _selectedVehicleClass == 'Car' ? DSColors.primary.withValues(alpha: 0.15) : DSColors.surface,
+                                  borderRadius: BorderRadius.circular(DSRadius.md),
+                                  border: Border.all(color: _selectedVehicleClass == 'Car' ? DSColors.primary : DSColors.border),
                                 ),
                                 child: Column(
                                   children: [
                                     Icon(
                                       Icons.directions_car_filled_rounded,
-                                      color: _selectedVehicleClass == 'Car' ? SpottColors.primary : SpottColors.textSecondary,
+                                      color: _selectedVehicleClass == 'Car' ? DSColors.primary : DSColors.textSecondary,
                                       size: 28,
                                     ),
-                                    const SizedBox(height: SpottSpacing.xs),
+                                    const SizedBox(height: DSSpacing.xs),
                                     Text(
                                       'Private Car',
-                                      style: SpottTextStyles.body.copyWith(
+                                      style: DSTypography.body.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        color: _selectedVehicleClass == 'Car' ? SpottColors.primary : SpottColors.textPrimary,
+                                        color: _selectedVehicleClass == 'Car' ? DSColors.primary : DSColors.textPrimary,
                                       ),
                                     ),
-                                    Text('Best for large box', style: SpottTextStyles.caption),
+                                    Text('Best for large box', style: DSTypography.caption),
                                   ],
                                 ),
                               ),
@@ -371,10 +372,10 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.all(SpottSpacing.lg),
+              padding: const EdgeInsets.all(DSSpacing.lg),
               decoration: BoxDecoration(
-                color: SpottColors.glassSurface,
-                border: const Border(top: BorderSide(color: SpottColors.border)),
+                color: DSColors.glass,
+                border: const Border(top: BorderSide(color: DSColors.border)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -382,11 +383,11 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Estimated Cost', style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold)),
-                      Text('₹$_calculateFare', style: SpottTextStyles.display.copyWith(fontSize: 22)),
+                      Text('Estimated Cost', style: DSTypography.body.copyWith(fontWeight: FontWeight.bold)),
+                      Text('₹$_calculateFare', style: DSTypography.headline.copyWith(fontSize: 22)),
                     ],
                   ),
-                  const SizedBox(height: SpottSpacing.md),
+                  const SizedBox(height: DSSpacing.md),
                   SpottButton.primary(
                     label: 'Assign Delivery Partner',
                     onPressed: () {
@@ -446,16 +447,16 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      style: SpottTextStyles.body.copyWith(color: SpottColors.textPrimary),
+      style: DSTypography.body.copyWith(color: DSColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
-        hintStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+        labelStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
+        hintStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
         filled: true,
-        fillColor: SpottColors.surface1,
-        contentPadding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.md),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(SpottRadius.md), borderSide: BorderSide.none),
+        fillColor: DSColors.surface,
+        contentPadding: const EdgeInsets.symmetric(horizontal: DSSpacing.md, vertical: DSSpacing.md),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(DSRadius.md), borderSide: BorderSide.none),
       ),
     );
   }
@@ -467,19 +468,19 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(SpottRadius.pill),
+      borderRadius: BorderRadius.circular(DSRadius.pill),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.sm),
+        padding: const EdgeInsets.symmetric(horizontal: DSSpacing.md, vertical: DSSpacing.sm),
         decoration: BoxDecoration(
-          color: selected ? SpottColors.primary.withValues(alpha: 0.15) : SpottColors.surface1,
-          borderRadius: BorderRadius.circular(SpottRadius.pill),
-          border: Border.all(color: selected ? SpottColors.primary : SpottColors.border),
+          color: selected ? DSColors.primary.withValues(alpha: 0.15) : DSColors.surface,
+          borderRadius: BorderRadius.circular(DSRadius.pill),
+          border: Border.all(color: selected ? DSColors.primary : DSColors.border),
         ),
         child: Text(
           label,
-          style: SpottTextStyles.caption.copyWith(
+          style: DSTypography.caption.copyWith(
             fontWeight: FontWeight.bold,
-            color: selected ? SpottColors.primary : SpottColors.textSecondary,
+            color: selected ? DSColors.primary : DSColors.textSecondary,
           ),
         ),
       ),
@@ -494,27 +495,27 @@ class _ParcelBookingScreenState extends State<ParcelBookingScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(SpottRadius.md),
+      borderRadius: BorderRadius.circular(DSRadius.md),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: SpottSpacing.md, horizontal: SpottSpacing.xs),
+        padding: const EdgeInsets.symmetric(vertical: DSSpacing.md, horizontal: DSSpacing.xs),
         decoration: BoxDecoration(
-          color: selected ? SpottColors.primary.withValues(alpha: 0.15) : SpottColors.surface1,
-          borderRadius: BorderRadius.circular(SpottRadius.md),
-          border: Border.all(color: selected ? SpottColors.primary : SpottColors.border),
+          color: selected ? DSColors.primary.withValues(alpha: 0.15) : DSColors.surface,
+          borderRadius: BorderRadius.circular(DSRadius.md),
+          border: Border.all(color: selected ? DSColors.primary : DSColors.border),
         ),
         child: Column(
           children: [
             Text(
               title,
-              style: SpottTextStyles.body.copyWith(
+              style: DSTypography.body.copyWith(
                 fontWeight: FontWeight.bold,
-                color: selected ? SpottColors.primary : SpottColors.textPrimary,
+                color: selected ? DSColors.primary : DSColors.textPrimary,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: SpottTextStyles.caption,
+              style: DSTypography.caption,
             ),
           ],
         ),

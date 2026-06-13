@@ -3,7 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../../theme/spott_theme.dart';
 
 class PremiumCommunityScreen extends StatelessWidget {
-  const PremiumCommunityScreen({Key? key}) : super(key: key);
+  const PremiumCommunityScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

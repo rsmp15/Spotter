@@ -1,10 +1,11 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
-import '../core/theme/shadows.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/typography.dart';
+
+
+
+
 import '../core/components/status_chip.dart';
 
 class RideConfirmationScreen extends StatelessWidget {
@@ -16,12 +17,12 @@ class RideConfirmationScreen extends StatelessWidget {
     final driver = ride.selectedDriver;
 
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: DSColors.background,
       body: Column(
         children: [
           // Header
           Container(
-            color: SpottColors.primary,
+            color: DSColors.primary,
             child: SafeArea(
               bottom: false,
               child: Padding(
@@ -36,7 +37,7 @@ class RideConfirmationScreen extends StatelessWidget {
                     ),
                     Text(
                       'Confirm ride',
-                      style: SpottTextStyles.headline.copyWith(
+                      style: DSTypography.headline.copyWith(
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
@@ -64,9 +65,9 @@ class RideConfirmationScreen extends StatelessWidget {
                           children: [
                             Text(
                               'Trip Summary',
-                              style: SpottTextStyles.title.copyWith(
+                              style: DSTypography.titleLarge.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: SpottColors.textPrimary,
+                                color: DSColors.textPrimary,
                               ),
                             ),
                             const StatusChip(
@@ -86,20 +87,20 @@ class RideConfirmationScreen extends StatelessWidget {
                                   height: 12,
                                   decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: SpottColors.success,
+                                    color: DSColors.success,
                                   ),
                                 ),
                                 Container(
                                   width: 2.0,
                                   height: 32,
-                                  color: SpottColors.border,
+                                  color: DSColors.border,
                                 ),
                                 Container(
                                   width: 12,
                                   height: 12,
                                   decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: SpottColors.primary,
+                                    color: DSColors.primary,
                                   ),
                                 ),
                               ],
@@ -116,16 +117,16 @@ class RideConfirmationScreen extends StatelessWidget {
                                     children: [
                                       Text(
                                         'Pune',
-                                        style: SpottTextStyles.body.copyWith(
+                                        style: DSTypography.body.copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: SpottColors.textPrimary,
+                                          color: DSColors.textPrimary,
                                         ),
                                       ),
                                       Text(
                                         '07:30 AM',
-                                        style: SpottTextStyles.body.copyWith(
+                                        style: DSTypography.body.copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: SpottColors.textPrimary,
+                                          color: DSColors.textPrimary,
                                         ),
                                       ),
                                     ],
@@ -137,16 +138,16 @@ class RideConfirmationScreen extends StatelessWidget {
                                     children: [
                                       Text(
                                         'Mumbai',
-                                        style: SpottTextStyles.body.copyWith(
+                                        style: DSTypography.body.copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: SpottColors.textPrimary,
+                                          color: DSColors.textPrimary,
                                         ),
                                       ),
                                       Text(
                                         '01:45 PM',
-                                        style: SpottTextStyles.body.copyWith(
+                                        style: DSTypography.body.copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: SpottColors.textPrimary,
+                                          color: DSColors.textPrimary,
                                         ),
                                       ),
                                     ],
@@ -157,7 +158,7 @@ class RideConfirmationScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        const Divider(height: 1, color: SpottColors.divider),
+                        const Divider(height: 1, color: DSColors.divider),
                         const SizedBox(height: 16),
                         const _InfoRow(label: 'Date', value: '5 Jun 2026'),
                         const SizedBox(height: 10),
@@ -165,7 +166,7 @@ class RideConfirmationScreen extends StatelessWidget {
                         const SizedBox(height: 10),
                         const _InfoRow(label: 'Vehicle', value: 'Honda City (AC)'),
                         const SizedBox(height: 16),
-                        const Divider(height: 1, color: SpottColors.divider),
+                        const Divider(height: 1, color: DSColors.divider),
                         const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment:
@@ -173,17 +174,17 @@ class RideConfirmationScreen extends StatelessWidget {
                           children: [
                             Text(
                               'Total Cost Share',
-                              style: SpottTextStyles.label.copyWith(
+                              style: DSTypography.labelLarge.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: SpottColors.textPrimary,
+                                color: DSColors.textPrimary,
                               ),
                             ),
                             Text(
                               '₹700',
-                              style: SpottTextStyles.title.copyWith(
+                              style: DSTypography.titleLarge.copyWith(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w800,
-                                color: SpottColors.primary,
+                                color: DSColors.primary,
                               ),
                             ),
                           ],
@@ -212,39 +213,39 @@ class RideConfirmationScreen extends StatelessWidget {
                             children: [
                               Text(
                                 driver?.name ?? 'Arjun K.',
-                                style: SpottTextStyles.body.copyWith(
+                                style: DSTypography.body.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: SpottColors.textPrimary,
+                                  color: DSColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'Honda City • MH 12 AB 1234',
-                                style: SpottTextStyles.caption.copyWith(
-                                  color: SpottColors.textSecondary,
+                                style: DSTypography.caption.copyWith(
+                                  color: DSColors.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
                                   const Icon(Icons.star_rounded,
-                                      color: SpottColors.warning, size: 14),
+                                      color: DSColors.warning, size: 14),
                                   const SizedBox(width: 4),
                                   Text(
                                     '4.9',
-                                    style: SpottTextStyles.caption.copyWith(
+                                    style: DSTypography.caption.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color: SpottColors.textPrimary,
+                                      color: DSColors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(width: 12),
                                   const Icon(Icons.verified_rounded,
-                                      color: SpottColors.info, size: 14),
+                                      color: DSColors.info, size: 14),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Verified',
-                                    style: SpottTextStyles.caption.copyWith(
-                                      color: SpottColors.info,
+                                    style: DSTypography.caption.copyWith(
+                                      color: DSColors.info,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -263,22 +264,22 @@ class RideConfirmationScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: SpottColors.warningSoft,
-                      borderRadius: BorderRadius.circular(SpottRadius.card),
-                      border: Border.all(color: SpottColors.warning.withValues(alpha: 0.2)),
+                      color: DSColors.warningSoft,
+                      borderRadius: BorderRadius.circular(DSRadius.card),
+                      border: Border.all(color: DSColors.warning.withValues(alpha: 0.2)),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(Icons.info_outline_rounded,
-                            color: SpottColors.warning, size: 18),
+                            color: DSColors.warning, size: 18),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             'Free cancellation within 24 hours of booking. '
                             'By proceeding, you agree to community guidelines.',
-                            style: SpottTextStyles.caption.copyWith(
-                              color: SpottColors.warning,
+                            style: DSTypography.caption.copyWith(
+                              color: DSColors.warning,
                               height: 1.45,
                             ),
                           ),
@@ -297,7 +298,7 @@ class RideConfirmationScreen extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               color: Colors.white,
-              border: Border(top: BorderSide(color: SpottColors.border)),
+              border: Border(top: BorderSide(color: DSColors.border)),
             ),
             padding: EdgeInsets.only(
               left: 20,
@@ -315,13 +316,13 @@ class RideConfirmationScreen extends StatelessWidget {
                   Navigator.pushNamed(context, AppRoutes.payment);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: SpottColors.primary,
+                  backgroundColor: DSColors.primary,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(SpottRadius.button),
+                    borderRadius: BorderRadius.circular(DSRadius.button),
                   ),
-                  textStyle: SpottTextStyles.label.copyWith(
+                  textStyle: DSTypography.labelLarge.copyWith(
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.6,
                   ),
@@ -345,10 +346,10 @@ class _SectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: SpottColors.surface1,
-        borderRadius: BorderRadius.circular(SpottRadius.card),
-        border: Border.all(color: SpottColors.border),
-        boxShadow: SpottShadows.elevation1,
+        color: DSColors.surface,
+        borderRadius: BorderRadius.circular(DSRadius.card),
+        border: Border.all(color: DSColors.border),
+        boxShadow: DSShadows.elevation1,
       ),
       child: child,
     );
@@ -367,15 +368,15 @@ class _InfoRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: SpottTextStyles.body.copyWith(
-            color: SpottColors.textSecondary,
+          style: DSTypography.body.copyWith(
+            color: DSColors.textSecondary,
           ),
         ),
         Text(
           value,
-          style: SpottTextStyles.body.copyWith(
+          style: DSTypography.body.copyWith(
             fontWeight: FontWeight.bold,
-            color: SpottColors.textPrimary,
+            color: DSColors.textPrimary,
           ),
         ),
       ],

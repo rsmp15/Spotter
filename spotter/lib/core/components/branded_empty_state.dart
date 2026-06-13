@@ -1,7 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../theme/spacing.dart';
-import '../theme/typography.dart';
 
 import 'spott_buttons.dart';
 
@@ -67,11 +65,11 @@ class BrandedEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = iconColor ?? SpottColors.accentPurple;
+    final color = iconColor ?? DSColors.primaryDark;
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.xl),
+        padding: const EdgeInsets.symmetric(horizontal: DSSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -95,31 +93,31 @@ class BrandedEmptyState extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: SpottSpacing.xl),
+            const SizedBox(height: DSSpacing.xl),
 
             // Emotional headline
             Text(
               headline,
               textAlign: TextAlign.center,
-              style: SpottTextStyles.title.copyWith(
+              style: DSTypography.titleLarge.copyWith(
                 height: 1.3,
               ),
             ),
-            const SizedBox(height: SpottSpacing.sm),
+            const SizedBox(height: DSSpacing.sm),
 
             // Descriptive subtitle
             Text(
               description,
               textAlign: TextAlign.center,
-              style: SpottTextStyles.body.copyWith(
-                color: SpottColors.textTertiary,
+              style: DSTypography.body.copyWith(
+                color: DSColors.textTertiary,
                 height: 1.5,
               ),
             ),
 
             // CTA button
             if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: SpottSpacing.xl),
+              const SizedBox(height: DSSpacing.xl),
               SizedBox(
                 width: 200,
                 child: SpottButton.primary(

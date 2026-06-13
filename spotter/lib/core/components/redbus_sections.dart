@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../theme/spacing.dart';
-import '../theme/redbus_theme.dart';
+import 'package:spotter/design_system/design_system.dart';
 
 /// Enum to represent different visual styles of RedBus sections
 enum RBSectionStyle {
@@ -39,7 +37,7 @@ class RBSectionContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     BoxDecoration decoration;
     EdgeInsetsGeometry defaultPadding = const EdgeInsets.symmetric(
-      horizontal: SpottSpacing.pageHorizontal,
+      horizontal: 12.0,
       vertical: 24,
     );
     EdgeInsetsGeometry defaultMargin = EdgeInsets.zero;
@@ -51,7 +49,7 @@ class RBSectionContainer extends StatelessWidget {
       case RBSectionStyle.brandHero:
         decoration = BoxDecoration(
           gradient: const LinearGradient(
-            colors: [RBColors.primary, Color(0xFFB73D45)],
+            colors: [DSColors.primary, Color(0xFFB73D45)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -72,7 +70,7 @@ class RBSectionContainer extends StatelessWidget {
             bottomLeft: Radius.circular(bRadius),
             bottomRight: Radius.circular(bRadius),
           ),
-          border: showBorder ? Border.all(color: SpottColors.border) : null,
+          border: showBorder ? Border.all(color: DSColors.border) : null,
         );
         break;
       case RBSectionStyle.rewards:
@@ -129,7 +127,7 @@ class RBSectionContainer extends StatelessWidget {
         decoration = BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: SpottColors.border, width: 1),
+          border: Border.all(color: DSColors.border, width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -168,8 +166,8 @@ class RBSectionHeader extends StatelessWidget {
     this.subtitle,
     this.actionLabel,
     this.onAction,
-    this.titleColor = RBColors.textDark,
-    this.subtitleColor = RBColors.textMedium,
+    this.titleColor = DSColors.textPrimary,
+    this.subtitleColor = DSColors.textSecondary,
   });
 
   @override
@@ -217,7 +215,7 @@ class RBSectionHeader extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: RBColors.primary,
+                foregroundColor: DSColors.primary,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -386,7 +384,7 @@ class _RBCarouselSectionState extends State<RBCarouselSection> {
                 width: _currentIndex == index ? 16 : 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: _currentIndex == index ? RBColors.primary : Colors.grey.shade300,
+                  color: _currentIndex == index ? DSColors.primary : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),

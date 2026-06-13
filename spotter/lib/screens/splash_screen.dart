@@ -1,8 +1,9 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/spacing.dart';
+
+
+
 import '../core/components/spott_buttons.dart';
 import '../core/components/status_chip.dart';
 
@@ -18,13 +19,13 @@ class SplashScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              SpottColors.background,
+              DSColors.background,
               Color(0xFF150A26), // Deep violet gradient
             ],
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg, vertical: SpottSpacing.lg),
+          padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg, vertical: DSSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -42,7 +43,7 @@ class SplashScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            SpottColors.primary.withValues(alpha: 0.25),
+                            DSColors.primary.withValues(alpha: 0.25),
                             Colors.transparent,
                           ],
                         ),
@@ -50,7 +51,7 @@ class SplashScreen extends StatelessWidget {
                     ),
                     Text(
                       'SPOTT',
-                      style: SpottTextStyles.display.copyWith(
+                      style: DSTypography.headline.copyWith(
                         fontSize: 56,
                         letterSpacing: -3.0,
                       ),
@@ -69,21 +70,21 @@ class SplashScreen extends StatelessWidget {
                   fontSize: 26,
                   height: 1.2,
                   fontWeight: FontWeight.bold,
-                  color: SpottColors.textPrimary,
+                  color: DSColors.textPrimary,
                   fontFamily: 'Inter',
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               // Feature chips row
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   StatusChip(label: '⚡ Cost Sharing'),
-                  SizedBox(width: SpottSpacing.sm),
+                  SizedBox(width: DSSpacing.sm),
                   StatusChip(label: '📦 Parcel Delivery'),
-                  SizedBox(width: SpottSpacing.sm),
+                  SizedBox(width: DSSpacing.sm),
                   StatusChip(label: '🛡 Verified'),
                 ],
               ),
@@ -97,7 +98,7 @@ class SplashScreen extends StatelessWidget {
                   Navigator.pushNamed(context, AppRoutes.chooseRole);
                 },
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               // Ghost Secondary Button
               SpottButton.ghost(
@@ -106,7 +107,7 @@ class SplashScreen extends StatelessWidget {
                   Navigator.pushNamed(context, AppRoutes.login);
                 },
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
             ],
           ),
         ),

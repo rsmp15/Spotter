@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -6,8 +7,8 @@ import '../app/app_assets.dart';
 import '../models/spott_models.dart';
 import '../controllers/ride_controller.dart';
 import '../core/components/glass_scaffold.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
+
+
 
 class ChooseRoleScreen extends StatelessWidget {
   const ChooseRoleScreen({super.key});
@@ -20,7 +21,7 @@ class ChooseRoleScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
+        leading: const BackButton(color: DSColors.textPrimary),
         centerTitle: true,
         title: Row(
           mainAxisSize: MainAxisSize.min,
@@ -67,11 +68,11 @@ class ChooseRoleScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: SpottSpacing.lg),
+            padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: SpottSpacing.sm),
+                const SizedBox(height: DSSpacing.sm),
                 Text(
                   'How will you\nuse Spott?',
                   style: GoogleFonts.poppins(
@@ -81,7 +82,7 @@ class ChooseRoleScreen extends StatelessWidget {
                     height: 1.15,
                   ),
                 ),
-                const SizedBox(height: SpottSpacing.xs),
+                const SizedBox(height: DSSpacing.xs),
                 Text(
                   'You can switch anytime',
                   style: GoogleFonts.poppins(
@@ -90,7 +91,7 @@ class ChooseRoleScreen extends StatelessWidget {
                     color: Colors.black54,
                   ),
                 ),
-                const SizedBox(height: SpottSpacing.lg),
+                const SizedBox(height: DSSpacing.lg),
 
                 // Premium Marketplace Metrics Cards
                 Row(
@@ -129,49 +130,42 @@ class ChooseRoleScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: SpottSpacing.lg),
+                const SizedBox(height: DSSpacing.lg),
 
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.only(bottom: SpottSpacing.md),
+                    padding: const EdgeInsets.only(bottom: DSSpacing.md),
                     physics: const BouncingScrollPhysics(),
                     children: [
-                      // Passenger Card
+                      // User Card
                       _RoleBentoCard(
-                        title: 'Find &\nJoin Trips',
-                        subtitle: 'Ride with verified, local travelers',
-                        tag: 'MOST POPULAR',
+                        title: 'Book & Send',
+                        subtitle: 'Find rides and send parcels fast',
+                        tag: 'PASSENGER & SENDER',
                         tagColor: const Color(0xFF6B1D2F),
                         assetPath: AppAssets.car,
                         onTap: () {
-                          ride.updateUserRole(UserRole.passenger);
+                          ride.updateUserRole(UserRole.user);
                           Navigator.pushNamed(context, AppRoutes.home);
                         },
                       ),
 
-                      // Traveler Card
+                      // Rider Card
                       _RoleBentoCard(
-                        title: 'Offer &\nShare Trips',
-                        subtitle: 'Recover costs, build community',
-                        tag: 'EARN MONEY',
+                        title: 'Share Rides',
+                        subtitle: 'Recover costs, travel together',
+                        tag: 'VERIFIED RIDER',
                         tagColor: const Color(0xFF047857),
                         assetPath: AppAssets.bike,
                         onTap: () {
-                          ride.updateUserRole(UserRole.traveler);
-                          Navigator.pushNamed(context, AppRoutes.kyc);
-                        },
-                      ),
-
-                      // Parcel Sender Card
-                      _RoleBentoCard(
-                        title: 'Ship via\nTravelers',
-                        subtitle: 'Affordable 📦 Fast 🛡️ Fully Tracked',
-                        tag: 'FAST DELIVERY',
-                        tagColor: const Color(0xFFB45309),
-                        assetPath: AppAssets.parcel,
-                        onTap: () {
-                          ride.updateUserRole(UserRole.parcelSender);
-                          Navigator.pushNamed(context, AppRoutes.home);
+                          if (ride.kycStatus == KycStatus.verified) {
+                            ride.updateUserRole(UserRole.rider);
+                            Navigator.pushNamed(context, AppRoutes.home);
+                          } else if (ride.kycStatus == KycStatus.submitted) {
+                            Navigator.pushNamed(context, AppRoutes.verificationPending);
+                          } else {
+                            Navigator.pushNamed(context, AppRoutes.kyc);
+                          }
                         },
                       ),
                     ],

@@ -6,7 +6,7 @@ import 'trust_badge.dart';
 class TripResultCard extends StatelessWidget {
   final VoidCallback onTap;
 
-  const TripResultCard({Key? key, required this.onTap}) : super(key: key);
+  const TripResultCard({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

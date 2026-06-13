@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../app/app_routes.dart';
-import '../core/theme/redbus_theme.dart';
+import 'package:spotter/design_system/design_system.dart';
 import '../core/components/redbus_sections.dart';
 
 class TripDetailsScreen extends StatefulWidget {
@@ -46,7 +46,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: RBColors.background,
+      backgroundColor: DSColors.background,
       body: Column(
         children: [
           _buildHeader(context),
@@ -67,12 +67,12 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // HEADER
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildHeader(BuildContext context) {
     return Container(
-      color: RBColors.primary,
+      color: DSColors.primary,
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -193,17 +193,17 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // TAB BAR
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildTabBar() {
     return Container(
       color: Colors.white,
       child: TabBar(
         controller: _tabController,
-        labelColor: RBColors.primary,
-        unselectedLabelColor: RBColors.textMedium,
-        indicatorColor: RBColors.primary,
+        labelColor: DSColors.primary,
+        unselectedLabelColor: DSColors.textSecondary,
+        indicatorColor: DSColors.primary,
         indicatorWeight: 2.5,
         labelStyle: const TextStyle(
           fontFamily: 'Inter',
@@ -224,9 +224,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // TAB 1: SEAT SELECTION (redBus exact)
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildSeatsTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -238,7 +238,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(RBRadius.lg),
+              borderRadius: BorderRadius.circular(DSRadius.lg),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -266,15 +266,15 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                           fontFamily: 'Inter',
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: RBColors.textDark,
+                          color: DSColors.textPrimary,
                         ),
                       ),
                       const Text(
-                        'Honda City • MH 12 AB 1234',
+                        'Honda City â€¢ MH 12 AB 1234',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 12,
-                          color: RBColors.textMedium,
+                          color: DSColors.textSecondary,
                         ),
                       ),
                     ],
@@ -283,7 +283,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                 Row(
                   children: [
                     const Icon(Icons.star_rounded,
-                        color: RBColors.gold, size: 14),
+                        color: DSColors.warning, size: 14),
                     const SizedBox(width: 2),
                     const Text(
                       '4.9',
@@ -291,7 +291,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                         fontFamily: 'Inter',
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: RBColors.textDark,
+                        color: DSColors.textPrimary,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -300,7 +300,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 11,
-                        color: RBColors.textLight,
+                        color: DSColors.textTertiary,
                       ),
                     ),
                   ],
@@ -314,11 +314,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
           // Seat legend
           Row(
             children: [
-              _LegendDot(color: RBColors.seatAvailable, label: 'Available'),
+              _LegendDot(color: DSColors.success, label: 'Available'),
               const SizedBox(width: 16),
-              _LegendDot(color: RBColors.seatUnavailable, label: 'Booked'),
+              _LegendDot(color: DSColors.textMuted, label: 'Booked'),
               const SizedBox(width: 16),
-              _LegendDot(color: RBColors.seatSelected, label: 'Selected'),
+              _LegendDot(color: DSColors.info, label: 'Selected'),
             ],
           ),
 
@@ -329,7 +329,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(RBRadius.lg),
+              borderRadius: BorderRadius.circular(DSRadius.lg),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -362,15 +362,15 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: RBColors.seatSelected.withValues(alpha: 0.07),
-                borderRadius: BorderRadius.circular(RBRadius.md),
+                color: DSColors.info.withValues(alpha: 0.07),
+                borderRadius: BorderRadius.circular(DSRadius.md),
                 border: Border.all(
-                    color: RBColors.seatSelected.withValues(alpha: 0.3)),
+                    color: DSColors.info.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
                   const Icon(Icons.event_seat_rounded,
-                      color: RBColors.seatSelected, size: 18),
+                      color: DSColors.info, size: 18),
                   const SizedBox(width: 8),
                   Text(
                     '${_selectedSeats.length} seat${_selectedSeats.length > 1 ? 's' : ''} selected',
@@ -378,17 +378,17 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                       fontFamily: 'Inter',
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: RBColors.seatSelected,
+                      color: DSColors.info,
                     ),
                   ),
                   const Spacer(),
                   Text(
-                    '₹${_selectedSeats.length * _pricePerSeat}',
+                    'â‚¹${_selectedSeats.length * _pricePerSeat}',
                     style: const TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
-                      color: RBColors.primary,
+                      color: DSColors.primary,
                     ),
                   ),
                 ],
@@ -426,7 +426,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
             fontFamily: 'Inter',
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: RBColors.textMedium,
+            color: DSColors.textSecondary,
           ),
         ),
       ),
@@ -450,7 +450,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
               style: const TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 10,
-                color: RBColors.textLight,
+                color: DSColors.textTertiary,
               ),
             ),
           ),
@@ -474,17 +474,17 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
     Color iconColor;
 
     if (isTaken) {
-      bg = RBColors.seatUnavailable.withValues(alpha: 0.12);
-      border = RBColors.seatUnavailable.withValues(alpha: 0.3);
-      iconColor = RBColors.seatUnavailable;
+      bg = DSColors.textMuted.withValues(alpha: 0.12);
+      border = DSColors.textMuted.withValues(alpha: 0.3);
+      iconColor = DSColors.textMuted;
     } else if (isSelected) {
-      bg = RBColors.seatSelected.withValues(alpha: 0.15);
-      border = RBColors.seatSelected;
-      iconColor = RBColors.seatSelected;
+      bg = DSColors.info.withValues(alpha: 0.15);
+      border = DSColors.info;
+      iconColor = DSColors.info;
     } else {
-      bg = RBColors.seatAvailable.withValues(alpha: 0.1);
-      border = RBColors.seatAvailable.withValues(alpha: 0.5);
-      iconColor = RBColors.seatAvailable;
+      bg = DSColors.success.withValues(alpha: 0.1);
+      border = DSColors.success.withValues(alpha: 0.5);
+      iconColor = DSColors.success;
     }
 
     return GestureDetector(
@@ -518,9 +518,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // TAB 2: TRIP DETAILS
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildDetailsTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -546,14 +546,14 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10),
                     decoration: BoxDecoration(
-                      color: RBColors.surfaceGrey,
+                      color: DSColors.surfaceVariant,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: RBColors.divider),
+                      border: Border.all(color: DSColors.divider),
                     ),
                     child: Row(
                       children: [
                         const Icon(Icons.local_cafe_rounded,
-                            color: RBColors.textMedium, size: 16),
+                            color: DSColors.textSecondary, size: 16),
                         const SizedBox(width: 8),
                         const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -564,7 +564,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                                 fontFamily: 'Inter',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: RBColors.textDark,
+                                color: DSColors.textPrimary,
                               ),
                             ),
                             Text(
@@ -572,7 +572,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 11,
-                                color: RBColors.textMedium,
+                                color: DSColors.textSecondary,
                               ),
                             ),
                           ],
@@ -603,21 +603,21 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                   icon: Icons.cancel_outlined,
                   title: 'Cancellation',
                   value: 'Free within 24h of booking',
-                  valueColor: RBColors.green,
+                  valueColor: DSColors.success,
                 ),
-                const Divider(height: 1, color: RBColors.divider),
+                const Divider(height: 1, color: DSColors.divider),
                 _PolicyRow(
                   icon: Icons.luggage_rounded,
                   title: 'Luggage',
                   value: '1 bag (15 kg max)',
-                  valueColor: RBColors.textMedium,
+                  valueColor: DSColors.textSecondary,
                 ),
-                const Divider(height: 1, color: RBColors.divider),
+                const Divider(height: 1, color: DSColors.divider),
                 _PolicyRow(
                   icon: Icons.no_food_rounded,
                   title: 'Food',
                   value: 'No strong-smelling food',
-                  valueColor: RBColors.textMedium,
+                  valueColor: DSColors.textSecondary,
                 ),
               ],
             ),
@@ -630,7 +630,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(RBRadius.lg),
+              borderRadius: BorderRadius.circular(DSRadius.lg),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -644,13 +644,13 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                 children: [
                   _StatBox(value: '4.9', label: 'Rating'),
                   VerticalDivider(
-                      color: RBColors.divider, width: 1),
+                      color: DSColors.divider, width: 1),
                   _StatBox(value: '98%', label: 'Response'),
                   VerticalDivider(
-                      color: RBColors.divider, width: 1),
+                      color: DSColors.divider, width: 1),
                   _StatBox(value: '542', label: 'Trips'),
                   VerticalDivider(
-                      color: RBColors.divider, width: 1),
+                      color: DSColors.divider, width: 1),
                   _StatBox(value: '0.4%', label: 'Cancel rate'),
                 ],
               ),
@@ -663,19 +663,19 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // TAB 3: AMENITIES
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildAmenitiesTab() {
     final amenities = [
-      (Icons.ac_unit_rounded, 'Climate Control', RBColors.blue),
-      (Icons.wifi_rounded, 'Free Wi-Fi', RBColors.blue),
-      (Icons.power_rounded, 'USB Charging', RBColors.green),
-      (Icons.verified_user_rounded, 'ID Verified', RBColors.green),
-      (Icons.directions_car_rounded, 'Vehicle Inspected', RBColors.green),
-      (Icons.music_note_rounded, 'Music Available', RBColors.purple),
-      (Icons.no_food_rounded, 'Non-Smoking', RBColors.orange),
-      (Icons.pets_rounded, 'Pet Friendly', RBColors.orange),
+      (Icons.ac_unit_rounded, 'Climate Control', DSColors.info),
+      (Icons.wifi_rounded, 'Free Wi-Fi', DSColors.info),
+      (Icons.power_rounded, 'USB Charging', DSColors.success),
+      (Icons.verified_user_rounded, 'ID Verified', DSColors.success),
+      (Icons.directions_car_rounded, 'Vehicle Inspected', DSColors.success),
+      (Icons.music_note_rounded, 'Music Available', DSColors.primaryDark),
+      (Icons.no_food_rounded, 'Non-Smoking', DSColors.warning),
+      (Icons.pets_rounded, 'Pet Friendly', DSColors.warning),
     ];
 
     return SingleChildScrollView(
@@ -686,7 +686,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(RBRadius.lg),
+              borderRadius: BorderRadius.circular(DSRadius.lg),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -727,7 +727,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                             fontFamily: 'Inter',
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: RBColors.textDark,
+                            color: DSColors.textPrimary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -745,9 +745,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
     );
   }
 
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // BOOKING BAR (bottom sticky)
-  // ══════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   Widget _buildBookingBar(BuildContext context) {
     final count = _selectedSeats.length;
     final total = count * _pricePerSeat;
@@ -789,16 +789,16 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                       style: const TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
-                        color: RBColors.textMedium,
+                        color: DSColors.textSecondary,
                       ),
                     ),
                     Text(
-                      '₹$total',
+                      'â‚¹$total',
                       style: const TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        color: RBColors.primary,
+                        color: DSColors.primary,
                       ),
                     ),
                   ],
@@ -812,11 +812,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
                     Navigator.pushNamed(context, AppRoutes.confirmRide);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: RBColors.primary,
+                    backgroundColor: DSColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 28),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(RBRadius.md),
+                      borderRadius: BorderRadius.circular(DSRadius.md),
                     ),
                     elevation: 0,
                   ),
@@ -839,9 +839,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
   }
 }
 
-// ════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // HELPER WIDGETS
-// ════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 class _LegendDot extends StatelessWidget {
   final Color color;
   final String label;
@@ -867,7 +867,7 @@ class _LegendDot extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Inter',
             fontSize: 11,
-            color: RBColors.textMedium,
+            color: DSColors.textSecondary,
           ),
         ),
       ],
@@ -897,11 +897,11 @@ class _SectionCard extends StatelessWidget {
                 fontFamily: 'Inter',
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: RBColors.textDark,
+                color: DSColors.textPrimary,
               ),
             ),
           ),
-          const Divider(height: 1, color: RBColors.divider),
+          const Divider(height: 1, color: DSColors.divider),
           Padding(
             padding: const EdgeInsets.all(20),
             child: child,
@@ -940,7 +940,7 @@ class _RouteStop extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: Colors.white,
                 border: Border.all(
-                  color: isFirst ? RBColors.primary : RBColors.blue,
+                  color: isFirst ? DSColors.primary : DSColors.info,
                   width: 5,
                 ),
               ),
@@ -959,7 +959,7 @@ class _RouteStop extends StatelessWidget {
                   fontFamily: 'Inter',
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: RBColors.textDark,
+                  color: DSColors.textPrimary,
                 ),
               ),
               Text(
@@ -967,7 +967,7 @@ class _RouteStop extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 11,
-                  color: RBColors.textMedium,
+                  color: DSColors.textSecondary,
                 ),
               ),
             ],
@@ -982,7 +982,7 @@ class _RouteStop extends StatelessWidget {
                 fontFamily: 'Inter',
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: RBColors.textDark,
+                color: DSColors.textPrimary,
               ),
             ),
             Text(
@@ -990,7 +990,7 @@ class _RouteStop extends StatelessWidget {
               style: const TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 11,
-                color: RBColors.textLight,
+                color: DSColors.textTertiary,
               ),
             ),
           ],
@@ -1017,7 +1017,7 @@ class _PolicyRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: RBColors.textMedium),
+          Icon(icon, size: 18, color: DSColors.textSecondary),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -1025,7 +1025,7 @@ class _PolicyRow extends StatelessWidget {
               style: const TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 13,
-                color: RBColors.textDark,
+                color: DSColors.textPrimary,
               ),
             ),
           ),
@@ -1059,7 +1059,7 @@ class _StatBox extends StatelessWidget {
             fontFamily: 'Inter',
             fontSize: 16,
             fontWeight: FontWeight.w800,
-            color: RBColors.textDark,
+            color: DSColors.textPrimary,
           ),
         ),
         const SizedBox(height: 2),
@@ -1068,7 +1068,7 @@ class _StatBox extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Inter',
             fontSize: 10,
-            color: RBColors.textLight,
+            color: DSColors.textTertiary,
           ),
         ),
       ],

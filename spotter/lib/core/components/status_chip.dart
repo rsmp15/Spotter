@@ -1,6 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../theme/radius.dart';
 
 enum ChipStatus { verified, pending, approved, rejected, delivered, inTransit, neutral }
 
@@ -22,7 +21,7 @@ class StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: _getBgColor(),
-        borderRadius: BorderRadius.circular(SpottRadius.pill),
+        borderRadius: BorderRadius.circular(DSRadius.pill),
         border: Border.all(color: _getBorderColor(), width: 1.0),
       ),
       child: Row(
@@ -51,14 +50,14 @@ class StatusChip extends StatelessWidget {
       case ChipStatus.verified:
       case ChipStatus.approved:
       case ChipStatus.delivered:
-        return SpottColors.success.withValues(alpha: 0.14);
+        return DSColors.success.withValues(alpha: 0.14);
       case ChipStatus.pending:
       case ChipStatus.inTransit:
-        return SpottColors.warning.withValues(alpha: 0.14);
+        return DSColors.warning.withValues(alpha: 0.14);
       case ChipStatus.rejected:
-        return SpottColors.danger.withValues(alpha: 0.14);
+        return DSColors.danger.withValues(alpha: 0.14);
       case ChipStatus.neutral:
-        return SpottColors.surface2;
+        return DSColors.surfaceVariant;
     }
   }
 
@@ -67,14 +66,14 @@ class StatusChip extends StatelessWidget {
       case ChipStatus.verified:
       case ChipStatus.approved:
       case ChipStatus.delivered:
-        return SpottColors.success.withValues(alpha: 0.3);
+        return DSColors.success.withValues(alpha: 0.3);
       case ChipStatus.pending:
       case ChipStatus.inTransit:
-        return SpottColors.warning.withValues(alpha: 0.3);
+        return DSColors.warning.withValues(alpha: 0.3);
       case ChipStatus.rejected:
-        return SpottColors.danger.withValues(alpha: 0.3);
+        return DSColors.danger.withValues(alpha: 0.3);
       case ChipStatus.neutral:
-        return SpottColors.border;
+        return DSColors.border;
     }
   }
 
@@ -83,14 +82,14 @@ class StatusChip extends StatelessWidget {
       case ChipStatus.verified:
       case ChipStatus.approved:
       case ChipStatus.delivered:
-        return SpottColors.success;
+        return DSColors.success;
       case ChipStatus.pending:
       case ChipStatus.inTransit:
-        return SpottColors.warning;
+        return DSColors.warning;
       case ChipStatus.rejected:
-        return SpottColors.danger;
+        return DSColors.danger;
       case ChipStatus.neutral:
-        return SpottColors.textSecondary;
+        return DSColors.textSecondary;
     }
   }
 }

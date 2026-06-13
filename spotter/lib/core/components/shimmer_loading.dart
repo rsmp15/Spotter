@@ -1,5 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
 
 /// Shimmer loading placeholder for skeleton screens.
 /// Use in place of content while data is loading.
@@ -82,9 +82,9 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
               begin: Alignment(-1.0 + 2.0 * _controller.value, 0),
               end: Alignment(1.0 + 2.0 * _controller.value, 0),
               colors: const [
-                SpottColors.shimmerBase,
-                SpottColors.shimmerHighlight,
-                SpottColors.shimmerBase,
+                DSColors.shimmerBase,
+                DSColors.shimmerHighlight,
+                DSColors.shimmerBase,
               ],
               stops: const [0.0, 0.5, 1.0],
             ),

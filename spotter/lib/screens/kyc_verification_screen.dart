@@ -1,13 +1,15 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
 import '../app/app_routes.dart';
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
+import '../controllers/ride_controller.dart';
+
+
+
+
 
 class KycVerificationScreen extends StatelessWidget {
   const KycVerificationScreen({super.key});
@@ -18,30 +20,30 @@ class KycVerificationScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Verification Center', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('Verification Center', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(SpottSpacing.lg),
+            padding: const EdgeInsets.all(DSSpacing.lg),
             children: [
-              Text('Become Verified', style: SpottTextStyles.display.copyWith(fontSize: 32)),
-              const SizedBox(height: SpottSpacing.xs),
+              Text('Become Verified', style: DSTypography.headline.copyWith(fontSize: 32)),
+              const SizedBox(height: DSSpacing.xs),
               Text(
                 'Build trust within the SPOTT community. Complete your profile to unlock premium benefits.', 
-                style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)
+                style: DSTypography.body.copyWith(color: DSColors.textSecondary)
               ),
-              const SizedBox(height: SpottSpacing.xl),
+              const SizedBox(height: DSSpacing.xl),
 
               // Trust Score
               GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.xl),
+                padding: const EdgeInsets.all(DSSpacing.xl),
                 child: Column(
                   children: [
-                    Text('Trust Score', style: SpottTextStyles.headline.copyWith(fontSize: 24)),
-                    const SizedBox(height: SpottSpacing.xl),
+                    Text('Trust Score', style: DSTypography.headline.copyWith(fontSize: 24)),
+                    const SizedBox(height: DSSpacing.xl),
                     SizedBox(
                       width: 150,
                       height: 150,
@@ -53,19 +55,19 @@ class KycVerificationScreen extends StatelessWidget {
                             height: 150,
                             child: CircularProgressIndicator(
                               value: 0.72,
-                              color: SpottColors.primary,
-                              backgroundColor: SpottColors.surface1,
+                              color: DSColors.primary,
+                              backgroundColor: DSColors.surface,
                               strokeWidth: 8,
                             ),
                           ),
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('72%', style: SpottTextStyles.display.copyWith(fontSize: 40)),
+                              Text('72%', style: DSTypography.headline.copyWith(fontSize: 40)),
                               Text(
                                 'VERIFIED', 
-                                style: SpottTextStyles.label.copyWith(
-                                  color: SpottColors.textSecondary,
+                                style: DSTypography.labelLarge.copyWith(
+                                  color: DSColors.textSecondary,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.2,
                                 ),
@@ -75,37 +77,37 @@ class KycVerificationScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: SpottSpacing.lg),
+                    const SizedBox(height: DSSpacing.lg),
                     Text(
                       'You\'re almost there! Complete the remaining steps to reach 100%.',
                       textAlign: TextAlign.center,
-                      style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+                      style: DSTypography.body.copyWith(color: DSColors.textSecondary),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               // Trust Benefits
               GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.xl),
+                padding: const EdgeInsets.all(DSSpacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.verified_rounded, color: SpottColors.primary),
-                        const SizedBox(width: SpottSpacing.sm),
-                        Text('Trust Benefits', style: SpottTextStyles.headline.copyWith(fontSize: 20)),
+                        const Icon(Icons.verified_rounded, color: DSColors.primary),
+                        const SizedBox(width: DSSpacing.sm),
+                        Text('Trust Benefits', style: DSTypography.headline.copyWith(fontSize: 20)),
                       ],
                     ),
-                    const SizedBox(height: SpottSpacing.lg),
+                    const SizedBox(height: DSSpacing.lg),
                     _buildBenefitItem(
                       icon: Icons.trending_up_rounded,
                       title: 'More Bookings',
                       subtitle: 'Verified profiles receive up to 3x more booking requests.',
                     ),
-                    const SizedBox(height: SpottSpacing.md),
+                    const SizedBox(height: DSSpacing.md),
                     _buildBenefitItem(
                       icon: Icons.visibility_rounded,
                       title: 'Higher Visibility',
@@ -114,16 +116,16 @@ class KycVerificationScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: SpottSpacing.xl),
+              const SizedBox(height: DSSpacing.xl),
 
               // Verification Checklist
-              Text('Verification Checklist', style: SpottTextStyles.headline.copyWith(fontSize: 20)),
-              const SizedBox(height: SpottSpacing.xs),
+              Text('Verification Checklist', style: DSTypography.headline.copyWith(fontSize: 20)),
+              const SizedBox(height: DSSpacing.xs),
               Text(
                 'Complete these steps to verify your identity.', 
-                style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)
+                style: DSTypography.body.copyWith(color: DSColors.textSecondary)
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               _KycTile(
                 title: 'Aadhaar or PAN',
@@ -133,7 +135,7 @@ class KycVerificationScreen extends StatelessWidget {
                 isActive: true,
                 onTap: () => _showKycMessage(context, 'Aadhaar or PAN upload opened'),
               ),
-              const SizedBox(height: SpottSpacing.sm),
+              const SizedBox(height: DSSpacing.sm),
               _KycTile(
                 title: 'Selfie verification',
                 subtitle: 'Take a quick selfie.',
@@ -142,7 +144,7 @@ class KycVerificationScreen extends StatelessWidget {
                 isActive: false,
                 onTap: () => _showKycMessage(context, 'Selfie verification opened'),
               ),
-              const SizedBox(height: SpottSpacing.sm),
+              const SizedBox(height: DSSpacing.sm),
               _KycTile(
                 title: 'Driving licence',
                 subtitle: 'Upload your driving licence.',
@@ -151,7 +153,7 @@ class KycVerificationScreen extends StatelessWidget {
                 isActive: false,
                 onTap: () => _showKycMessage(context, 'Driving licence upload opened'),
               ),
-              const SizedBox(height: SpottSpacing.sm),
+              const SizedBox(height: DSSpacing.sm),
               _KycTile(
                 title: 'Vehicle document',
                 subtitle: 'Registration and insurance.',
@@ -164,12 +166,15 @@ class KycVerificationScreen extends StatelessWidget {
             ],
           ),
           Positioned(
-            bottom: SpottSpacing.lg,
-            left: SpottSpacing.lg,
-            right: SpottSpacing.lg,
+            bottom: DSSpacing.lg,
+            left: DSSpacing.lg,
+            right: DSSpacing.lg,
             child: SpottButton.primary(
               label: 'Complete Verification',
-              onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.driverHome),
+              onPressed: () {
+                RideScope.of(context).submitKyc();
+                Navigator.pushReplacementNamed(context, AppRoutes.verificationPending);
+              },
             ),
           ),
         ],
@@ -185,20 +190,20 @@ class KycVerificationScreen extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: SpottColors.surface1,
+            color: DSColors.surface,
             shape: BoxShape.circle,
-            border: Border.all(color: SpottColors.borderSubtle),
+            border: Border.all(color: DSColors.borderSubtle),
           ),
-          child: Icon(icon, color: SpottColors.textPrimary, size: 20),
+          child: Icon(icon, color: DSColors.textPrimary, size: 20),
         ),
-        const SizedBox(width: SpottSpacing.md),
+        const SizedBox(width: DSSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: SpottTextStyles.titleSmall.copyWith(fontWeight: FontWeight.bold)),
+              Text(title, style: DSTypography.titleLarge.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 2),
-              Text(subtitle, style: SpottTextStyles.body.copyWith(fontSize: 13, color: SpottColors.textSecondary)),
+              Text(subtitle, style: DSTypography.body.copyWith(fontSize: 13, color: DSColors.textSecondary)),
             ],
           ),
         ),
@@ -232,18 +237,18 @@ class _KycTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: isActive ? Colors.white : SpottColors.surface2.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(SpottRadius.card), // matching rounded-btn (18px approx)
-        border: Border.all(color: isActive ? SpottColors.primary : SpottColors.borderSubtle, width: isActive ? 2 : 1),
+        color: isActive ? Colors.white : DSColors.surfaceVariant.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(DSRadius.card), // matching rounded-btn (18px approx)
+        border: Border.all(color: isActive ? DSColors.primary : DSColors.borderSubtle, width: isActive ? 2 : 1),
         boxShadow: isActive ? [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 10, offset: const Offset(0, 4))] : null,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(SpottRadius.card),
+          borderRadius: BorderRadius.circular(DSRadius.card),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(SpottRadius.card),
+            borderRadius: BorderRadius.circular(DSRadius.card),
             child: Stack(
               children: [
                 if (isActive)
@@ -251,7 +256,7 @@ class _KycTile extends StatelessWidget {
                     left: 0,
                     top: 0,
                     bottom: 0,
-                    child: Container(width: 6, color: SpottColors.primary),
+                    child: Container(width: 6, color: DSColors.primary),
                   ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -262,20 +267,20 @@ class _KycTile extends StatelessWidget {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: SpottColors.surface1,
+                          color: DSColors.surface,
                           shape: BoxShape.circle,
-                          border: Border.all(color: SpottColors.borderSubtle),
+                          border: Border.all(color: DSColors.borderSubtle),
                         ),
-                        child: Icon(icon, color: SpottColors.textPrimary, size: 24),
+                        child: Icon(icon, color: DSColors.textPrimary, size: 24),
                       ),
-                      const SizedBox(width: SpottSpacing.md),
+                      const SizedBox(width: DSSpacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(title, style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold, color: SpottColors.textPrimary)),
+                            Text(title, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold, color: DSColors.textPrimary)),
                             const SizedBox(height: 2),
-                            Text(subtitle, style: SpottTextStyles.body.copyWith(fontSize: 13, color: SpottColors.textSecondary)),
+                            Text(subtitle, style: DSTypography.body.copyWith(fontSize: 13, color: DSColors.textSecondary)),
                           ],
                         ),
                       ),
@@ -283,9 +288,10 @@ class _KycTile extends StatelessWidget {
                         ElevatedButton(
                           onPressed: onTap,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: SpottColors.primary,
+                            backgroundColor: DSColors.primary,
                             foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SpottRadius.pill)),
+                            minimumSize: const Size(80, 36),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DSRadius.pill)),
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                             elevation: 0,
                           ),
@@ -294,9 +300,9 @@ class _KycTile extends StatelessWidget {
                       else
                         Row(
                           children: [
-                            Text(status, style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold, color: SpottColors.textSecondary)),
+                            Text(status, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold, color: DSColors.textSecondary)),
                             const SizedBox(width: 8),
-                            const Icon(Icons.chevron_right_rounded, color: SpottColors.textSecondary),
+                            const Icon(Icons.chevron_right_rounded, color: DSColors.textSecondary),
                           ],
                         ),
                     ],

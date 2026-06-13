@@ -1,10 +1,11 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../app/app_routes.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/radius.dart';
-import '../core/theme/shadows.dart';
-import '../core/theme/typography.dart';
+
+
+
+
 import '../core/components/premium_inputs.dart';
 import '../core/components/spott_buttons.dart';
 
@@ -36,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SpottColors.background,
+      backgroundColor: DSColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -53,22 +54,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: SpottColors.primarySoft,
+                      color: DSColors.primarySoft,
                       shape: BoxShape.circle,
-                      boxShadow: SpottShadows.elevation1,
+                      boxShadow: DSShadows.elevation1,
                     ),
                     child: const Icon(
                       Icons.directions_car_rounded,
-                      color: SpottColors.primary,
+                      color: DSColors.primary,
                       size: 36,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'SPOTT',
-                    style: SpottTextStyles.headline.copyWith(
+                    style: DSTypography.headline.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: SpottColors.primary,
+                      color: DSColors.primary,
                       letterSpacing: 3.0,
                     ),
                   ),
@@ -78,26 +79,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: SpottColors.surface1,
-                      borderRadius: BorderRadius.circular(SpottRadius.card),
-                      boxShadow: SpottShadows.elevation1,
-                      border: Border.all(color: SpottColors.border),
+                      color: DSColors.surface,
+                      borderRadius: BorderRadius.circular(DSRadius.card),
+                      boxShadow: DSShadows.elevation1,
+                      border: Border.all(color: DSColors.border),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Welcome to Spott',
-                          style: SpottTextStyles.headline.copyWith(
+                          style: DSTypography.headline.copyWith(
                             fontWeight: FontWeight.w800,
-                            color: SpottColors.textPrimary,
+                            color: DSColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Enter your mobile number to get started.',
-                          style: SpottTextStyles.body.copyWith(
-                            color: SpottColors.textSecondary,
+                          style: DSTypography.body.copyWith(
+                            color: DSColors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -119,22 +120,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   Text(
                                     '🇮🇳 +91',
-                                    style: SpottTextStyles.bodyLarge.copyWith(
-                                      color: SpottColors.textPrimary,
+                                    style: DSTypography.bodyLarge.copyWith(
+                                      color: DSColors.textPrimary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
                                   const Icon(
                                     Icons.keyboard_arrow_down_rounded,
-                                    color: SpottColors.textSecondary,
+                                    color: DSColors.textSecondary,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
                                   Container(
                                     width: 1,
                                     height: 20,
-                                    color: SpottColors.border,
+                                    color: DSColors.border,
                                   ),
                                 ],
                               ),
@@ -155,8 +156,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             'By continuing, you agree to our Terms of Service',
                             textAlign: TextAlign.center,
-                            style: SpottTextStyles.caption.copyWith(
-                              color: SpottColors.textTertiary,
+                            style: DSTypography.caption.copyWith(
+                              color: DSColors.textTertiary,
                             ),
                           ),
                         ),
@@ -183,16 +184,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: SpottColors.successSoft,
-                      borderRadius: BorderRadius.circular(SpottRadius.card),
-                      border: Border.all(color: SpottColors.success.withValues(alpha: 0.2)),
+                      color: DSColors.successSoft,
+                      borderRadius: BorderRadius.circular(DSRadius.card),
+                      border: Border.all(color: DSColors.success.withValues(alpha: 0.2)),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(
                           Icons.lock_outline_rounded,
-                          color: SpottColors.success,
+                          color: DSColors.success,
                           size: 20,
                         ),
                         const SizedBox(width: 12),
@@ -202,16 +203,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Text(
                                 'Your number stays private',
-                                style: SpottTextStyles.body.copyWith(
+                                style: DSTypography.body.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: SpottColors.textPrimary,
+                                  color: DSColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'We never share your contact details until your ride sharing is confirmed.',
-                                style: SpottTextStyles.caption.copyWith(
-                                  color: SpottColors.textSecondary,
+                                style: DSTypography.caption.copyWith(
+                                  color: DSColors.textSecondary,
                                   height: 1.4,
                                 ),
                               ),
@@ -254,22 +255,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: SpottColors.border,
+                  color: DSColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Select Country Code',
-                style: SpottTextStyles.title.copyWith(fontWeight: FontWeight.bold),
+                style: DSTypography.titleLarge.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              const Divider(height: 1, color: SpottColors.divider),
+              const Divider(height: 1, color: DSColors.divider),
               Flexible(
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: countries.length,
-                  separatorBuilder: (_, _) => const Divider(height: 1, color: SpottColors.divider),
+                  separatorBuilder: (_, _) => const Divider(height: 1, color: DSColors.divider),
                   itemBuilder: (context, index) {
                     final country = countries[index];
                     return ListTile(
@@ -279,16 +280,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       title: Text(
                         country['name']!,
-                        style: SpottTextStyles.body.copyWith(
+                        style: DSTypography.body.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: SpottColors.textPrimary,
+                          color: DSColors.textPrimary,
                         ),
                       ),
                       trailing: Text(
                         country['code']!,
-                        style: SpottTextStyles.bodyLarge.copyWith(
+                        style: DSTypography.bodyLarge.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: SpottColors.primary,
+                          color: DSColors.primary,
                         ),
                       ),
                       onTap: () {
@@ -317,7 +318,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Enter a valid phone number'),
-          backgroundColor: SpottColors.primary,
+          backgroundColor: DSColors.primary,
         ),
       );
       return;

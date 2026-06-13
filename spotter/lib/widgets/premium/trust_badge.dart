@@ -8,11 +8,11 @@ class TrustBadge extends StatelessWidget {
   final Color? color;
 
   const TrustBadge({
-    Key? key,
+    super.key,
     required this.label,
     this.icon = Icons.check_circle_rounded,
     this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

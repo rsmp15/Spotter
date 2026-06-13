@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
-import '../core/theme/redbus_theme.dart';
+import 'package:spotter/design_system/design_system.dart';
 
 class BookingSuccessScreen extends StatefulWidget {
   const BookingSuccessScreen({super.key});
@@ -40,7 +40,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
           children: [
             // Header
             Container(
-              color: RBColors.primary,
+              color: DSColors.primary,
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               child: Row(
                 children: const [
@@ -74,15 +74,15 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            color: RBColors.green.withValues(alpha: 0.1),
+                            color: DSColors.success.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: RBColors.green.withValues(alpha: 0.3),
+                                color: DSColors.success.withValues(alpha: 0.3),
                                 width: 2),
                           ),
                           child: const Icon(
                             Icons.check_rounded,
-                            color: RBColors.green,
+                            color: DSColors.success,
                             size: 54,
                           ),
                         ),
@@ -97,7 +97,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                         fontFamily: 'Inter',
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
-                        color: RBColors.textDark,
+                        color: DSColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -106,7 +106,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13,
-                        color: RBColors.textMedium,
+                        color: DSColors.textSecondary,
                       ),
                     ),
 
@@ -121,15 +121,15 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: RBColors.blue.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(RBRadius.lg),
+                        color: DSColors.info.withValues(alpha: 0.06),
+                        borderRadius: BorderRadius.circular(DSRadius.lg),
                         border: Border.all(
-                            color: RBColors.blue.withValues(alpha: 0.2)),
+                            color: DSColors.info.withValues(alpha: 0.2)),
                       ),
                       child: Row(
                         children: [
                           const Icon(Icons.location_on_rounded,
-                              color: RBColors.blue, size: 18),
+                              color: DSColors.info, size: 18),
                           const SizedBox(width: 10),
                           const Expanded(
                             child: Text(
@@ -137,7 +137,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 12,
-                                color: RBColors.blue,
+                                color: DSColors.info,
                                 height: 1.4,
                               ),
                             ),
@@ -169,11 +169,11 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                       onPressed: () =>
                           Navigator.pushNamed(context, AppRoutes.tracking),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: RBColors.primary,
+                        backgroundColor: DSColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(RBRadius.md),
+                          borderRadius: BorderRadius.circular(DSRadius.md),
                         ),
                       ),
                       child: const Text(
@@ -198,10 +198,10 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                         (route) => false,
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: RBColors.primary,
-                        side: const BorderSide(color: RBColors.primary),
+                        foregroundColor: DSColors.primary,
+                        side: const BorderSide(color: DSColors.primary),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(RBRadius.md),
+                          borderRadius: BorderRadius.circular(DSRadius.md),
                         ),
                       ),
                       child: const Text(
@@ -229,7 +229,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(RBRadius.xl),
+        borderRadius: BorderRadius.circular(DSRadius.xl),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -244,10 +244,10 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: const BoxDecoration(
-              color: RBColors.primary,
+              color: DSColors.primary,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(RBRadius.xl),
-                topRight: Radius.circular(RBRadius.xl),
+                topLeft: Radius.circular(DSRadius.xl),
+                topRight: Radius.circular(DSRadius.xl),
               ),
             ),
             child: Row(
@@ -305,7 +305,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                 width: 18,
                 height: 18,
                 decoration: const BoxDecoration(
-                  color: RBColors.background,
+                  color: DSColors.background,
                   shape: BoxShape.circle,
                 ),
                 transform:
@@ -322,7 +322,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                       (_) => Container(
                         width: 4,
                         height: 1,
-                        color: RBColors.divider,
+                        color: DSColors.divider,
                       ),
                     ),
                   ),
@@ -332,7 +332,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                 width: 18,
                 height: 18,
                 decoration: const BoxDecoration(
-                  color: RBColors.background,
+                  color: DSColors.background,
                   shape: BoxShape.circle,
                 ),
                 transform:
@@ -361,7 +361,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                             fontFamily: 'Inter',
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-                            color: RBColors.textDark,
+                            color: DSColors.textPrimary,
                           ),
                         ),
                         Text(
@@ -369,13 +369,13 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 13,
-                            color: RBColors.textMedium,
+                            color: DSColors.textSecondary,
                           ),
                         ),
                       ],
                     ),
                     const Icon(Icons.arrow_forward_rounded,
-                        color: RBColors.textLight, size: 20),
+                        color: DSColors.textTertiary, size: 20),
                     Column(
                       crossAxisAlignment:
                           CrossAxisAlignment.end,
@@ -386,7 +386,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                             fontFamily: 'Inter',
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-                            color: RBColors.textDark,
+                            color: DSColors.textPrimary,
                           ),
                         ),
                         Text(
@@ -394,7 +394,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 13,
-                            color: RBColors.textMedium,
+                            color: DSColors.textSecondary,
                           ),
                         ),
                       ],
@@ -402,7 +402,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                   ],
                 ),
                 const SizedBox(height: 14),
-                const Divider(height: 1, color: RBColors.divider),
+                const Divider(height: 1, color: DSColors.divider),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -412,17 +412,17 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                     Container(
                         width: 1,
                         height: 32,
-                        color: RBColors.divider),
+                        color: DSColors.divider),
                     Expanded(
                         child: _TicketInfoCell(
                             label: 'Seats', value: '1 Seat')),
                     Container(
                         width: 1,
                         height: 32,
-                        color: RBColors.divider),
+                        color: DSColors.divider),
                     Expanded(
                         child: _TicketInfoCell(
-                            label: 'Total', value: '₹700')),
+                            label: 'Total', value: 'â‚¹700')),
                   ],
                 ),
               ],
@@ -448,7 +448,7 @@ class _TicketInfoCell extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Inter',
             fontSize: 10,
-            color: RBColors.textLight,
+            color: DSColors.textTertiary,
           ),
         ),
         const SizedBox(height: 2),
@@ -458,7 +458,7 @@ class _TicketInfoCell extends StatelessWidget {
             fontFamily: 'Inter',
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: RBColors.textDark,
+            color: DSColors.textPrimary,
           ),
         ),
       ],

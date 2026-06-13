@@ -4,7 +4,7 @@ import '../../widgets/premium/glassmorphism.dart';
 import '../../widgets/premium/trust_badge.dart';
 
 class PremiumProfileScreen extends StatelessWidget {
-  const PremiumProfileScreen({Key? key}) : super(key: key);
+  const PremiumProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

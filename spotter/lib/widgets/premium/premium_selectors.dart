@@ -1,8 +1,9 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../core/theme/colors.dart';
-import '../../core/theme/typography.dart';
-import '../../core/theme/radius.dart';
+
+
+
 
 // ══════════════════════════════════════════════════════════════════════════════
 // PREMIUM DATE PICKER BOTTOM SHEET
@@ -78,7 +79,7 @@ class _PremiumDatePickerBottomSheetState
     _today = DateTime(now.year, now.month, now.day);
     _selectedDate = _stripTime(widget.initialDate);
     _displayedMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
-    _primaryColor = widget.primaryColor ?? SpottColors.primary;
+    _primaryColor = widget.primaryColor ?? DSColors.primary;
 
     _monthAnimController = AnimationController(
       vsync: this,
@@ -165,7 +166,7 @@ class _PremiumDatePickerBottomSheetState
 
     return Container(
       decoration: const BoxDecoration(
-        color: SpottColors.surface1,
+        color: DSColors.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(28),
           topRight: Radius.circular(28),
@@ -177,24 +178,26 @@ class _PremiumDatePickerBottomSheetState
         right: 20,
         bottom: safeBottom + 20,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildDragHandle(),
-          const SizedBox(height: 20),
-          _buildHeader(),
-          const SizedBox(height: 16),
-          _buildPresets(),
-          const SizedBox(height: 20),
-          _buildMonthNav(),
-          const SizedBox(height: 12),
-          _buildWeekdayLabels(),
-          const SizedBox(height: 8),
-          _buildCalendarGrid(),
-          const SizedBox(height: 24),
-          _buildConfirmButton(),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDragHandle(),
+            const SizedBox(height: 20),
+            _buildHeader(),
+            const SizedBox(height: 16),
+            _buildPresets(),
+            const SizedBox(height: 20),
+            _buildMonthNav(),
+            const SizedBox(height: 12),
+            _buildWeekdayLabels(),
+            const SizedBox(height: 8),
+            _buildCalendarGrid(),
+            const SizedBox(height: 24),
+            _buildConfirmButton(),
+          ],
+        ),
       ),
     );
   }
@@ -205,7 +208,7 @@ class _PremiumDatePickerBottomSheetState
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: SpottColors.border,
+          color: DSColors.border,
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -221,7 +224,7 @@ class _PremiumDatePickerBottomSheetState
           height: 44,
           decoration: BoxDecoration(
             color: _primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(SpottRadius.md),
+            borderRadius: BorderRadius.circular(DSRadius.md),
           ),
           child: Icon(Icons.calendar_month_rounded, color: _primaryColor, size: 22),
         ),
@@ -232,15 +235,15 @@ class _PremiumDatePickerBottomSheetState
             children: [
               Text(
                 'Select Travel Date',
-                style: SpottTextStyles.titleSmall.copyWith(
+                style: DSTypography.titleLarge.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: SpottColors.textPrimary,
+                  color: DSColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 formatted,
-                style: SpottTextStyles.caption.copyWith(
+                style: DSTypography.caption.copyWith(
                   color: _primaryColor,
                   fontWeight: FontWeight.w600,
                 ),
@@ -250,12 +253,12 @@ class _PremiumDatePickerBottomSheetState
         ),
         IconButton(
           icon: const Icon(Icons.close_rounded, size: 20),
-          color: SpottColors.textSecondary,
+          color: DSColors.textSecondary,
           onPressed: () => Navigator.pop(context),
           style: IconButton.styleFrom(
-            backgroundColor: SpottColors.surface2,
+            backgroundColor: DSColors.surfaceVariant,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SpottRadius.sm),
+              borderRadius: BorderRadius.circular(DSRadius.sm),
             ),
           ),
         ),
@@ -314,21 +317,21 @@ class _PremiumDatePickerBottomSheetState
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? _primaryColor : SpottColors.surface2,
-                borderRadius: BorderRadius.circular(SpottRadius.pill),
+                color: isSelected ? _primaryColor : DSColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(DSRadius.pill),
                 border: Border.all(
                   color: isSelected
                       ? _primaryColor
-                      : SpottColors.border,
+                      : DSColors.border,
                   width: 1,
                 ),
               ),
               child: Text(
                 label,
-                style: SpottTextStyles.caption.copyWith(
+                style: DSTypography.caption.copyWith(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isSelected ? Colors.white : SpottColors.textPrimary,
+                  color: isSelected ? Colors.white : DSColors.textPrimary,
                 ),
               ),
             ),
@@ -343,9 +346,9 @@ class _PremiumDatePickerBottomSheetState
       children: [
         Text(
           '${_months[_displayedMonth.month - 1]} ${_displayedMonth.year}',
-          style: SpottTextStyles.titleSmall.copyWith(
+          style: DSTypography.titleLarge.copyWith(
             fontWeight: FontWeight.w700,
-            color: SpottColors.textPrimary,
+            color: DSColors.textPrimary,
           ),
         ),
         const Spacer(),
@@ -375,10 +378,10 @@ class _PremiumDatePickerBottomSheetState
                 child: Text(
                   d,
                   textAlign: TextAlign.center,
-                  style: SpottTextStyles.overline.copyWith(
+                  style: DSTypography.caption.copyWith(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: SpottColors.textTertiary,
+                    color: DSColors.textTertiary,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -445,12 +448,12 @@ class _PremiumDatePickerBottomSheetState
           elevation: 0,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SpottRadius.button),
+            borderRadius: BorderRadius.circular(DSRadius.button),
           ),
         ),
         child: Text(
-          'Confirm Date',
-          style: SpottTextStyles.labelLarge.copyWith(
+          'CONFIRM DATE',
+          style: DSTypography.labelLarge.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.w700,
           ),
@@ -486,18 +489,18 @@ class _NavButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: enabled
               ? primaryColor.withValues(alpha: 0.08)
-              : SpottColors.surface2,
-          borderRadius: BorderRadius.circular(SpottRadius.sm),
+              : DSColors.surfaceVariant,
+          borderRadius: BorderRadius.circular(DSRadius.sm),
           border: Border.all(
             color: enabled
                 ? primaryColor.withValues(alpha: 0.2)
-                : SpottColors.border,
+                : DSColors.border,
           ),
         ),
         child: Icon(
           icon,
           size: 20,
-          color: enabled ? primaryColor : SpottColors.textMuted,
+          color: enabled ? primaryColor : DSColors.textMuted,
         ),
       ),
     );
@@ -558,12 +561,12 @@ class _DayCell extends StatelessWidget {
                   ? FontWeight.w700
                   : FontWeight.w500,
               color: isDisabled
-                  ? SpottColors.border
+                  ? DSColors.border
                   : isSelected
                       ? Colors.white
                       : isToday
                           ? primaryColor
-                          : SpottColors.textPrimary,
+                          : DSColors.textPrimary,
             ),
           ),
         ),
@@ -592,7 +595,7 @@ class PremiumPassengersBottomSheet extends StatefulWidget {
     this.maxSeats = 6,
     this.primaryColor,
     this.title = 'Select Passengers',
-    this.subtitle = 'Choose the number of seats to book',
+    this.subtitle = 'Choose the number of seats you want to book',
   });
 
   static Future<int?> show(
@@ -601,7 +604,7 @@ class PremiumPassengersBottomSheet extends StatefulWidget {
     int maxSeats = 6,
     Color? primaryColor,
     String title = 'Select Passengers',
-    String subtitle = 'Choose the number of seats to book',
+    String subtitle = 'Choose the number of seats you want to book',
   }) {
     return showModalBottomSheet<int>(
       context: context,
@@ -633,7 +636,7 @@ class _PremiumPassengersBottomSheetState
   void initState() {
     super.initState();
     _selectedSeats = widget.initialSeats.clamp(1, widget.maxSeats);
-    _primaryColor = widget.primaryColor ?? SpottColors.primary;
+    _primaryColor = widget.primaryColor ?? DSColors.primary;
   }
 
   void _updateSeats(int count) {
@@ -649,7 +652,7 @@ class _PremiumPassengersBottomSheetState
 
     return Container(
       decoration: const BoxDecoration(
-        color: SpottColors.surface1,
+        color: DSColors.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(28),
           topRight: Radius.circular(28),
@@ -661,21 +664,23 @@ class _PremiumPassengersBottomSheetState
         right: 24,
         bottom: safeBottom + 20,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildDragHandle(),
-          const SizedBox(height: 20),
-          _buildHeader(),
-          const SizedBox(height: 24),
-          _buildSeatMap(),
-          const SizedBox(height: 28),
-          _buildStepper(),
-          const SizedBox(height: 28),
-          _buildQuickPicks(),
-          const SizedBox(height: 24),
-          _buildConfirmButton(),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDragHandle(),
+            const SizedBox(height: 20),
+            _buildHeader(),
+            const SizedBox(height: 24),
+            _buildSeatMap(),
+            const SizedBox(height: 28),
+            _buildStepper(),
+            const SizedBox(height: 28),
+            _buildQuickPicks(),
+            const SizedBox(height: 24),
+            _buildConfirmButton(),
+          ],
+        ),
       ),
     );
   }
@@ -686,7 +691,7 @@ class _PremiumPassengersBottomSheetState
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: SpottColors.border,
+          color: DSColors.border,
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -701,7 +706,7 @@ class _PremiumPassengersBottomSheetState
           height: 44,
           decoration: BoxDecoration(
             color: _primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(SpottRadius.md),
+            borderRadius: BorderRadius.circular(DSRadius.md),
           ),
           child: Icon(Icons.chair_alt_rounded, color: _primaryColor, size: 22),
         ),
@@ -712,16 +717,16 @@ class _PremiumPassengersBottomSheetState
             children: [
               Text(
                 widget.title,
-                style: SpottTextStyles.titleSmall.copyWith(
+                style: DSTypography.titleLarge.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: SpottColors.textPrimary,
+                  color: DSColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 widget.subtitle,
-                style: SpottTextStyles.caption.copyWith(
-                  color: SpottColors.textTertiary,
+                style: DSTypography.caption.copyWith(
+                  color: DSColors.textTertiary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -731,12 +736,12 @@ class _PremiumPassengersBottomSheetState
         ),
         IconButton(
           icon: const Icon(Icons.close_rounded, size: 20),
-          color: SpottColors.textSecondary,
+          color: DSColors.textSecondary,
           onPressed: () => Navigator.pop(context),
           style: IconButton.styleFrom(
-            backgroundColor: SpottColors.surface2,
+            backgroundColor: DSColors.surfaceVariant,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SpottRadius.sm),
+              borderRadius: BorderRadius.circular(DSRadius.sm),
             ),
           ),
         ),
@@ -759,24 +764,24 @@ class _PremiumPassengersBottomSheetState
           width: 220,
           height: 10,
           decoration: BoxDecoration(
-            color: SpottColors.surface2,
+            color: DSColors.surfaceVariant,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
-            border: Border.all(color: SpottColors.border),
+            border: Border.all(color: DSColors.border),
           ),
         ),
         Container(
           width: 240,
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
           decoration: BoxDecoration(
-            color: SpottColors.surface2,
+            color: DSColors.surfaceVariant,
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(20),
               bottomRight: Radius.circular(20),
             ),
-            border: Border.all(color: SpottColors.border),
+            border: Border.all(color: DSColors.border),
           ),
           child: Column(
             children: [
@@ -792,7 +797,7 @@ class _PremiumPassengersBottomSheetState
                 Container(
                   height: 1,
                   margin: const EdgeInsets.symmetric(vertical: 14),
-                  color: SpottColors.border,
+                  color: DSColors.border,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -803,7 +808,7 @@ class _PremiumPassengersBottomSheetState
                 Container(
                   height: 1,
                   margin: const EdgeInsets.symmetric(vertical: 14),
-                  color: SpottColors.border,
+                  color: DSColors.border,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -825,23 +830,23 @@ class _PremiumPassengersBottomSheetState
           width: 46,
           height: 46,
           decoration: BoxDecoration(
-            color: SpottColors.surface1,
-            borderRadius: BorderRadius.circular(SpottRadius.sm),
-            border: Border.all(color: SpottColors.border),
+            color: DSColors.surface,
+            borderRadius: BorderRadius.circular(DSRadius.sm),
+            border: Border.all(color: DSColors.border),
           ),
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.person_rounded,
-                  color: SpottColors.textTertiary, size: 20),
+                  color: DSColors.textTertiary, size: 20),
               SizedBox(height: 2),
               Text(
-                'Driver',
+                'DRIVER',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 8,
                   fontWeight: FontWeight.w600,
-                  color: SpottColors.textTertiary,
+                  color: DSColors.textTertiary,
                 ),
               ),
             ],
@@ -862,12 +867,12 @@ class _PremiumPassengersBottomSheetState
         width: 46,
         height: 46,
         decoration: BoxDecoration(
-          color: isSelected ? _primaryColor : SpottColors.surface1,
-          borderRadius: BorderRadius.circular(SpottRadius.sm),
+          color: isSelected ? _primaryColor : DSColors.surface,
+          borderRadius: BorderRadius.circular(DSRadius.sm),
           border: Border.all(
             color: isSelected
                 ? _primaryColor
-                : SpottColors.border,
+                : DSColors.border,
             width: 1.5,
           ),
           boxShadow: isSelected
@@ -885,7 +890,7 @@ class _PremiumPassengersBottomSheetState
           children: [
             Icon(
               Icons.airline_seat_recline_normal_rounded,
-              color: isSelected ? Colors.white : SpottColors.textMuted,
+              color: isSelected ? Colors.white : DSColors.textMuted,
               size: 20,
             ),
             const SizedBox(height: 1),
@@ -895,7 +900,7 @@ class _PremiumPassengersBottomSheetState
                 fontFamily: 'Inter',
                 fontSize: 9,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? Colors.white.withValues(alpha: 0.8) : SpottColors.textMuted,
+                color: isSelected ? Colors.white.withValues(alpha: 0.8) : DSColors.textMuted,
               ),
             ),
           ],
@@ -940,7 +945,7 @@ class _PremiumPassengersBottomSheetState
                     fontFamily: 'Inter',
                     fontSize: 40,
                     fontWeight: FontWeight.w800,
-                    color: SpottColors.textPrimary,
+                    color: DSColors.textPrimary,
                     height: 1.0,
                   ),
                 ),
@@ -948,9 +953,9 @@ class _PremiumPassengersBottomSheetState
               const SizedBox(height: 4),
               Text(
                 _selectedSeats == 1 ? 'seat selected' : 'seats selected',
-                style: SpottTextStyles.caption.copyWith(
+                style: DSTypography.caption.copyWith(
                   fontSize: 12,
-                  color: SpottColors.textTertiary,
+                  color: DSColors.textTertiary,
                 ),
               ),
             ],
@@ -983,10 +988,10 @@ class _PremiumPassengersBottomSheetState
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: isSelected ? _primaryColor : SpottColors.surface2,
+                color: isSelected ? _primaryColor : DSColors.surfaceVariant,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? _primaryColor : SpottColors.border,
+                  color: isSelected ? _primaryColor : DSColors.border,
                   width: isSelected ? 0 : 1,
                 ),
               ),
@@ -997,7 +1002,7 @@ class _PremiumPassengersBottomSheetState
                     fontFamily: 'Inter',
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: isSelected ? Colors.white : SpottColors.textSecondary,
+                    color: isSelected ? Colors.white : DSColors.textSecondary,
                   ),
                 ),
               ),
@@ -1023,14 +1028,12 @@ class _PremiumPassengersBottomSheetState
           elevation: 0,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SpottRadius.button),
+            borderRadius: BorderRadius.circular(DSRadius.button),
           ),
         ),
         child: Text(
-          _selectedSeats == 1
-              ? 'Confirm 1 Seat'
-              : 'Confirm $_selectedSeats Seats',
-          style: SpottTextStyles.labelLarge.copyWith(
+          'CONFIRM SELECTION',
+          style: DSTypography.labelLarge.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.w700,
           ),
@@ -1066,19 +1069,19 @@ class _StepperButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: enabled
               ? primaryColor.withValues(alpha: 0.08)
-              : SpottColors.surface2,
+              : DSColors.surfaceVariant,
           shape: BoxShape.circle,
           border: Border.all(
             color: enabled
                 ? primaryColor.withValues(alpha: 0.25)
-                : SpottColors.border,
+                : DSColors.border,
             width: 1.5,
           ),
         ),
         child: Icon(
           icon,
           size: 26,
-          color: enabled ? primaryColor : SpottColors.textMuted,
+          color: enabled ? primaryColor : DSColors.textMuted,
         ),
       ),
     );

@@ -1,7 +1,5 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../theme/radius.dart';
-import '../theme/typography.dart';
 
 class PremiumTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -68,13 +66,13 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
 
   @override
   Widget build(BuildContext context) {
-    Color borderColor = SpottColors.border;
+    Color borderColor = DSColors.border;
     double borderWidth = 1.0;
     if (widget.errorText != null) {
-      borderColor = SpottColors.danger;
+      borderColor = DSColors.danger;
       borderWidth = 1.5;
     } else if (_hasFocus) {
-      borderColor = SpottColors.primary;
+      borderColor = DSColors.primary;
       borderWidth = 1.5;
     }
 
@@ -84,8 +82,8 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
       children: [
         Text(
           widget.labelText,
-          style: SpottTextStyles.caption.copyWith(
-            color: widget.errorText != null ? SpottColors.danger : SpottColors.textSecondary,
+          style: DSTypography.caption.copyWith(
+            color: widget.errorText != null ? DSColors.danger : DSColors.textSecondary,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -95,8 +93,8 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
           curve: Curves.easeOut,
           constraints: const BoxConstraints(minHeight: 48), // Ensure minimum 48px touch target
           decoration: BoxDecoration(
-            color: SpottColors.surface2,
-            borderRadius: BorderRadius.circular(SpottRadius.lg),
+            color: DSColors.surfaceVariant,
+            borderRadius: BorderRadius.circular(DSRadius.lg),
             border: Border.all(
               color: borderColor,
               width: borderWidth,
@@ -113,7 +111,7 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
                   },
                   child: const Icon(
                     Icons.clear_rounded,
-                    color: SpottColors.textTertiary,
+                    color: DSColors.textTertiary,
                     size: 20,
                   ),
                 );
@@ -129,13 +127,13 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
                 obscureText: widget.obscureText,
                 autofocus: widget.autofocus,
                 focusNode: _focusNode,
-                style: SpottTextStyles.bodyLarge.copyWith(
-                  color: SpottColors.textPrimary,
+                style: DSTypography.bodyLarge.copyWith(
+                  color: DSColors.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
                 decoration: InputDecoration(
                   hintText: widget.hintText,
-                  hintStyle: SpottTextStyles.body.copyWith(color: SpottColors.textMuted),
+                  hintStyle: DSTypography.body.copyWith(color: DSColors.textMuted),
                   prefixIcon: widget.prefixIcon,
                   suffixIcon: suffixWidget,
                   border: InputBorder.none,
@@ -155,8 +153,8 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
             padding: const EdgeInsets.only(left: 4),
             child: Text(
               widget.errorText!,
-              style: SpottTextStyles.caption.copyWith(
-                color: SpottColors.danger,
+              style: DSTypography.caption.copyWith(
+                color: DSColors.danger,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),

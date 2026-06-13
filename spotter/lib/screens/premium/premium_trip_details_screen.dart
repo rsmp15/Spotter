@@ -5,7 +5,7 @@ import '../../widgets/premium/premium_button.dart';
 import '../../widgets/premium/trust_badge.dart';
 
 class PremiumTripDetailsScreen extends StatelessWidget {
-  const PremiumTripDetailsScreen({Key? key}) : super(key: key);
+  const PremiumTripDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

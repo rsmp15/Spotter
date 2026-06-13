@@ -8,7 +8,9 @@
 // ---------------------------------------------------------------------------
 
 /// Mirrors the `role` column of the Users table.
-enum UserRole { passenger, traveler, parcelSender }
+enum UserRole { user, rider }
+
+enum KycStatus { notStarted, submitted, verified }
 
 /// Shared verification lifecycle for driver-licence and vehicle checks.
 enum VerificationStatus { pending, submitted, verified, rejected }
@@ -50,7 +52,7 @@ class SpottUser {
     required this.email,
     this.profileImage,
     this.rating = 5.0,
-    this.role = UserRole.passenger,
+    this.role = UserRole.user,
     required this.createdAt,
   });
 
@@ -64,7 +66,7 @@ class SpottUser {
       rating: (json['rating'] as num?)?.toDouble() ?? 5.0,
       role: UserRole.values.firstWhere(
         (e) => e.name == json['role'],
-        orElse: () => UserRole.passenger,
+        orElse: () => UserRole.user,
       ),
       createdAt: DateTime.parse(json['created_at'] as String),
     );

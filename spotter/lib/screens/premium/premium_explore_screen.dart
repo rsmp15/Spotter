@@ -7,7 +7,7 @@ import '../../widgets/premium/premium_button.dart';
 import 'premium_search_results_screen.dart';
 
 class PremiumExploreScreen extends StatefulWidget {
-  const PremiumExploreScreen({Key? key}) : super(key: key);
+  const PremiumExploreScreen({super.key});
 
   @override
   State<PremiumExploreScreen> createState() => _PremiumExploreScreenState();

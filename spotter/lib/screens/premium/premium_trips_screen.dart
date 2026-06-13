@@ -5,7 +5,7 @@ import 'premium_trip_details_screen.dart';
 import '../../widgets/premium/glassmorphism.dart';
 
 class PremiumTripsScreen extends StatelessWidget {
-  const PremiumTripsScreen({Key? key}) : super(key: key);
+  const PremiumTripsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

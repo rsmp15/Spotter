@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../app/app_routes.dart';
@@ -6,10 +7,10 @@ import '../models/ride_models.dart';
 import '../core/components/glass_card.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/radius.dart';
+
+
+
+
 
 class ParcelTrackingScreen extends StatefulWidget {
   const ParcelTrackingScreen({super.key});
@@ -54,7 +55,7 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Invalid Recipient PIN! Check with recipient (PIN is ${ride.parcelVerificationPin})'),
-          backgroundColor: SpottColors.primary,
+          backgroundColor: DSColors.primary,
         ),
       );
     }
@@ -70,67 +71,67 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Track Parcel', style: SpottTextStyles.sectionTitle),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('Track Parcel', style: DSTypography.headline),
         centerTitle: true,
       ),
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(SpottSpacing.lg),
+            padding: const EdgeInsets.all(DSSpacing.lg),
             children: [
-              Text('Real-time delivery progress via private transport.', style: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary)),
-              const SizedBox(height: SpottSpacing.xl),
+              Text('Real-time delivery progress via private transport.', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+              const SizedBox(height: DSSpacing.xl),
 
               // Map Preview
               Container(
                 height: 180,
                 decoration: BoxDecoration(
-                  color: SpottColors.surface1,
-                  borderRadius: BorderRadius.circular(SpottRadius.card),
-                  border: Border.all(color: SpottColors.border),
+                  color: DSColors.surface,
+                  borderRadius: BorderRadius.circular(DSRadius.card),
+                  border: Border.all(color: DSColors.border),
                 ),
                 child: const Center(
-                  child: Icon(Icons.map_rounded, size: 48, color: SpottColors.textSecondary),
+                  child: Icon(Icons.map_rounded, size: 48, color: DSColors.textSecondary),
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               // Active Delivery Driver details
               GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.md),
+                padding: const EdgeInsets.all(DSSpacing.md),
                 child: Row(
                   children: [
                     Container(
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: SpottColors.surface1,
+                        color: DSColors.surface,
                         shape: BoxShape.circle,
-                        border: Border.all(color: SpottColors.border),
+                        border: Border.all(color: DSColors.border),
                       ),
                       child: Center(
                         child: Text(
                           driver.name[0],
-                          style: SpottTextStyles.sectionTitle.copyWith(color: SpottColors.textPrimary),
+                          style: DSTypography.headline.copyWith(color: DSColors.textPrimary),
                         ),
                       ),
                     ),
-                    const SizedBox(width: SpottSpacing.md),
+                    const SizedBox(width: DSSpacing.md),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(driver.name, style: SpottTextStyles.body.copyWith(fontWeight: FontWeight.bold, color: SpottColors.textPrimary)),
+                          Text(driver.name, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold, color: DSColors.textPrimary)),
                           const SizedBox(height: 2),
                           Row(
                             children: [
-                              const Icon(Icons.directions_car_rounded, color: SpottColors.textSecondary, size: 14),
+                              const Icon(Icons.directions_car_rounded, color: DSColors.textSecondary, size: 14),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   '${driver.vehicle}  •  ${driver.rating} ★',
-                                  style: SpottTextStyles.caption,
+                                  style: DSTypography.caption,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -142,28 +143,28 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: SpottColors.primary.withValues(alpha: 0.15),
-                        border: Border.all(color: SpottColors.primary),
-                        borderRadius: BorderRadius.circular(SpottRadius.sm),
+                        color: DSColors.primary.withValues(alpha: 0.15),
+                        border: Border.all(color: DSColors.primary),
+                        borderRadius: BorderRadius.circular(DSRadius.sm),
                       ),
                       child: Text(
                         _internalStatus == TripStatus.driverAssigned ? '3 mins' : 'En route',
-                        style: SpottTextStyles.caption.copyWith(fontWeight: FontWeight.bold, color: SpottColors.primary),
+                        style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold, color: DSColors.primary),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               // Status Timeline Details
               GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.xl),
+                padding: const EdgeInsets.all(DSSpacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Delivery Milestone', style: SpottTextStyles.sectionTitle),
-                    const SizedBox(height: SpottSpacing.xl),
+                    Text('Delivery Milestone', style: DSTypography.headline),
+                    const SizedBox(height: DSSpacing.xl),
                     _buildMilestoneRow(
                       label: 'Delivery Partner Assigned',
                       detail: 'Private driver ${driver.name} is on the way',
@@ -186,44 +187,44 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: SpottSpacing.md),
+              const SizedBox(height: DSSpacing.md),
 
               // PoD OTP verification Box
               GlassCard(
-                padding: const EdgeInsets.all(SpottSpacing.xl),
+                padding: const EdgeInsets.all(DSSpacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.vpn_key_rounded, color: SpottColors.primary, size: 20),
-                        const SizedBox(width: SpottSpacing.sm),
+                        const Icon(Icons.vpn_key_rounded, color: DSColors.primary, size: 20),
+                        const SizedBox(width: DSSpacing.sm),
                         Expanded(
-                          child: Text('Enter Recipient Delivery PIN', style: SpottTextStyles.sectionTitle),
+                          child: Text('Enter Recipient Delivery PIN', style: DSTypography.headline),
                         ),
                       ],
                     ),
-                    const SizedBox(height: SpottSpacing.xs),
+                    const SizedBox(height: DSSpacing.xs),
                     Text(
                       'Verify with receiver to get their secret 4-digit drop-off PIN.',
-                      style: SpottTextStyles.caption,
+                      style: DSTypography.caption,
                     ),
-                    const SizedBox(height: SpottSpacing.lg),
+                    const SizedBox(height: DSSpacing.lg),
                     TextField(
                       controller: _pinController,
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.done,
                       onSubmitted: (_) => _verifyAndComplete(context, ride),
-                      style: SpottTextStyles.body.copyWith(color: SpottColors.textPrimary),
+                      style: DSTypography.body.copyWith(color: DSColors.textPrimary),
                       decoration: InputDecoration(
                         labelText: 'Recipient PIN',
                         hintText: 'Enter 4-digit PIN (e.g. ${ride.parcelVerificationPin})',
-                        labelStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
-                        hintStyle: SpottTextStyles.body.copyWith(color: SpottColors.textSecondary),
+                        labelStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
+                        hintStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
                         filled: true,
-                        fillColor: SpottColors.surface1,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: SpottSpacing.md, vertical: SpottSpacing.md),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(SpottRadius.md), borderSide: BorderSide.none),
+                        fillColor: DSColors.surface,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: DSSpacing.md, vertical: DSSpacing.md),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(DSRadius.md), borderSide: BorderSide.none),
                       ),
                     ),
                   ],
@@ -233,9 +234,9 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
             ],
           ),
           Positioned(
-            bottom: SpottSpacing.lg,
-            left: SpottSpacing.lg,
-            right: SpottSpacing.lg,
+            bottom: DSSpacing.lg,
+            left: DSSpacing.lg,
+            right: DSSpacing.lg,
             child: SpottButton.primary(
               label: 'Confirm PIN & Complete Drop',
               onPressed: () => _verifyAndComplete(context, ride),
@@ -260,12 +261,12 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
         width: 22,
         height: 22,
         decoration: BoxDecoration(
-          color: SpottColors.success.withValues(alpha: 0.15),
+          color: DSColors.success.withValues(alpha: 0.15),
           shape: BoxShape.circle,
-          border: Border.all(color: SpottColors.success, width: 2),
+          border: Border.all(color: DSColors.success, width: 2),
         ),
         child: const Center(
-          child: Icon(Icons.check_rounded, size: 12, color: SpottColors.success),
+          child: Icon(Icons.check_rounded, size: 12, color: DSColors.success),
         ),
       );
     } else if (active) {
@@ -273,15 +274,15 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
         width: 22,
         height: 22,
         decoration: BoxDecoration(
-          color: SpottColors.primary.withValues(alpha: 0.15),
+          color: DSColors.primary.withValues(alpha: 0.15),
           shape: BoxShape.circle,
-          border: Border.all(color: SpottColors.primary, width: 2),
+          border: Border.all(color: DSColors.primary, width: 2),
         ),
         child: Center(
           child: Container(
             width: 8,
             height: 8,
-            decoration: const BoxDecoration(color: SpottColors.primary, shape: BoxShape.circle),
+            decoration: const BoxDecoration(color: DSColors.primary, shape: BoxShape.circle),
           ),
         ),
       );
@@ -292,13 +293,13 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
         decoration: BoxDecoration(
           color: Colors.transparent,
           shape: BoxShape.circle,
-          border: Border.all(color: SpottColors.border, width: 2),
+          border: Border.all(color: DSColors.border, width: 2),
         ),
         child: Center(
           child: Container(
             width: 6,
             height: 6,
-            decoration: const BoxDecoration(color: SpottColors.border, shape: BoxShape.circle),
+            decoration: const BoxDecoration(color: DSColors.border, shape: BoxShape.circle),
           ),
         ),
       );
@@ -316,30 +317,30 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
                   child: Container(
                     width: 2,
                     margin: const EdgeInsets.symmetric(vertical: 4),
-                    color: completed ? SpottColors.success.withValues(alpha: 0.5) : (active ? SpottColors.primary.withValues(alpha: 0.3) : SpottColors.border),
+                    color: completed ? DSColors.success.withValues(alpha: 0.5) : (active ? DSColors.primary.withValues(alpha: 0.3) : DSColors.border),
                   ),
                 ),
             ],
           ),
-          const SizedBox(width: SpottSpacing.md),
+          const SizedBox(width: DSSpacing.md),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: SpottSpacing.xl),
+              padding: const EdgeInsets.only(bottom: DSSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     label,
-                    style: SpottTextStyles.body.copyWith(
+                    style: DSTypography.body.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: active ? SpottColors.textPrimary : SpottColors.textSecondary,
+                      color: active ? DSColors.textPrimary : DSColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     detail,
-                    style: SpottTextStyles.caption.copyWith(
-                      color: active ? SpottColors.textSecondary : SpottColors.textSecondary.withValues(alpha: 0.7),
+                    style: DSTypography.caption.copyWith(
+                      color: active ? DSColors.textSecondary : DSColors.textSecondary.withValues(alpha: 0.7),
                     ),
                   ),
                 ],

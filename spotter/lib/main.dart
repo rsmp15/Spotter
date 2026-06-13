@@ -9,7 +9,7 @@ import 'app/app_error_screen.dart';
 import 'app/app_readiness.dart';
 import 'app/app_routes.dart';
 import 'controllers/ride_controller.dart';
-import 'helper.dart';
+import 'design_system/design_system.dart';
 import 'repositories/remote_config_repository.dart';
 
 void main() {
@@ -83,7 +83,11 @@ class _MyAppState extends State<MyApp> {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: AppConfig.appName,
-              theme: Helper.buildTheme(isDarkMode: _rideController.isDarkMode),
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: _rideController.isDarkMode
+                  ? ThemeMode.dark
+                  : ThemeMode.light,
               initialRoute: AppRoutes.splash,
               onGenerateRoute: AppRoutes.onGenerateRoute,
             );

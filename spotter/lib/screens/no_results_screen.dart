@@ -1,8 +1,9 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/branded_empty_state.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/typography.dart';
+
+
 
 class NoResultsScreen extends StatelessWidget {
   const NoResultsScreen({super.key});
@@ -13,8 +14,8 @@ class NoResultsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: SpottColors.textPrimary),
-        title: const Text('Search Results', style: SpottTextStyles.titleSmall),
+        leading: const BackButton(color: DSColors.textPrimary),
+        title: Text('Search Results', style: DSTypography.titleLarge),
         centerTitle: true,
       ),
       body: BrandedEmptyState.noResults(

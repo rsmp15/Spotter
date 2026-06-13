@@ -13,8 +13,8 @@ class StaggeredList extends StatefulWidget {
   const StaggeredList({
     super.key,
     required this.children,
-    this.staggerDelay = SpottAnimations.stagger,
-    this.itemDuration = SpottAnimations.medium,
+    this.staggerDelay = const Duration(milliseconds: 50),
+    this.itemDuration = const Duration(milliseconds: 300),
     this.axis = Axis.vertical,
     this.crossAxisAlignment = CrossAxisAlignment.start,
   });

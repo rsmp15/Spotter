@@ -1,3 +1,4 @@
+import 'package:spotter/design_system/design_system.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../../app/app_assets.dart';
@@ -5,7 +6,7 @@ import '../../app/app_config.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
-import '../../core/theme/colors.dart';
+
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
 
@@ -133,7 +134,7 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
                             child: const Text(
                               'View All',
                               style: TextStyle(
-                                color: SpottColors.textPrimary,
+                                color: DSColors.textPrimary,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -286,12 +287,12 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? SpottColors.textPrimary
+              ? DSColors.textPrimary
               : (isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF3F4F6)),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: isSelected
-                ? SpottColors.textPrimary
+                ? DSColors.textPrimary
                 : (isDark
                       ? Colors.white.withValues(alpha: 0.08)
                       : Colors.transparent),
@@ -660,7 +661,7 @@ class _CarouselRideCard extends StatelessWidget {
                             fontFamily: 'Inter',
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-                            color: isDark ? Colors.white : SpottColors.textPrimary,
+                            color: isDark ? Colors.white : DSColors.textPrimary,
                           ),
                         ),
                         TextSpan(
@@ -681,7 +682,7 @@ class _CarouselRideCard extends StatelessWidget {
                 ElevatedButton(
                   onPressed: onBookTap,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: SpottColors.textPrimary,
+                    backgroundColor: DSColors.textPrimary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
@@ -1004,7 +1005,7 @@ class _AroundYouSection extends StatelessWidget {
                     width: 122,
                     height: 122,
                     decoration: BoxDecoration(
-                      color: SpottColors.textPrimary.withValues(alpha: 0.12),
+                      color: DSColors.textPrimary.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -1014,7 +1015,7 @@ class _AroundYouSection extends StatelessWidget {
                     width: 18,
                     height: 18,
                     decoration: BoxDecoration(
-                      color: SpottColors.textPrimary,
+                      color: DSColors.textPrimary,
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 3),
                     ),
@@ -1160,7 +1161,7 @@ class _PremierBanner extends StatelessWidget {
               height: 8,
               margin: const EdgeInsets.symmetric(horizontal: 3),
               decoration: BoxDecoration(
-                color: index == 0 ? SpottColors.textPrimary : const Color(0xFFD1D5DB),
+                color: index == 0 ? DSColors.textPrimary : const Color(0xFFD1D5DB),
                 shape: BoxShape.circle,
               ),
             ),

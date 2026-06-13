@@ -5,7 +5,7 @@ import '../app/app_routes.dart';
 import '../core/components/status_chip.dart';
 import '../core/components/spott_avatar.dart';
 
-import '../core/theme/redbus_theme.dart';
+import 'package:spotter/design_system/design_system.dart';
 import '../core/components/redbus_sections.dart';
 
 class DriverHomeScreen extends StatefulWidget {
@@ -38,7 +38,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     }
 
     return Scaffold(
-      backgroundColor: RBColors.background,
+      backgroundColor: DSColors.background,
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
@@ -55,8 +55,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             // Wave Separator
             SliverToBoxAdapter(
               child: RBWaveSeparator(
-                topColor: RBColors.primary,
-                bottomColor: RBColors.background,
+                topColor: DSColors.primary,
+                bottomColor: DSColors.background,
                 height: 24,
               ),
             ),
@@ -178,10 +178,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: const BoxDecoration(
-              color: RBColors.primarySoft,
+              color: DSColors.primarySoft,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.directions_rounded, color: RBColors.primary, size: 20),
+            child: const Icon(Icons.directions_rounded, color: DSColors.primary, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -194,7 +194,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    color: RBColors.primary,
+                    color: DSColors.primary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -203,14 +203,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,
-                    color: RBColors.textMedium,
+                    color: DSColors.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close_rounded, size: 20, color: RBColors.textLight),
+            icon: const Icon(Icons.close_rounded, size: 20, color: DSColors.textTertiary),
             onPressed: () {
               setState(() {
                 _isTravelActive = false;
@@ -245,17 +245,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       fontFamily: 'Inter',
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: RBColors.textMedium,
+                      color: DSColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '₹${_todayEarnings + 7210}',
+                    'â‚¹${_todayEarnings + 7210}',
                     style: const TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
-                      color: RBColors.textDark,
+                      color: DSColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -267,16 +267,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: RBColors.primarySoft,
+                  color: DSColors.primarySoft,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'Today: ₹$_todayEarnings',
+                  'Today: â‚¹$_todayEarnings',
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: RBColors.primary,
+                    color: DSColors.primary,
                   ),
                 ),
               ),
@@ -285,7 +285,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           const SizedBox(height: 16),
           _buildEarningsBar(),
           const SizedBox(height: 16),
-          const Divider(height: 1, color: RBColors.divider),
+          const Divider(height: 1, color: DSColors.divider),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -294,19 +294,19 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 icon: Icons.check_circle_rounded,
                 value: '$_completedTripsToday',
                 label: 'Trips',
-                color: RBColors.green,
+                color: DSColors.success,
               ),
               _buildStatPill(
                 icon: Icons.timer_rounded,
                 value: '5h 12m',
                 label: 'Online',
-                color: RBColors.blue,
+                color: DSColors.info,
               ),
               _buildStatPill(
                 icon: Icons.star_rounded,
                 value: '4.95',
                 label: 'Rating',
-                color: RBColors.gold,
+                color: DSColors.warning,
               ),
             ],
           ),
@@ -331,7 +331,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               width: 28,
               height: 48 * values[i],
               decoration: BoxDecoration(
-                color: isToday ? RBColors.primary : RBColors.divider,
+                color: isToday ? DSColors.primary : DSColors.divider,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -342,7 +342,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 fontFamily: 'Inter',
                 fontSize: 10,
                 fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
-                color: isToday ? RBColors.primary : RBColors.textMedium,
+                color: isToday ? DSColors.primary : DSColors.textSecondary,
               ),
             ),
           ],
@@ -370,7 +370,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 fontFamily: 'Inter',
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: RBColors.textDark,
+                color: DSColors.textPrimary,
               ),
             ),
           ],
@@ -381,7 +381,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           style: const TextStyle(
             fontFamily: 'Inter',
             fontSize: 11,
-            color: RBColors.textLight,
+            color: DSColors.textTertiary,
           ),
         ),
       ],
@@ -404,7 +404,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               fontFamily: 'Inter',
               fontSize: 18,
               fontWeight: FontWeight.w800,
-              color: RBColors.textDark,
+              color: DSColors.textPrimary,
             ),
           ),
           const SizedBox(height: 6),
@@ -413,7 +413,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 13,
-              color: RBColors.textMedium,
+              color: DSColors.textSecondary,
             ),
           ),
           const SizedBox(height: 16),
@@ -423,7 +423,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             child: ElevatedButton(
               onPressed: () => _openLocationPicker(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: RBColors.primary,
+                backgroundColor: DSColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -457,12 +457,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Trip started heading toward $_destination!'),
-                  backgroundColor: RBColors.seatAvailable,
+                  backgroundColor: DSColors.success,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: RBColors.primary,
+              backgroundColor: DSColors.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -486,7 +486,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           style: const TextStyle(
             fontFamily: 'Inter',
             fontSize: 12,
-            color: RBColors.textMedium,
+            color: DSColors.textSecondary,
           ),
         ),
       ],
@@ -501,11 +501,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _buildInfoRow('Best cost share', '₹650', RBColors.green),
-          const Divider(height: 16, color: RBColors.divider),
-          _buildInfoRow('Closest pickup', '1.2 km', RBColors.blue),
-          const Divider(height: 16, color: RBColors.divider),
-          _buildInfoRow('Seats requested', '2', RBColors.primary),
+          _buildInfoRow('Best cost share', 'â‚¹650', DSColors.success),
+          const Divider(height: 16, color: DSColors.divider),
+          _buildInfoRow('Closest pickup', '1.2 km', DSColors.info),
+          const Divider(height: 16, color: DSColors.divider),
+          _buildInfoRow('Seats requested', '2', DSColors.primary),
         ],
       ),
     );
@@ -521,7 +521,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             fontFamily: 'Inter',
             fontSize: 13,
             fontWeight: FontWeight.w500,
-            color: RBColors.textMedium,
+            color: DSColors.textSecondary,
           ),
         ),
         Container(
@@ -546,7 +546,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   Widget _buildNavigationScreen(BuildContext context) {
     return Scaffold(
-      backgroundColor: RBColors.background,
+      backgroundColor: DSColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -558,10 +558,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                     width: 48,
                     height: 48,
                     decoration: const BoxDecoration(
-                      color: RBColors.primarySoft,
+                      color: DSColors.primarySoft,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.navigation_rounded, color: RBColors.primary),
+                    child: const Icon(Icons.navigation_rounded, color: DSColors.primary),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -574,7 +574,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                             fontFamily: 'Inter',
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
-                            color: RBColors.textDark,
+                            color: DSColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -583,7 +583,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           style: const TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 12,
-                            color: RBColors.textMedium,
+                            color: DSColors.textSecondary,
                           ),
                         ),
                       ],
@@ -599,20 +599,20 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: RBColors.divider),
+                    border: Border.all(color: DSColors.divider),
                   ),
                   child: const Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.map_rounded, size: 48, color: RBColors.textLight),
+                        Icon(Icons.map_rounded, size: 48, color: DSColors.textTertiary),
                         SizedBox(height: 8),
                         Text(
                           'Map View',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 12,
-                            color: RBColors.textMedium,
+                            color: DSColors.textSecondary,
                           ),
                         ),
                       ],
@@ -640,7 +640,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         fontFamily: 'Inter',
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        color: RBColors.textDark,
+                        color: DSColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -649,7 +649,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
-                        color: RBColors.textMedium,
+                        color: DSColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -670,12 +670,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Trip completed! Earnings updated.'),
-                                    backgroundColor: RBColors.seatAvailable,
+                                    backgroundColor: DSColors.success,
                                   ),
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: RBColors.primary,
+                                backgroundColor: DSColors.primary,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -698,15 +698,15 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           height: 48,
                           width: 48,
                           decoration: BoxDecoration(
-                            color: RBColors.surfaceGrey,
+                            color: DSColors.surfaceVariant,
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: RBColors.divider),
+                            border: Border.all(color: DSColors.divider),
                           ),
                           child: IconButton(
                             onPressed: () {
                               setState(() => _isRideStarted = false);
                             },
-                            icon: const Icon(Icons.pause_rounded, color: RBColors.primary, size: 20),
+                            icon: const Icon(Icons.pause_rounded, color: DSColors.primary, size: 20),
                           ),
                         ),
                       ],
@@ -756,31 +756,31 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         fontFamily: 'Inter',
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: RBColors.textDark,
+                        color: DSColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 14),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                       decoration: BoxDecoration(
-                        color: RBColors.surfaceGrey,
+                        color: DSColors.surfaceVariant,
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: RBColors.divider),
+                        border: Border.all(color: DSColors.divider),
                       ),
                       child: TextField(
                         controller: searchController,
                         autofocus: true,
-                        cursorColor: RBColors.primary,
+                        cursorColor: DSColors.primary,
                         decoration: const InputDecoration(
                           hintText: 'Enter destination...',
                           border: InputBorder.none,
-                          icon: Icon(Icons.search_rounded, color: RBColors.textMedium),
+                          icon: Icon(Icons.search_rounded, color: DSColors.textSecondary),
                         ),
                         style: const TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: RBColors.textDark,
+                          color: DSColors.textPrimary,
                         ),
                         onSubmitted: (value) {
                           if (value.trim().isNotEmpty) {
@@ -800,7 +800,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         fontFamily: 'Inter',
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: RBColors.textLight,
+                        color: DSColors.textTertiary,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -821,16 +821,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             decoration: BoxDecoration(
-                              color: RBColors.surfaceGrey,
+                              color: DSColors.surfaceVariant,
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: RBColors.divider),
+                              border: Border.all(color: DSColors.divider),
                             ),
                             child: Text(
                               dest,
                               style: const TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 13,
-                                color: RBColors.textDark,
+                                color: DSColors.textPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

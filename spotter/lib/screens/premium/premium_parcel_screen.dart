@@ -4,7 +4,7 @@ import '../../widgets/premium/glassmorphism.dart';
 import '../../widgets/premium/premium_button.dart';
 
 class PremiumParcelScreen extends StatelessWidget {
-  const PremiumParcelScreen({Key? key}) : super(key: key);
+  const PremiumParcelScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
