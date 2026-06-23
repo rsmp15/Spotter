@@ -14,10 +14,12 @@ class RideConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     final driver = ride.selectedDriver;
 
     return Scaffold(
-      backgroundColor: DSColors.background,
+      backgroundColor: palette.background,
       body: Column(
         children: [
           // Header
@@ -297,7 +299,7 @@ class RideConfirmationScreen extends StatelessWidget {
           // Bottom confirm bar
           Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: DSColors.background,
               border: Border(top: BorderSide(color: DSColors.border)),
             ),
             padding: EdgeInsets.only(
@@ -308,7 +310,7 @@ class RideConfirmationScreen extends StatelessWidget {
             ),
             child: SizedBox(
               width: double.infinity,
-              height: 52,
+              height: 56,
               child: ElevatedButton(
                 onPressed: () async {
                   await ride.confirmRide();
@@ -317,10 +319,10 @@ class RideConfirmationScreen extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DSColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: isDark ? Colors.black : Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DSRadius.button),
+                    borderRadius: BorderRadius.circular(999),
                   ),
                   textStyle: DSTypography.labelLarge.copyWith(
                     fontWeight: FontWeight.w800,
@@ -383,3 +385,4 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
+

@@ -2,6 +2,7 @@ import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../app/app_routes.dart';
+import '../controllers/ride_controller.dart';
 
 
 
@@ -41,8 +42,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ride = RideScope.of(context);
+    final palette = ride.isDarkMode ? DSPalettes.dark : DSPalettes.light;
     return Scaffold(
-      backgroundColor: DSColors.background,
+      backgroundColor: palette.background,
       body: Column(
         children: [
           _buildHeader(context),
@@ -659,3 +662,4 @@ class _RideResultCard extends StatelessWidget {
     );
   }
 }
+

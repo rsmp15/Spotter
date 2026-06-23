@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/spott_theme.dart';
+import '../../design_system/design_system.dart';
 
 class ServiceChip extends StatelessWidget {
   final String label;
@@ -21,27 +21,26 @@ class ServiceChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(
-          horizontal: SpottTheme.spacingLarge,
-          vertical: SpottTheme.spacingSmall,
+          horizontal: DSSpacing.lg, // 16.0
+          vertical: DSSpacing.sm,  // 8.0
         ),
         decoration: BoxDecoration(
-          color: isSelected ? SpottTheme.primary : SpottTheme.surface,
-          borderRadius: BorderRadius.circular(SpottTheme.radiusXLarge),
+          color: isSelected ? DSColors.primary : DSColors.surfaceVariant,
+          borderRadius: BorderRadius.circular(DSRadius.pill),
           border: Border.all(
             color: isSelected
-                ? SpottTheme.primary
-                : Colors.white.withValues(alpha: 0.05),
+                ? DSColors.primary
+                : Colors.transparent,
           ),
-          boxShadow: isSelected ? SpottTheme.glowingShadow : [],
         ),
         child: Text(
           label,
-          style: SpottTheme.textTheme.bodyMedium?.copyWith(
-            color: isSelected ? Colors.white : SpottTheme.textSecondary,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          style: DSTypography.bodySMStrong.copyWith(
+            color: isSelected ? DSColors.onPrimary : DSColors.textPrimary,
           ),
         ),
       ),
     );
   }
 }
+

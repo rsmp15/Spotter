@@ -92,3 +92,4 @@ class RemoteConfigScope extends InheritedNotifier<RemoteConfigRepository> {
         .currentState;
   }
 }
+

@@ -7,17 +7,16 @@ void main() {
   testWidgets('activity screen filters trip history by type', (tester) async {
     await pumpSpotterRoute(tester, AppRoutes.activity);
 
-    expect(find.text('Your activity'), findsOneWidget);
-    expect(find.text('Downtown Garage'), findsOneWidget);
-    expect(find.text('Ride to Airport'), findsOneWidget);
-    expect(find.text('Package to Kalyani Nagar'), findsOneWidget);
+    expect(find.text('Activity'), findsOneWidget);
+    expect(find.text('Rajaji National Park Safari'), findsOneWidget);
+    expect(find.text('Hotel Godawari'), findsOneWidget);
+    expect(find.text('Package Delivery'), findsOneWidget);
 
     await tester.tap(find.text('Rides'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Ride to Airport'), findsOneWidget);
-    expect(find.text('Moto from Office'), findsOneWidget);
-    expect(find.text('Downtown Garage'), findsNothing);
-    expect(find.text('Package to Kalyani Nagar'), findsNothing);
+    expect(find.text('Rajaji National Park Safari'), findsOneWidget);
+    expect(find.text('Hotel Godawari'), findsOneWidget);
+    expect(find.text('Package Delivery'), findsNothing);
   });
 }

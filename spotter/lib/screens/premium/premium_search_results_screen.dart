@@ -133,3 +133,4 @@ class PremiumSearchResultsScreen extends StatelessWidget {
     );
   }
 }
+

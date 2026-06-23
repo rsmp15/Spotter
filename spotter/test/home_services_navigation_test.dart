@@ -16,7 +16,7 @@ void main() {
     await _tapText(tester, 'Services');
     await tester.pumpAndSettle();
     expect(find.text('Services'), findsWidgets);
-    expect(find.text('Share rides, send parcels, save money'), findsOneWidget);
+    expect(find.text('Go anywhere, get anything'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.home_outlined));
     await tester.pumpAndSettle();

@@ -6,29 +6,19 @@ import '../controllers/ride_controller.dart';
 import '../screens/admin_review_screen.dart';
 import '../screens/cancel_ride_screen.dart';
 import '../screens/chat_screen.dart';
-import '../screens/choose_role_screen.dart';
-import '../screens/create_trip_screen.dart';
 import '../screens/dispute_case_screen.dart';
-import '../screens/driver_home_screen.dart';
-import '../screens/drop_task_screen.dart';
 import '../screens/empty_state_screen.dart';
-import '../screens/job_detail_screen.dart';
-import '../screens/job_requests_screen.dart';
 import '../screens/kyc_verification_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/onboarding_screen.dart';
 import '../screens/otp_verification_screen.dart';
-import '../screens/pickup_task_screen.dart';
 import '../screens/safety_toolkit_screen.dart';
 import '../screens/share_trip_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/support_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/vehicle_management_screen.dart';
-import '../screens/trip_search_screen.dart';
-import '../screens/passenger_requests_screen.dart';
-import '../screens/booking_success_screen.dart';
 import 'app_error_screen.dart';
 import 'spotter_overlay_shell.dart';
 import '../screens/main_navigation_shell.dart';
@@ -45,8 +35,6 @@ import '../screens/network_error_screen.dart';
 import '../screens/trip_details_screen.dart';
 import '../screens/passenger_trips_screen.dart';
 import '../screens/parcel_history_screen.dart';
-import '../screens/traveler_trips_screen.dart';
-import '../screens/active_trip_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -85,20 +73,12 @@ class AppRoutes {
   static const String dispute = '/dispute';
   static const String empty = '/empty';
   static const String kyc = '/kyc';
-  static const String driverHome = '/driver-home';
-  static const String createTrip = '/create-trip';
-  static const String jobRequests = '/job-requests';
-  static const String jobDetail = '/job-detail';
-  static const String pickupTask = '/pickup-task';
-  static const String dropTask = '/drop-task';
   static const String adminReview = '/admin-review';
   static const String parcelBooking = '/parcel-booking';
   static const String parcelTracking = '/parcel-tracking';
   static const String parcelComplete = '/parcel-complete';
   static const String vehicleManagement = '/vehicle-management';
   static const String tripSearch = '/trip-search';
-  static const String passengerRequests = '/passenger-requests';
-  static const String bookingSuccess = '/booking-success';
   static const String figmaPluginSandbox = '/figma-plugin-sandbox';
   static const String searchResults = '/search-results';
   static const String verificationPending = '/verification-pending';
@@ -108,8 +88,6 @@ class AppRoutes {
   static const String tripDetails = '/trip-details';
   static const String passengerTrips = '/passenger-trips';
   static const String parcelHistory = '/parcel-history';
-  static const String travelerTrips = '/traveler-trips';
-  static const String activeTrip = '/active-trip';
 
   static const List<String> allRoutes = [
     parcelBooking,
@@ -151,17 +129,9 @@ class AppRoutes {
     dispute,
     empty,
     kyc,
-    driverHome,
-    createTrip,
-    jobRequests,
-    jobDetail,
-    pickupTask,
-    dropTask,
     adminReview,
     vehicleManagement,
     tripSearch,
-    passengerRequests,
-    bookingSuccess,
     figmaPluginSandbox,
     searchResults,
     verificationPending,
@@ -171,8 +141,6 @@ class AppRoutes {
     tripDetails,
     passengerTrips,
     parcelHistory,
-    travelerTrips,
-    activeTrip,
   ];
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -200,11 +168,11 @@ class AppRoutes {
       case otp:
         return const OtpVerificationScreen();
       case chooseRole:
-        return const ChooseRoleScreen();
+        return const OnboardingScreen();
       case home:
         return const RoleGuard(
-          allowedRoles: [UserRole.user, UserRole.rider],
-          child: MainNavigationShell(initialTab: 0),
+          allowedRoles: [UserRole.user],
+          child: SpotterOverlayShell(),
         );
       case pickup:
         return const RoleGuard(
@@ -260,7 +228,7 @@ class AppRoutes {
         return const SettingsScreen();
       case profile:
         return const RoleGuard(
-          allowedRoles: [UserRole.user, UserRole.rider],
+          allowedRoles: [UserRole.user],
           child: MainNavigationShell(initialTab: 3),
         );
       case chat:
@@ -276,7 +244,7 @@ class AppRoutes {
         );
       case activity:
         return const RoleGuard(
-          allowedRoles: [UserRole.user, UserRole.rider],
+          allowedRoles: [UserRole.user],
           child: MainNavigationShell(initialTab: 2),
         );
       case notifications:
@@ -287,7 +255,7 @@ class AppRoutes {
         return const PremiumSosAlertScreen();
       case services:
         return const RoleGuard(
-          allowedRoles: [UserRole.user, UserRole.rider],
+          allowedRoles: [UserRole.user],
           child: MainNavigationShell(initialTab: 1),
         );
       case parking:
@@ -308,7 +276,7 @@ class AppRoutes {
       case intercity:
         return const RoleGuard(
           allowedRoles: [UserRole.user],
-          child: TripSearchScreen(),
+          child: SearchResultsScreen(),
         );
       case rentals:
         return const AppErrorScreen(
@@ -323,44 +291,14 @@ class AppRoutes {
         return const EmptyStateScreen();
       case kyc:
         return const RoleGuard(
-          allowedRoles: [UserRole.user, UserRole.rider],
+          allowedRoles: [UserRole.user],
           child: KycVerificationScreen(),
-        );
-      case driverHome:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider],
-          child: DriverHomeScreen(),
-        );
-      case createTrip:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider, UserRole.user],
-          child: CreateTripScreen(),
-        );
-      case jobRequests:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider],
-          child: JobRequestsScreen(),
-        );
-      case jobDetail:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider],
-          child: JobDetailScreen(),
-        );
-      case pickupTask:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider],
-          child: PickupTaskScreen(),
-        );
-      case dropTask:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider],
-          child: DropTaskScreen(),
         );
       case adminReview:
         return const AdminReviewScreen();
       case parcelBooking:
         return const RoleGuard(
-          allowedRoles: [UserRole.user, UserRole.rider],
+          allowedRoles: [UserRole.user],
           child: ParcelBookingScreen(),
         );
       case parcelTracking:
@@ -375,23 +313,13 @@ class AppRoutes {
         );
       case vehicleManagement:
         return const RoleGuard(
-          allowedRoles: [UserRole.rider],
+          allowedRoles: [UserRole.user],
           child: VehicleManagementScreen(),
         );
       case tripSearch:
         return const RoleGuard(
           allowedRoles: [UserRole.user],
-          child: TripSearchScreen(),
-        );
-      case passengerRequests:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider],
-          child: PassengerRequestsScreen(),
-        );
-      case bookingSuccess:
-        return const RoleGuard(
-          allowedRoles: [UserRole.user],
-          child: BookingSuccessScreen(),
+          child: SearchResultsScreen(),
         );
       case figmaPluginSandbox:
         return const FigmaPluginSandboxScreen();
@@ -422,16 +350,6 @@ class AppRoutes {
         return const RoleGuard(
           allowedRoles: [UserRole.user],
           child: ParcelHistoryScreen(),
-        );
-      case travelerTrips:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider],
-          child: TravelerTripsScreen(),
-        );
-      case activeTrip:
-        return const RoleGuard(
-          allowedRoles: [UserRole.rider],
-          child: ActiveTripScreen(),
         );
       default:
         return const AppErrorScreen(
@@ -474,3 +392,4 @@ class RoleMismatchScreen extends StatelessWidget {
     );
   }
 }
+

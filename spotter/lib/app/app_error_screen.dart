@@ -85,3 +85,4 @@ class AppErrorScreen extends StatelessWidget {
     );
   }
 }
+

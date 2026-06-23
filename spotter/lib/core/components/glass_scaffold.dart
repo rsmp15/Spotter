@@ -1,5 +1,6 @@
 import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import '../../controllers/ride_controller.dart';
 
 class GlassScaffold extends StatelessWidget {
   final Widget body;
@@ -17,8 +18,10 @@ class GlassScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = RideScope.of(context).isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     return Scaffold(
-      backgroundColor: DSColors.background,
+      backgroundColor: palette.background,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
@@ -26,3 +29,4 @@ class GlassScaffold extends StatelessWidget {
     );
   }
 }
+

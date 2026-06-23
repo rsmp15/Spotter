@@ -1,761 +1,886 @@
-import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/cupertino.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
-import '../helper.dart';
-
 import '../models/ride_models.dart';
-import '../spotter_widgets.dart';
+import '../design_system/design_system.dart';
+import 'map_selector.dart';
 
 class DestinationSearchScreen extends StatefulWidget {
   const DestinationSearchScreen({super.key});
 
   @override
-  State<DestinationSearchScreen> createState() =>
-      _DestinationSearchScreenState();
+  State<DestinationSearchScreen> createState() => _DestinationSearchScreenState();
 }
 
 class _DestinationSearchScreenState extends State<DestinationSearchScreen> {
+  final DraggableScrollableController _sheetController = DraggableScrollableController();
   late final TextEditingController _pickupController;
   late final TextEditingController _destinationController;
-  bool _seededPickup = false;
+  late final FocusNode _pickupFocusNode;
+  late final FocusNode _destinationFocusNode;
 
-  static const List<LocationPoint> _suggestions = [
-    LocationPoint(
-      title: 'Select Citywalk Mall',
-      detail:
-          'Saket District Center, District Center, Sector 6, Pushp Vihar, New Delhi, Delhi 110017',
-    ),
-    LocationPoint(
-      title: '5, Kullar Farms Rd',
-      detail: 'New Manglapuri, Manglapuri Village, Sultanpur, New Delhi, Delhi',
-    ),
-    LocationPoint(
-      title: 'DLF Promenade',
-      detail: 'Vasant Kunj Road, New Delhi, Delhi 110070',
-    ),
-    LocationPoint(title: 'Home', detail: '123 Elm Street, Springfield'),
-    LocationPoint(title: 'Work', detail: '456 Corporate Blvd, Suite 200'),
-    LocationPoint(title: 'Gym', detail: '789 Iron Ave, Downtown'),
-  ];
+  double _sheetSize = 0.3; // Default min size
+  bool _seededPickup = false;
+  String _profileName = 'For me'; // Default profile selection
+  String _activeSearchField = 'destination'; // 'pickup' or 'destination'
 
   @override
   void initState() {
     super.initState();
     _pickupController = TextEditingController();
-    _destinationController = TextEditingController()
-      ..addListener(() => setState(() {}));
+    _destinationController = TextEditingController()..addListener(_onSearchChanged);
+    _pickupFocusNode = FocusNode()..addListener(() {
+      if (_pickupFocusNode.hasFocus) {
+        setState(() => _activeSearchField = 'pickup');
+      }
+    });
+    _destinationFocusNode = FocusNode()..addListener(() {
+      if (_destinationFocusNode.hasFocus) {
+        setState(() => _activeSearchField = 'destination');
+      }
+    });
+
+    _sheetController.addListener(_onSheetSizeChanged);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_seededPickup) return;
-
     final ride = RideScope.of(context);
-    _pickupController.text = ride.pickup.detail;
+    _pickupController.text = ride.pickup.title;
     _seededPickup = true;
   }
 
   @override
   void dispose() {
+    _sheetController.removeListener(_onSheetSizeChanged);
+    _sheetController.dispose();
     _pickupController.dispose();
     _destinationController.dispose();
+    _pickupFocusNode.dispose();
+    _destinationFocusNode.dispose();
     super.dispose();
   }
 
-  IconData _getIconForPlace(String title) {
-    switch (title.toLowerCase()) {
-      case 'home':
-        return Icons.home_rounded;
-      case 'work':
-        return Icons.work_rounded;
-      case 'gym':
-        return Icons.fitness_center_rounded;
-      default:
-        return Icons.history_rounded;
+  void _onSheetSizeChanged() {
+    if (mounted) {
+      setState(() {
+        _sheetSize = _sheetController.size;
+      });
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-    final destinationQuery = _destinationController.text.trim();
-    final suggestions = _filteredSuggestions(destinationQuery);
-    final scaffoldBg = isDark
-        ? const Color(0xFF050505)
-        : DSColors.background;
-    final textColor = isDark ? Colors.white : DSColors.textPrimary;
+  void _onSearchChanged() {
+    setState(() {});
+  }
 
-    return Scaffold(
-      backgroundColor: scaffoldBg,
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRoutes.home,
-                          (route) => false,
-                        ),
-                        icon: Icon(Icons.arrow_back, color: textColor),
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Plan your ride',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 48),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Row(
-                      children: [
-                        _FilterChip(
-                          icon: Icons.access_time_filled_rounded,
-                          label: 'Pick up now',
-                          showChevron: true,
-                          isDark: isDark,
-                          onTap: () =>
-                              _showMessage(context, 'Pickup time set to now'),
-                        ),
-                        const SizedBox(width: 8),
-                        _FilterChip(
-                          icon: Icons.trending_flat_rounded,
-                          label: 'One way',
-                          showChevron: true,
-                          isDark: isDark,
-                          onTap: () =>
-                              _showMessage(context, 'One-way trip selected'),
-                        ),
-                        const SizedBox(width: 8),
-                        _FilterChip(
-                          icon: Icons.person_rounded,
-                          label: 'For me',
-                          isDark: isDark,
-                          onTap: () =>
-                              _showMessage(context, 'Booking for yourself'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _LocationInputs(
-                    pickupController: _pickupController,
-                    destinationController: _destinationController,
-                    onPickupSubmitted: (value) =>
-                        _updatePickupFromInput(context, value),
-                    onDestinationSubmitted: (value) =>
-                        _selectDestinationFromInput(context, value),
-                    isDark: isDark,
-                  ),
-                  const SizedBox(height: 14),
-                  _SavedPlacesTile(
-                    onTap: () => _showSavedPlaces(context),
-                    isDark: isDark,
-                  ),
-                ],
-              ),
-            ),
-            // Custom cyber separator divider
-            Container(
-              width: double.infinity,
-              height: 6,
-              color: isDark ? const Color(0xFF121212) : const Color(0xFFF2F4F7),
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                children: [
-                  if (ride.actionState.isFailure)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: RecoveryBanner(
-                        state: ride.actionState,
-                        onRetry: ride.retryInitialize,
-                      ),
-                    ),
-                  if (destinationQuery.isNotEmpty)
-                    _DestinationResultTile(
-                      title: 'Use "$destinationQuery"',
-                      detail: 'Set typed destination and estimate the fare',
-                      icon: Icons.search_rounded,
-                      isDark: isDark,
-                      onTap: () => _selectDestinationFromInput(
-                        context,
-                        destinationQuery,
-                      ),
-                    ),
-                  for (final suggestion in suggestions)
-                    _DestinationResultTile(
-                      title: suggestion.title,
-                      detail: suggestion.detail,
-                      isDark: isDark,
-                      icon: _getIconForPlace(suggestion.title),
-                      onTap: () {
-                        _selectDestination(context, suggestion);
-                      },
-                    ),
-                  if (destinationQuery.isNotEmpty && suggestions.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                      child: Text(
-                        'No saved matches yet. Use your typed destination above.',
-                        style: TextStyle(
-                          color: isDark
-                              ? const Color(0xFF8E90A2)
-                              : const Color(0xFF667085),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            _buildSetOnMapFooter(context, isDark),
-          ],
-        ),
+  List<LocationPoint> _filteredSuggestions(String query, RideController ride) {
+    final suggestions = [
+      const LocationPoint(
+        title: 'Central Bus Stand',
+        detail: 'Shahupuri, Kolhapur, Maharashtra 416001',
       ),
+      const LocationPoint(
+        title: 'Swargate Bus Stand',
+        detail: 'Swargate, Pune, Maharashtra 411042',
+      ),
+      const LocationPoint(
+        title: 'Select Citywalk Mall',
+        detail: 'Saket District Center, District Center, Sector 6, Pushp Vihar, New Delhi, Delhi 110017',
+      ),
+      const LocationPoint(
+        title: 'Kullar Farms Rd',
+        detail: 'New Manglapuri, Manglapuri Village, Sultanpur, New Delhi, Delhi',
+      ),
+      const LocationPoint(
+        title: 'DLF Promenade',
+        detail: 'Vasant Kunj Road, New Delhi, Delhi 110070',
+      ),
+      ride.homeLocation,
+      ride.workLocation,
+      const LocationPoint(title: 'Gym', detail: 'Wagholi, Pune, Maharashtra'),
+    ];
+    if (query.isEmpty) return suggestions;
+    return suggestions
+        .where((s) =>
+            s.title.toLowerCase().contains(query.toLowerCase()) ||
+            s.detail.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+  }
+
+  void _expandSheet() {
+    _sheetController.animateTo(
+      0.95,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
 
-  Widget _buildSetOnMapFooter(BuildContext context, bool isDark) {
-    final footerBg = isDark ? const Color(0xFF121212) : Colors.white;
-    final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.08)
-        : const Color(0xFFE2E8F0);
-    final buttonBg = isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF2F4F7);
-    final textColor = isDark ? Colors.white : DSColors.textPrimary;
-    final iconColor = isDark ? Colors.white : DSColors.textPrimary;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: footerBg,
-        border: Border(top: BorderSide(color: borderColor, width: 1.0)),
-      ),
-      child: Material(
-        color: buttonBg,
-        borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            _showMessage(context, 'Set location on map selected');
+  void _selectSuggestion(LocationPoint point, RideController ride) {
+    if (point.title == 'Choose on map') {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final palette = isDark ? DSPalettes.dark : DSPalettes.light;
+      showModalBottomSheet<String>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => MapPickerSheet(
+          isDark: isDark,
+          palette: palette,
+          title: _activeSearchField == 'pickup' ? 'Set Pickup Location' : 'Set Destination',
+          onSelected: (loc) {
+            Navigator.pop(context, loc);
           },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: isDark
-                  ? Border.all(
-                      color: Colors.white.withValues(alpha: 0.06),
-                      width: 1.0,
-                    )
-                  : null,
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.map_rounded, color: iconColor),
-                const SizedBox(width: 12),
-                Text(
-                  'Set on map',
-                  style: TextStyle(
-                    color: textColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    fontFamily: 'Inter',
-                  ),
-                ),
-                const Spacer(),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: isDark
-                      ? const Color(0xFF8E90A2)
-                      : const Color(0xFF98A2B3),
-                ),
-              ],
-            ),
-          ),
         ),
-      ),
-    );
-  }
-
-  void _showMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  List<LocationPoint> _filteredSuggestions(String query) {
-    if (query.isEmpty) return _suggestions;
-
-    final lowerQuery = query.toLowerCase();
-    return _suggestions
-        .where((suggestion) {
-          return suggestion.title.toLowerCase().contains(lowerQuery) ||
-              suggestion.detail.toLowerCase().contains(lowerQuery);
-        })
-        .toList(growable: false);
-  }
-
-  void _updatePickupFromInput(BuildContext context, String value) {
-    final trimmed = value.trim();
-    if (trimmed.isEmpty) return;
-
-    final ride = RideScope.of(context);
-    ride.updatePickup(LocationPoint(title: trimmed, detail: trimmed));
-    _showMessage(context, 'Pickup updated');
-  }
-
-  void _selectDestinationFromInput(BuildContext context, String value) {
-    final trimmed = value.trim();
-    if (trimmed.isEmpty) {
-      _showMessage(context, 'Enter a destination first');
+      ).then((result) {
+        if (result != null && mounted) {
+          final customPoint = LocationPoint(title: result, detail: 'Custom location');
+          _selectSuggestion(customPoint, ride);
+        }
+      });
       return;
     }
 
-    final lowerValue = trimmed.toLowerCase();
-    LocationPoint? match;
-    for (final suggestion in _suggestions) {
-      if (suggestion.title.toLowerCase() == lowerValue ||
-          suggestion.detail.toLowerCase() == lowerValue) {
-        match = suggestion;
-        break;
+    LocationPoint cleanPoint = point;
+    if (point.detail == 'Set custom location') {
+      final match = RegExp(r'^Use "(.+)"$').firstMatch(point.title);
+      if (match != null) {
+        cleanPoint = LocationPoint(
+          title: match.group(1)!,
+          detail: 'Custom location',
+        );
       }
     }
 
-    _selectDestination(
-      context,
-      match ?? LocationPoint(title: trimmed, detail: trimmed),
-    );
+    if (_activeSearchField == 'pickup') {
+      _pickupController.text = cleanPoint.title;
+      ride.updatePickup(cleanPoint);
+      _destinationFocusNode.requestFocus();
+    } else {
+      _destinationController.text = cleanPoint.title;
+      ride.updateDestination(cleanPoint);
+      // Navigate to fare screen
+      Navigator.pushNamed(context, AppRoutes.fare);
+    }
   }
 
-  void _selectDestination(BuildContext context, LocationPoint destination) {
-    final ride = RideScope.of(context);
-    ride.updateDestination(destination);
-    Navigator.pushNamed(context, AppRoutes.fare);
-  }
+  // ══════════════════════════════════════════════════════════════════
+  // PROFILE SELECTOR (FOR ME) SHEET
+  // ══════════════════════════════════════════════════════════════════
+  final List<String> _customProfiles = [];
 
-  void _showSavedPlaces(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-    final bgColor = isDark ? const Color(0xFF121212) : Colors.white;
-    final textColor = isDark ? Colors.white : DSColors.textPrimary;
-    final subtitleColor = isDark
-        ? const Color(0xFF8E90A2)
-        : const Color(0xFF667085);
-    final avatarBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF2F4F7);
-    final iconColor = isDark ? Colors.white : DSColors.textPrimary;
-    final barrierColor = isDark
-        ? Colors.black.withValues(alpha: 0.6)
-        : Colors.black.withValues(alpha: 0.4);
-
-    showModalBottomSheet<void>(
+  void _showAddRiderDialog(BuildContext context, bool isDark, StateSetter setModalState) {
+    final textController = TextEditingController();
+    showDialog(
       context: context,
-      showDragHandle: true,
-      backgroundColor: bgColor,
-      barrierColor: barrierColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
-        ),
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Container(
-            color: Colors.transparent,
-            child: ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-              children: [
-                Text(
-                  'Saved places',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: textColor,
-                    fontFamily: 'Inter',
-                  ),
-                ),
-                const SizedBox(height: 12),
-                for (final place in _suggestions.where(
-                  (p) =>
-                      p.title == 'Home' ||
-                      p.title == 'Work' ||
-                      p.title == 'Gym',
-                ))
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF1A1A1A)
-                          : const Color(0xFFF9FAFB),
-                      borderRadius: BorderRadius.circular(16),
-                      border: isDark
-                          ? Border.all(
-                              color: Colors.white.withValues(alpha: 0.06),
-                              width: 1.0,
-                            )
-                          : null,
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 4,
-                      ),
-                      leading: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: avatarBg,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          _getIconForPlace(place.title),
-                          color: iconColor,
-                          size: 20,
-                        ),
-                      ),
-                      title: Text(
-                        place.title,
-                        style: TextStyle(
-                          color: textColor,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                      subtitle: Text(
-                        place.detail,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: subtitleColor,
-                          fontSize: 13,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.pop(sheetContext);
-                        _selectDestination(context, place);
-                      },
-                    ),
-                  ),
-              ],
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text('Add Rider'),
+          content: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: CupertinoTextField(
+              controller: textController,
+              placeholder: 'Rider Name',
+              style: TextStyle(color: isDark ? Colors.white : Colors.black),
             ),
           ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: const Text('Add'),
+              onPressed: () {
+                final name = textController.text.trim();
+                if (name.isNotEmpty) {
+                  setModalState(() {
+                    _customProfiles.add(name);
+                  });
+                }
+                Navigator.pop(context);
+              },
+            ),
+          ],
         );
       },
     );
   }
-}
 
-class _FilterChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool showChevron;
-  final VoidCallback onTap;
-  final bool isDark;
+  void _openProfileSelector(BuildContext context, bool isDark) {
+    final bgCol = isDark ? const Color(0xFF121212) : Colors.white;
+    final textCol = isDark ? Colors.white : Colors.black;
 
-  const _FilterChip({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    required this.isDark,
-    this.showChevron = false,
-  });
+    String tempSelection = _profileName;
 
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return DraggableScrollableSheet(
+              initialChildSize: 0.5,
+              minChildSize: 0.3,
+              maxChildSize: 0.9,
+              expand: false,
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: bgCol,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // Drag Handle
+                      Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 10, bottom: 12),
+                          width: 40,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFD1D5DB),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                      ),
+
+                      // Header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Text(
+                          'Choose who\'s riding',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: textCol,
+                          ),
+                        ),
+                      ),
+                      const Divider(),
+
+                      // Users List
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          children: [
+                            _buildProfileRow('For me', 'Ritesh Mahatme (Me)', 'R', tempSelection, isDark, (val) {
+                              setModalState(() => tempSelection = val);
+                            }),
+                            _buildProfileRow('Mom', 'Mom', 'M', tempSelection, isDark, (val) {
+                              setModalState(() => tempSelection = val);
+                            }),
+                            _buildProfileRow('Dad', 'Dad', 'D', tempSelection, isDark, (val) {
+                              setModalState(() => tempSelection = val);
+                            }),
+                            _buildProfileRow('Friend', 'Friend', 'F', tempSelection, isDark, (val) {
+                              setModalState(() => tempSelection = val);
+                            }),
+                            ..._customProfiles.map((name) => _buildProfileRow(name, name, name.isNotEmpty ? name[0].toUpperCase() : 'U', tempSelection, isDark, (val) {
+                              setModalState(() => tempSelection = val);
+                            })),
+                            const Divider(),
+                            ListTile(
+                              leading: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: isDark ? const Color(0xFF1F1F1F) : const Color(0xFFF6F6F6),
+                                child: Icon(
+                                  CupertinoIcons.add,
+                                  color: isDark ? Colors.white : Colors.black,
+                                  size: 16,
+                                ),
+                              ),
+                              title: Text(
+                                'Add a rider',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              onTap: () {
+                                _showAddRiderDialog(context, isDark, setModalState);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Done Button
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: CupertinoButton(
+                            color: isDark ? Colors.white : Colors.black,
+                            borderRadius: BorderRadius.circular(26),
+                            onPressed: () {
+                              setState(() {
+                                _profileName = tempSelection;
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'Done',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: isDark ? Colors.black : Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildProfileRow(
+    String id,
+    String label,
+    String initial,
+    String currentSelection,
+    bool isDark,
+    ValueChanged<String> onChanged,
+  ) {
+    final rowCol = isDark ? Colors.white : Colors.black;
+
+    return ListTile(
+      leading: CircleAvatar(
+        radius: 18,
+        backgroundColor: isDark ? const Color(0xFF1F1F1F) : const Color(0xFFF6F6F6),
+        child: Text(
+          initial,
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: rowCol,
+          ),
+        ),
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: rowCol,
+        ),
+      ),
+      trailing: CupertinoRadio<String>(
+        value: id,
+        groupValue: currentSelection,
+        activeColor: const Color(0xFF276EF1),
+        onChanged: (val) {
+          if (val != null) onChanged(val);
+        },
+      ),
+      onTap: () => onChanged(id),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // BUILD METHOD
+  // ══════════════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
-    final chipBg = isDark ? const Color(0xFF1E293B) : DSColors.surfaceVariant;
-    final textColor = isDark ? Colors.white : DSColors.textPrimary;
+    final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(999),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: chipBg,
-          borderRadius: BorderRadius.circular(999),
-          border: isDark
-              ? Border.all(
-                  color: Colors.white.withValues(alpha: 0.06),
-                  width: 1.0,
-                )
-              : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 18, color: textColor),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Inter',
-              ),
-            ),
-            if (showChevron) ...[
-              const SizedBox(width: 4),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                size: 18,
-                color: textColor,
-              ),
-            ],
-          ],
-        ),
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          // Draggable scrollable sheet overlays the map
+          DraggableScrollableSheet(
+            initialChildSize: 0.3,
+            minChildSize: 0.3,
+            maxChildSize: 0.95,
+            controller: _sheetController,
+            snap: true,
+            snapSizes: const [0.3, 0.95],
+            builder: (context, scrollController) {
+              final isMax = _sheetSize > 0.6;
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: palette.background, // Canvas
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(DSRadius.xl), // 16px
+                    topRight: Radius.circular(DSRadius.xl),
+                    bottomLeft: isMax ? Radius.zero : Radius.circular(DSRadius.xl),
+                    bottomRight: isMax ? Radius.zero : Radius.circular(DSRadius.xl),
+                  ),
+                  border: Border.all(color: palette.divider, width: 1.0),
+                  boxShadow: DSShadows.level2, // Level 2 Card Drop shadow
+                ),
+                child: CustomScrollView(
+                  controller: scrollController,
+                  physics: const ClampingScrollPhysics(),
+                  slivers: [
+                    // Drag handle and core header/inputs content
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Drag handle
+                          Center(
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 10, bottom: 12),
+                              width: 40,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: palette.border, // Surface Pressed
+                                borderRadius: BorderRadius.circular(DSRadius.pill),
+                              ),
+                            ),
+                          ),
+                          // Content header based on height state
+                          if (!isMax)
+                            _buildMinContent(context, ride, palette)
+                          else
+                            _buildMaxHeader(context, ride, palette),
+                        ],
+                      ),
+                    ),
+                    
+                    // Sticky Location Inputs
+                    if (isMax)
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _SliverHeaderDelegate(
+                          height: 145.0,
+                          child: Container(
+                            color: palette.background,
+                            padding: const EdgeInsets.only(top: 8, bottom: 12),
+                            child: _buildLocationInputs(context, ride, palette),
+                          ),
+                        ),
+                      ),
+
+                    // Suggestions list
+                    if (isMax)
+                      _buildSuggestionsSliverList(context, ride, palette),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
-}
 
-class _LocationInputs extends StatelessWidget {
-  final TextEditingController pickupController;
-  final TextEditingController destinationController;
-  final ValueChanged<String> onPickupSubmitted;
-  final ValueChanged<String> onDestinationSubmitted;
-  final bool isDark;
-
-  const _LocationInputs({
-    required this.pickupController,
-    required this.destinationController,
-    required this.onPickupSubmitted,
-    required this.onDestinationSubmitted,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cardBg = isDark ? const Color(0xFF121212) : Colors.white;
-    final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.08)
-        : const Color(0xFFE2E8F0);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor, width: 1.0),
-        boxShadow: Helper.premiumShadows,
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
+  // ══════════════════════════════════════════════════════════════════
+  // MIN STATE CONTENT (30% HEIGHT)
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildMinContent(
+    BuildContext context,
+    RideController ride,
+    DSColorPalette palette,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg), // 16px
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 14, left: 4),
-            child: Column(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: DSColors.textPrimary,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Container(
-                  width: 1.5,
-                  height: 48,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.12)
-                      : const Color(0xFFD0D5DD),
-                ),
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: DSColors.textPrimary,
-                    shape: BoxShape.rectangle,
-                  ),
-                ),
-              ],
+          // Title
+          Text(
+            'Set your destination', // Sentence-case
+            style: DSTypography.displaySM.copyWith(
+              color: palette.textPrimary,
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              children: [
-                _FieldShell(
-                  controller: pickupController,
-                  hintText: 'Pickup location',
-                  textInputAction: TextInputAction.next,
-                  onSubmitted: onPickupSubmitted,
-                  isDark: isDark,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Divider(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : const Color(0xFFF2F4F7),
-                    height: 1,
+          const SizedBox(height: DSSpacing.md),
+
+          // Tappable "Where to?" trigger field
+          GestureDetector(
+            onTap: _expandSheet,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg, vertical: 14),
+              decoration: BoxDecoration(
+                color: palette.surfaceVariant, // Canvas Soft
+                borderRadius: BorderRadius.circular(DSRadius.md), // 8px for form fields
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    CupertinoIcons.search,
+                    color: palette.iconSecondary,
+                    size: 20,
                   ),
-                ),
-                _FieldShell(
-                  controller: destinationController,
-                  hintText: 'Where to?',
-                  autofocus: true,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: onDestinationSubmitted,
-                  isDark: isDark,
-                ),
-              ],
+                  const SizedBox(width: DSSpacing.md),
+                  Text(
+                    'Where to?', // Sentence-case
+                    style: DSTypography.bodyMDStrong.copyWith(
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
-}
 
-class _FieldShell extends StatelessWidget {
-  final TextEditingController controller;
-  final String hintText;
-  final bool autofocus;
-  final TextInputAction textInputAction;
-  final ValueChanged<String> onSubmitted;
-  final bool isDark;
-
-  const _FieldShell({
-    required this.controller,
-    required this.hintText,
-    required this.textInputAction,
-    required this.onSubmitted,
-    required this.isDark,
-    this.autofocus = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final hintColor = isDark
-        ? const Color(0xFF8E90A2)
-        : const Color(0xFF667085);
-    final textColor = isDark ? Colors.white : const Color(0xFF111827);
-
-    return Container(
-      width: double.infinity,
-      color: Colors.transparent,
-      child: TextField(
-        controller: controller,
-        autofocus: autofocus,
-        textInputAction: textInputAction,
-        onSubmitted: onSubmitted,
-        cursorColor: DSColors.textPrimary,
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(
-            color: hintColor,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          filled: false,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 0,
-            vertical: 12,
-          ),
-          suffixIcon: controller.text.isEmpty
-              ? null
-              : IconButton(
-                  tooltip: 'Clear $hintText',
-                  icon: Icon(Icons.close_rounded, size: 18, color: hintColor),
-                  onPressed: controller.clear,
+  // ══════════════════════════════════════════════════════════════════
+  // MAX STATE CONTENT HEADER (95% HEIGHT)
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildMaxHeader(
+    BuildContext context,
+    RideController ride,
+    DSColorPalette palette,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 1. Back button and Plan Your Ride Title
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg, vertical: 4),
+          child: Row(
+            children: [
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(36, 36),
+                child: Icon(
+                  CupertinoIcons.arrow_left,
+                  color: palette.iconPrimary,
+                  size: 22,
                 ),
+                onPressed: () {
+                  // Collapse back to min state
+                  _sheetController.animateTo(
+                    0.3,
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                  );
+                },
+              ),
+              Expanded(
+                child: Text(
+                  'Plan your ride', // Sentence-case
+                  textAlign: TextAlign.center,
+                  style: DSTypography.displaySM.copyWith(
+                    color: palette.textPrimary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 36), // Balanced spacing
+            ],
+          ),
         ),
-        style: TextStyle(
-          color: textColor,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          fontFamily: 'Inter',
+
+        // 2. "For me" profile selector dropdown - Pill shaped (999.0)
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: DSSpacing.lg, top: 4, bottom: 12),
+            child: GestureDetector(
+              onTap: () => _openProfileSelector(context, palette.isDark),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: palette.surfaceVariant, // Canvas Soft
+                  borderRadius: BorderRadius.circular(DSRadius.pill), // 999px
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      CupertinoIcons.person_fill,
+                      size: 14,
+                      color: palette.iconPrimary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      _profileName == 'For me' ? 'For me' : 'For $_profileName',
+                      style: DSTypography.bodySMStrong.copyWith(
+                        color: palette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      CupertinoIcons.chevron_down,
+                      size: 10,
+                      color: palette.iconPrimary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // LOCATION INPUTS (STICKY)
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildLocationInputs(
+    BuildContext context,
+    RideController ride,
+    DSColorPalette palette,
+  ) {
+    final isPickupFocused = _pickupFocusNode.hasFocus;
+    final isDestinationFocused = _destinationFocusNode.hasFocus;
+    final isAnyFocused = isPickupFocused || isDestinationFocused;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isAnyFocused ? palette.surface : palette.surfaceVariant, // Canvas or Canvas Soft
+          borderRadius: BorderRadius.circular(DSRadius.xl), // 16px
+          border: Border.all(
+            color: isAnyFocused ? palette.primary : Colors.transparent,
+            width: 1.0,
+          ),
+          boxShadow: isAnyFocused
+              ? (palette.isDark
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : DSShadows.level2)
+              : [],
+        ),
+        child: Row(
+          children: [
+            // Visual indicators (Circle and Square connected by line)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: palette.iconPrimary,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 32,
+                  color: palette.divider,
+                ),
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: palette.iconPrimary,
+                    shape: BoxShape.rectangle,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 14),
+
+            // Text fields
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Pickup (From) input
+                  TextField(
+                    controller: _pickupController,
+                    focusNode: _pickupFocusNode,
+                    textInputAction: TextInputAction.next,
+                    cursorColor: palette.textPrimary,
+                    style: DSTypography.bodyMDStrong.copyWith(
+                      color: palette.textPrimary,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'From?',
+                      hintStyle: DSTypography.bodyMD.copyWith(
+                        color: palette.textSecondary,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                      suffixIcon: _pickupController.text.isEmpty
+                          ? null
+                          : CupertinoButton(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              child: Icon(CupertinoIcons.clear_circled_solid, size: 16, color: palette.isDark ? Colors.white54 : Colors.black45),
+                              onPressed: () {
+                                _pickupController.clear();
+                                setState(() {});
+                              },
+                            ),
+                    ),
+                  ),
+                  Divider(color: palette.divider, height: 1),
+
+                  // Destination (Where) input
+                  TextField(
+                    controller: _destinationController,
+                    focusNode: _destinationFocusNode,
+                    autofocus: true,
+                    textInputAction: TextInputAction.search,
+                    cursorColor: palette.textPrimary,
+                    style: DSTypography.bodyMDStrong.copyWith(
+                      color: palette.textPrimary,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Where?',
+                      hintStyle: DSTypography.bodyMD.copyWith(
+                        color: palette.textSecondary,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                      suffixIcon: _destinationController.text.isEmpty
+                          ? null
+                          : CupertinoButton(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              child: Icon(CupertinoIcons.clear_circled_solid, size: 16, color: palette.isDark ? Colors.white54 : Colors.black45),
+                              onPressed: () {
+                                _destinationController.clear();
+                                setState(() {});
+                              },
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-}
 
-class _SavedPlacesTile extends StatelessWidget {
-  final VoidCallback onTap;
-  final bool isDark;
 
-  const _SavedPlacesTile({required this.onTap, required this.isDark});
+  // ══════════════════════════════════════════════════════════════════
+  // MAX STATE CONTENT SUGGESTIONS LIST (95% HEIGHT)
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildSuggestionsSliverList(
+    BuildContext context,
+    RideController ride,
+    DSColorPalette palette,
+  ) {
+    final activeQuery = _activeSearchField == 'pickup'
+        ? _pickupController.text.trim()
+        : _destinationController.text.trim();
+    
+    final List<LocationPoint> suggestionsList = [];
+    suggestionsList.add(const LocationPoint(
+      title: 'Choose on map',
+      detail: 'Set location using interactive map',
+    ));
+    if (activeQuery.isNotEmpty) {
+      suggestionsList.add(LocationPoint(
+        title: 'Use "$activeQuery"',
+        detail: 'Set custom location',
+      ));
+    }
+    suggestionsList.addAll(_filteredSuggestions(activeQuery, ride));
 
-  @override
-  Widget build(BuildContext context) {
-    final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.08)
-        : const Color(0xFFF2F4F7);
-    final avatarBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF2F4F7);
-    final iconColor = isDark ? Colors.white : DSColors.textPrimary;
-    final textColor = isDark ? Colors.white : DSColors.textPrimary;
+    return SliverPadding(
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final suggestion = suggestionsList[index];
+            return _buildSuggestionTile(suggestion, ride, palette);
+          },
+          childCount: suggestionsList.length,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionTile(LocationPoint point, RideController ride, DSColorPalette palette) {
+    IconData iconData = CupertinoIcons.clock_fill;
+    final titleLower = point.title.toLowerCase();
+    if (titleLower == 'choose on map') {
+      iconData = CupertinoIcons.map;
+    } else if (titleLower.contains('bus')) {
+      iconData = CupertinoIcons.bus;
+    } else if (titleLower.contains('home')) {
+      iconData = CupertinoIcons.house_fill;
+    } else if (titleLower.contains('work') || titleLower.contains('office')) {
+      iconData = CupertinoIcons.briefcase_fill;
+    }
 
     return InkWell(
-      onTap: onTap,
+      onTap: () => _selectSuggestion(point, ride),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+        padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg, vertical: 12),
         decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(color: borderColor),
-            bottom: BorderSide(color: borderColor),
-          ),
+          border: Border(bottom: BorderSide(color: palette.divider, width: 1.0)),
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: avatarBg,
-                shape: BoxShape.circle,
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: palette.surfaceVariant, // Canvas Soft
+              child: Icon(
+                iconData,
+                color: palette.iconPrimary,
+                size: 14,
               ),
-              child: Icon(Icons.star_rounded, color: iconColor),
             ),
             const SizedBox(width: 14),
             Expanded(
-              child: Text(
-                'Saved places',
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Inter',
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    point.title,
+                    style: DSTypography.bodyMDStrong.copyWith(
+                      color: palette.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    point.detail,
+                    style: DSTypography.bodySM.copyWith(
+                      color: palette.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
             Icon(
-              Icons.chevron_right_rounded,
-              color: isDark ? const Color(0xFF8E90A2) : const Color(0xFF98A2B3),
-              size: 22,
+              CupertinoIcons.chevron_right,
+              color: palette.textSecondary,
+              size: 14,
             ),
           ],
         ),
@@ -764,82 +889,33 @@ class _SavedPlacesTile extends StatelessWidget {
   }
 }
 
-class _DestinationResultTile extends StatelessWidget {
-  final String title;
-  final String detail;
-  final IconData icon;
-  final VoidCallback onTap;
-  final bool isDark;
+class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double height;
+  final Widget child;
 
-  const _DestinationResultTile({
-    required this.title,
-    required this.detail,
-    required this.onTap,
-    required this.isDark,
-    this.icon = Icons.location_on_rounded,
-  });
+  _SliverHeaderDelegate({required this.height, required this.child});
 
   @override
-  Widget build(BuildContext context) {
-    final avatarBg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF2F4F7);
-    final iconColor = isDark ? Colors.white : DSColors.textPrimary;
-    final textColor = isDark ? Colors.white : DSColors.textPrimary;
-    final subtitleColor = isDark
-        ? const Color(0xFF8E90A2)
-        : const Color(0xFF667085);
+  double get minExtent => height;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                margin: const EdgeInsets.only(top: 2),
-                decoration: BoxDecoration(
-                  color: avatarBg,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: iconColor, size: 20),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      detail,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: subtitleColor,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Inter',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: child,
     );
   }
+
+  @override
+  bool shouldRebuild(covariant _SliverHeaderDelegate oldDelegate) {
+    return oldDelegate.height != height || oldDelegate.child != child;
+  }
 }
+

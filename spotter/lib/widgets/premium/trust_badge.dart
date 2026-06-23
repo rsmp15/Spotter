@@ -40,3 +40,4 @@ class TrustBadge extends StatelessWidget {
     );
   }
 }
+

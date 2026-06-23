@@ -1,15 +1,10 @@
-import 'package:spotter/design_system/design_system.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:spotter/design_system/design_system.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
-
-import '../core/components/glass_card.dart';
-import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-
-
-
-
+import '../core/components/glass_scaffold.dart';
 
 class ParcelCompleteScreen extends StatefulWidget {
   const ParcelCompleteScreen({super.key});
@@ -26,13 +21,28 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
     final ride = RideScope.of(context);
     final package = ride.activeParcel;
     final driver = ride.assignedParcelDriver ?? ride.drivers.first;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
     return GlassScaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: DSColors.textPrimary),
-        title: Text('Delivery Receipt', style: DSTypography.headline),
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: Icon(
+            CupertinoIcons.arrow_left,
+            color: palette.textPrimary,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Delivery Receipt',
+          style: DSTypography.headline.copyWith(
+            color: palette.textPrimary,
+            letterSpacing: 1.2,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Stack(
@@ -40,27 +50,28 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
           ListView(
             padding: const EdgeInsets.all(DSSpacing.lg),
             children: [
-              Text('Package successfully delivered!', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+              Text(
+                'Package successfully delivered!',
+                style: DSTypography.body.copyWith(
+                  color: palette.textSecondary,
+                ),
+              ),
               const SizedBox(height: DSSpacing.xl),
 
-              // Success Avatar Glow
+              // Success Avatar Glow (Monochromatic)
               Center(
                 child: Container(
                   width: 90,
                   height: 90,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: DSColors.success.withValues(alpha: 0.1),
+                    color: palette.border,
                   ),
                   child: Center(
-                    child: Container(
-                      width: 64,
-                      height: 64,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: DSColors.success,
-                      ),
-                      child: const Icon(Icons.done_all_rounded, color: Colors.white, size: 32),
+                    child: Icon(
+                      CupertinoIcons.checkmark_alt,
+                      color: palette.textPrimary,
+                      size: 40,
                     ),
                   ),
                 ),
@@ -68,62 +79,92 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
               const SizedBox(height: DSSpacing.xl),
 
               // Receipt Summary Box
-              GlassCard(
+              Container(
                 padding: const EdgeInsets.all(DSSpacing.xl),
+                decoration: BoxDecoration(
+                  color: palette.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: palette.border),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Transaction Summary', style: DSTypography.headline),
+                    Text(
+                      'Transaction Summary',
+                      style: DSTypography.headline.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: palette.textPrimary,
+                      ),
+                    ),
                     const SizedBox(height: DSSpacing.lg),
-                    _buildInfoRow('Sender', package?.senderName ?? 'Ritesh M'),
+                    _buildInfoRow('Sender', package?.senderName ?? 'Ritesh M', palette),
                     const SizedBox(height: DSSpacing.sm),
-                    _buildInfoRow('Receiver', package?.receiverName ?? 'Rahul Sharma'),
+                    _buildInfoRow('Receiver', package?.receiverName ?? 'Rahul Sharma', palette),
                     const SizedBox(height: DSSpacing.sm),
                     _buildInfoRow(
                       'Category',
                       package == null
                           ? 'Documents'
                           : package.category.name.replaceAll('documents', 'Documents / Keys').replaceAll('collegeItems', 'College Items'),
+                      palette,
                     ),
                     const SizedBox(height: DSSpacing.sm),
                     _buildInfoRow(
                       'Weight class',
                       package == null ? 'Light' : package.size.name.toUpperCase(),
+                      palette,
                     ),
                     const SizedBox(height: DSSpacing.sm),
-                    _buildInfoRow('Vehicle type', driver.vehicle.split(' - ')[0]),
+                    _buildInfoRow('Vehicle type', driver.vehicle.split(' - ')[0], palette),
                     const SizedBox(height: DSSpacing.md),
-                    const Divider(color: DSColors.border),
+                    Divider(color: palette.border),
                     const SizedBox(height: DSSpacing.md),
-                    _buildInfoRow('Amount Charged', package?.fareLabel ?? '₹45', valueColor: DSColors.success),
+                    _buildInfoRow('Amount Charged', package?.fareLabel ?? '₹45', palette, valueColor: palette.textPrimary),
                   ],
                 ),
               ),
               const SizedBox(height: DSSpacing.md),
 
               // Photo Proof placeholder Box
-              GlassCard(
+              Container(
                 padding: const EdgeInsets.all(DSSpacing.xl),
+                decoration: BoxDecoration(
+                  color: palette.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: palette.border),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Proof of Delivery (Photo)', style: DSTypography.headline),
+                    Text(
+                      'Proof of Delivery (Photo)',
+                      style: DSTypography.headline.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: palette.textPrimary,
+                      ),
+                    ),
                     const SizedBox(height: DSSpacing.md),
                     Container(
                       height: 120,
+                      width: double.infinity,
                       decoration: BoxDecoration(
-                        color: DSColors.surface,
-                        borderRadius: BorderRadius.circular(DSRadius.md),
-                        border: Border.all(color: DSColors.border),
+                        color: palette.background,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: palette.border),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.photo_library_outlined, size: 32, color: DSColors.textSecondary),
+                          Icon(CupertinoIcons.photo_on_rectangle, size: 32, color: palette.textSecondary),
                           const SizedBox(height: DSSpacing.xs),
                           Text(
                             'Verification Photo Uploaded by ${driver.name}',
-                            style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold),
+                            style: DSTypography.caption.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: palette.textPrimary,
+                            ),
                           ),
                         ],
                       ),
@@ -134,20 +175,34 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
               const SizedBox(height: DSSpacing.md),
 
               // Private Driver Partner rating Star selector
-              GlassCard(
+              Container(
                 padding: const EdgeInsets.all(DSSpacing.xl),
+                decoration: BoxDecoration(
+                  color: palette.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: palette.border),
+                ),
                 child: Column(
                   children: [
-                    Text('Rate ${driver.name}', style: DSTypography.headline),
+                    Text(
+                      'Rate ${driver.name}',
+                      style: DSTypography.headline.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: palette.textPrimary,
+                      ),
+                    ),
                     const SizedBox(height: DSSpacing.md),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(5, (index) {
                         final starPos = index + 1;
-                        return IconButton(
-                          icon: Icon(
-                            starPos <= _userRating ? Icons.star_rounded : Icons.star_border_rounded,
-                            color: DSColors.warning,
+                        final isSelected = starPos <= _userRating;
+                        return CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          child: Icon(
+                            isSelected ? CupertinoIcons.star_fill : CupertinoIcons.star,
+                            color: isSelected ? palette.textPrimary : palette.textSecondary.withValues(alpha: 0.4),
                             size: 36,
                           ),
                           onPressed: () {
@@ -181,19 +236,26 @@ class _ParcelCompleteScreenState extends State<ParcelCompleteScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {Color? valueColor}) {
+  Widget _buildInfoRow(String label, String value, DSColorPalette palette, {Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: DSTypography.body),
+        Text(
+          label,
+          style: DSTypography.body.copyWith(
+            color: palette.textSecondary,
+          ),
+        ),
         Text(
           value,
           style: DSTypography.body.copyWith(
             fontWeight: FontWeight.bold,
-            color: valueColor ?? DSColors.textPrimary,
+            color: valueColor ?? palette.textPrimary,
           ),
         ),
       ],
     );
   }
 }
+
+

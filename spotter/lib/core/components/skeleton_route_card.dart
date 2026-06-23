@@ -103,3 +103,4 @@ class SkeletonTravelerCard extends StatelessWidget {
     );
   }
 }
+

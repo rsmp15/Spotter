@@ -269,3 +269,4 @@ class TrustBadge extends StatelessWidget {
     );
   }
 }
+

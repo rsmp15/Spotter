@@ -352,3 +352,4 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
     );
   }
 }
+

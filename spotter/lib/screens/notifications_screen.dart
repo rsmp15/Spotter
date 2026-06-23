@@ -1,13 +1,8 @@
-import 'package:spotter/design_system/design_system.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../core/components/glass_card.dart';
+import 'package:spotter/design_system/design_system.dart';
 import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-
-
-
-
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -22,12 +17,27 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     return GlassScaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: DSColors.textPrimary),
-        title: Text('SPOTT', style: DSTypography.headline),
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: Icon(
+            CupertinoIcons.arrow_left,
+            color: palette.textPrimary,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'SPOTT',
+          style: DSTypography.headline.copyWith(
+            color: palette.textPrimary,
+            letterSpacing: 1.5,
+          ),
+        ),
         centerTitle: true,
       ),
       body: ListView(
@@ -35,14 +45,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         children: [
           // Header Section
           const SizedBox(height: DSSpacing.sm),
-          Text('Notifications', style: DSTypography.headline.copyWith(fontSize: 40)),
+          Text(
+            'Notifications',
+            style: DSTypography.headline.copyWith(
+              fontSize: 36,
+              fontWeight: FontWeight.w800,
+              color: palette.textPrimary,
+            ),
+          ),
           const SizedBox(height: DSSpacing.xs),
-          Text('Stay updated on your journeys and earnings.', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+          Text(
+            'Stay updated on your journeys and earnings.',
+            style: DSTypography.body.copyWith(
+              color: palette.textSecondary,
+            ),
+          ),
           const SizedBox(height: DSSpacing.xl),
 
           // Smart Filter Chips
           SizedBox(
-            height: 48,
+            height: 40,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _filters.length,
@@ -51,24 +73,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 final isSelected = _selectedFilterIndex == index;
                 return GestureDetector(
                   onTap: () => setState(() => _selectedFilterIndex = index),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: DSSpacing.xl, vertical: DSSpacing.sm),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(horizontal: DSSpacing.lg),
                     decoration: BoxDecoration(
-                      color: isSelected ? DSColors.primary : Colors.white.withValues(alpha:0.6),
-                      borderRadius: BorderRadius.circular(DSRadius.pill),
+                      color: isSelected ? palette.textPrimary : palette.surfaceVariant,
+                      borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: isSelected ? Colors.transparent : Colors.white.withValues(alpha:0.8),
+                        color: isSelected ? Colors.transparent : palette.border,
                       ),
-                      boxShadow: isSelected
-                          ? [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 4, offset: const Offset(0, 2))]
-                          : null,
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       _filters[index],
                       style: DSTypography.labelLarge.copyWith(
-                        color: isSelected ? Colors.white : DSColors.textSecondary,
+                        color: isSelected ? palette.background : palette.textPrimary,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        fontFamily: 'Inter',
                       ),
                     ),
                   ),
@@ -83,8 +104,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             title: 'Amit accepted your ride',
             subtitle: 'Ride update',
             time: '2 minutes ago',
-            icon: Icons.check_circle_rounded,
-            iconColor: DSColors.success,
+            icon: CupertinoIcons.checkmark_circle_fill,
             buttonLabel: 'View Details',
             onTap: () => _showNotification(context, 'Ride update opened'),
           ),
@@ -94,8 +114,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             title: 'Ride OTP generated',
             subtitle: 'Security update',
             time: 'Today',
-            icon: Icons.password_rounded,
-            iconColor: DSColors.primary,
+            icon: CupertinoIcons.lock_shield,
             buttonLabel: 'View Details',
             onTap: () => _showNotification(context, 'Ride OTP details opened'),
           ),
@@ -105,8 +124,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             title: 'Wallet top-up successful',
             subtitle: 'Payment received',
             time: 'Today',
-            icon: Icons.account_balance_wallet_rounded,
-            iconColor: DSColors.textSecondary, // mapped from original flutter code
+            icon: CupertinoIcons.creditcard_fill,
             buttonLabel: 'View Wallet',
             onTap: () => _showNotification(context, 'Wallet receipt opened'),
           ),
@@ -116,8 +134,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             title: 'Safety contact added',
             subtitle: 'Account updated',
             time: 'Yesterday',
-            icon: Icons.security_rounded,
-            iconColor: DSColors.warning,
+            icon: CupertinoIcons.shield_fill,
             buttonLabel: 'View Details',
             onTap: () => _showNotification(context, 'Safety contact opened'),
           ),
@@ -127,7 +144,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _showNotification(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          message,
+          style: const TextStyle(fontFamily: 'Inter', color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+      ),
+    );
   }
 }
 
@@ -136,7 +162,6 @@ class _NotificationCard extends StatelessWidget {
   final String subtitle;
   final String time;
   final IconData icon;
-  final Color iconColor;
   final String buttonLabel;
   final VoidCallback onTap;
 
@@ -145,16 +170,21 @@ class _NotificationCard extends StatelessWidget {
     required this.subtitle,
     required this.time,
     required this.icon,
-    required this.iconColor,
     required this.buttonLabel,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
-      onTap: onTap,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
+    return Container(
       padding: const EdgeInsets.all(DSSpacing.lg),
+      decoration: BoxDecoration(
+        color: palette.surfaceVariant,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: palette.border),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -165,21 +195,43 @@ class _NotificationCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha:0.1),
+                  color: palette.border,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: iconColor, size: 24),
+                child: Icon(
+                  icon,
+                  color: palette.textPrimary,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: DSSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: DSTypography.headline.copyWith(fontSize: 18)),
+                    Text(
+                      title,
+                      style: DSTypography.headline.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: palette.textPrimary,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+                    Text(
+                      subtitle,
+                      style: DSTypography.body.copyWith(
+                        fontSize: 14,
+                        color: palette.textSecondary,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text(time, style: DSTypography.caption.copyWith(color: DSColors.textSecondary.withValues(alpha:0.6))),
+                    Text(
+                      time,
+                      style: DSTypography.caption.copyWith(
+                        color: palette.textSecondary.withValues(alpha: 0.6),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -198,3 +250,5 @@ class _NotificationCard extends StatelessWidget {
     );
   }
 }
+
+

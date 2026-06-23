@@ -8,18 +8,12 @@
 // ---------------------------------------------------------------------------
 
 /// Mirrors the `role` column of the Users table.
-enum UserRole { user, rider }
+enum UserRole { user }
 
 enum KycStatus { notStarted, submitted, verified }
 
 /// Shared verification lifecycle for driver-licence and vehicle checks.
 enum VerificationStatus { pending, submitted, verified, rejected }
-
-/// Overall trip lifecycle.
-enum TripStatus { draft, active, inProgress, completed, cancelled }
-
-/// Individual seat-request lifecycle.
-enum TripRequestStatus { pending, accepted, rejected, cancelled }
 
 /// Parcel hand-off lifecycle.
 enum ParcelStatus {
@@ -232,139 +226,6 @@ class Vehicle {
   }
 }
 
-// ---------------------------------------------------------------------------
-// 4. Trip
-// ---------------------------------------------------------------------------
-
-class Trip {
-  final String id;
-  final String travelerId;
-  final String source;
-  final String destination;
-  final DateTime departureTime;
-  final int availableSeats;
-  final int pricePerSeat;
-  final bool parcelAllowed;
-  final TripStatus status;
-
-  const Trip({
-    required this.id,
-    required this.travelerId,
-    required this.source,
-    required this.destination,
-    required this.departureTime,
-    required this.availableSeats,
-    required this.pricePerSeat,
-    this.parcelAllowed = false,
-    this.status = TripStatus.draft,
-  });
-
-  factory Trip.fromJson(Map<String, dynamic> json) {
-    return Trip(
-      id: json['id'] as String,
-      travelerId: json['traveler_id'] as String,
-      source: json['source'] as String,
-      destination: json['destination'] as String,
-      departureTime: DateTime.parse(json['departure_time'] as String),
-      availableSeats: json['available_seats'] as int,
-      pricePerSeat: json['price_per_seat'] as int,
-      parcelAllowed: json['parcel_allowed'] as bool? ?? false,
-      status: TripStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => TripStatus.draft,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'traveler_id': travelerId,
-    'source': source,
-    'destination': destination,
-    'departure_time': departureTime.toIso8601String(),
-    'available_seats': availableSeats,
-    'price_per_seat': pricePerSeat,
-    'parcel_allowed': parcelAllowed,
-    'status': status.name,
-  };
-
-  Trip copyWith({
-    String? id,
-    String? travelerId,
-    String? source,
-    String? destination,
-    DateTime? departureTime,
-    int? availableSeats,
-    int? pricePerSeat,
-    bool? parcelAllowed,
-    TripStatus? status,
-  }) {
-    return Trip(
-      id: id ?? this.id,
-      travelerId: travelerId ?? this.travelerId,
-      source: source ?? this.source,
-      destination: destination ?? this.destination,
-      departureTime: departureTime ?? this.departureTime,
-      availableSeats: availableSeats ?? this.availableSeats,
-      pricePerSeat: pricePerSeat ?? this.pricePerSeat,
-      parcelAllowed: parcelAllowed ?? this.parcelAllowed,
-      status: status ?? this.status,
-    );
-  }
-
-  String get priceLabel => 'Rs $pricePerSeat';
-}
-
-// ---------------------------------------------------------------------------
-// 5. TripRequest
-// ---------------------------------------------------------------------------
-
-class TripRequest {
-  final String id;
-  final String tripId;
-  final String passengerId;
-  final TripRequestStatus status;
-
-  const TripRequest({
-    required this.id,
-    required this.tripId,
-    required this.passengerId,
-    this.status = TripRequestStatus.pending,
-  });
-
-  factory TripRequest.fromJson(Map<String, dynamic> json) {
-    return TripRequest(
-      id: json['id'] as String,
-      tripId: json['trip_id'] as String,
-      passengerId: json['passenger_id'] as String,
-      status: TripRequestStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => TripRequestStatus.pending,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'trip_id': tripId,
-    'passenger_id': passengerId,
-    'status': status.name,
-  };
-
-  TripRequest copyWith({
-    String? id,
-    String? tripId,
-    String? passengerId,
-    TripRequestStatus? status,
-  }) {
-    return TripRequest(
-      id: id ?? this.id,
-      tripId: tripId ?? this.tripId,
-      passengerId: passengerId ?? this.passengerId,
-      status: status ?? this.status,
-    );
-  }
-}
 
 // ---------------------------------------------------------------------------
 // 6. Parcel
@@ -500,3 +361,4 @@ class Review {
     );
   }
 }
+

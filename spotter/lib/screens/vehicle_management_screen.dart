@@ -1,16 +1,10 @@
 import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../controllers/ride_controller.dart';
 import '../models/spott_models.dart';
-import '../core/components/glass_card.dart';
-import '../core/components/glass_scaffold.dart';
 import '../core/components/status_chip.dart';
-import '../core/components/spott_buttons.dart';
-
-
-
-
 
 class VehicleManagementScreen extends StatefulWidget {
   const VehicleManagementScreen({super.key});
@@ -24,13 +18,13 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
     switch (type.toLowerCase()) {
       case 'car':
       case 'suv':
-        return Icons.directions_car_rounded;
+        return CupertinoIcons.car_detailed;
       case 'bike':
-        return Icons.motorcycle_rounded;
+        return CupertinoIcons.location;
       case 'auto':
-        return Icons.electric_rickshaw_rounded;
+        return CupertinoIcons.car;
       default:
-        return Icons.directions_car_rounded;
+        return CupertinoIcons.car_detailed;
     }
   }
 
@@ -62,6 +56,8 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
 
   void _openVehicleFormSheet(BuildContext context, [Vehicle? vehicle]) {
     final ride = RideScope.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     final isEdit = vehicle != null;
 
     final modelController = TextEditingController(text: vehicle?.vehicleModel ?? '');
@@ -71,7 +67,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      backgroundColor: DSColors.surfaceVariant,
+      backgroundColor: palette.surface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -93,28 +89,37 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(isEdit ? 'Edit Vehicle' : 'Add Vehicle', style: DSTypography.headline),
+                  Text(
+                    isEdit ? 'Edit Vehicle' : 'Add Vehicle',
+                    style: DSTypography.headline.copyWith(color: palette.textPrimary),
+                  ),
                   const SizedBox(height: DSSpacing.lg),
 
-                  Text('Vehicle Type', style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    'Vehicle Type',
+                    style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold, color: palette.textSecondary),
+                  ),
                   const SizedBox(height: DSSpacing.xs),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: DSSpacing.md),
                     decoration: BoxDecoration(
-                      color: DSColors.surface,
-                      borderRadius: BorderRadius.circular(DSRadius.md),
-                      border: Border.all(color: DSColors.border),
+                      color: palette.surfaceVariant,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: palette.border),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: selectedType,
                         isExpanded: true,
-                        dropdownColor: DSColors.surfaceVariant,
-                        style: DSTypography.body.copyWith(color: DSColors.textPrimary),
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: DSColors.textSecondary),
+                        dropdownColor: palette.surface,
+                        style: DSTypography.body.copyWith(color: palette.textPrimary),
+                        icon: Icon(CupertinoIcons.chevron_down, color: palette.textSecondary, size: 18),
                         items: ['Car', 'Bike', 'SUV', 'Auto'].map((type) {
-                          return DropdownMenuItem(value: type, child: Text(type));
+                          return DropdownMenuItem(
+                            value: type,
+                            child: Text(type, style: TextStyle(color: palette.textPrimary)),
+                          );
                         }).toList(),
                         onChanged: (value) {
                           if (value != null) setSheetState(() => selectedType = value);
@@ -124,45 +129,59 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                   ),
                   const SizedBox(height: DSSpacing.md),
 
-                  Text('Vehicle Model Name', style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    'Vehicle Model Name',
+                    style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold, color: palette.textSecondary),
+                  ),
                   const SizedBox(height: DSSpacing.xs),
                   TextField(
                     controller: modelController,
-                    style: DSTypography.body.copyWith(color: DSColors.textPrimary),
+                    style: DSTypography.body.copyWith(color: palette.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'e.g. Honda City / Activa 6G',
                       filled: true,
-                      fillColor: DSColors.surface,
-                      hintStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
+                      fillColor: palette.surfaceVariant,
+                      hintStyle: DSTypography.body.copyWith(color: palette.textTertiary),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(DSRadius.md),
-                        borderSide: const BorderSide(color: DSColors.border),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: palette.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(DSRadius.md),
-                        borderSide: const BorderSide(color: DSColors.border),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: palette.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: palette.primary, width: 1.5),
                       ),
                     ),
                   ),
                   const SizedBox(height: DSSpacing.md),
 
-                  Text('Registration Number', style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    'Registration Number',
+                    style: DSTypography.caption.copyWith(fontWeight: FontWeight.bold, color: palette.textSecondary),
+                  ),
                   const SizedBox(height: DSSpacing.xs),
                   TextField(
                     controller: numberController,
-                    style: DSTypography.body.copyWith(color: DSColors.textPrimary),
+                    style: DSTypography.body.copyWith(color: palette.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'e.g. MH-12-PQ-9876',
                       filled: true,
-                      fillColor: DSColors.surface,
-                      hintStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
+                      fillColor: palette.surfaceVariant,
+                      hintStyle: DSTypography.body.copyWith(color: palette.textTertiary),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(DSRadius.md),
-                        borderSide: const BorderSide(color: DSColors.border),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: palette.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(DSRadius.md),
-                        borderSide: const BorderSide(color: DSColors.border),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: palette.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: palette.primary, width: 1.5),
                       ),
                     ),
                   ),
@@ -172,56 +191,79 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                     children: [
                       if (isEdit) ...[
                         Expanded(
-                          child: SpottButton.ghost(
-                            label: 'Delete',
-                            onPressed: () {
-                              ride.deleteVehicle(vehicle.id);
-                              Navigator.pop(sheetContext);
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vehicle deleted')));
-                            },
+                          child: SizedBox(
+                            height: 56,
+                            child: OutlinedButton(
+                              onPressed: () {
+                                ride.deleteVehicle(vehicle.id);
+                                Navigator.pop(sheetContext);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Vehicle deleted')),
+                                );
+                              },
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: palette.danger,
+                                side: BorderSide(color: palette.danger),
+                                shape: const StadiumBorder(),
+                              ),
+                              child: const Text('Delete', style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold)),
+                            ),
                           ),
                         ),
                         const SizedBox(width: DSSpacing.md),
                       ],
                       Expanded(
                         flex: 2,
-                        child: SpottButton.primary(
-                          label: isEdit ? 'Save Changes' : 'Add Vehicle',
-                          onPressed: () {
-                            if (modelController.text.trim().isEmpty || numberController.text.trim().isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please complete all details')));
-                              return;
-                            }
+                        child: SizedBox(
+                          height: 56,
+                          child: FilledButton(
+                            onPressed: () {
+                              if (modelController.text.trim().isEmpty || numberController.text.trim().isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Please complete all details')),
+                                );
+                                return;
+                              }
 
-                            if (isEdit) {
-                              ride.updateVehicle(
-                                Vehicle(
-                                  id: vehicle.id,
-                                  userId: vehicle.userId,
-                                  vehicleType: selectedType,
-                                  vehicleNumber: numberController.text.trim(),
-                                  vehicleModel: modelController.text.trim(),
-                                  verificationStatus: vehicle.verificationStatus,
-                                ),
-                              );
-                            } else {
-                              ride.addVehicle(
-                                Vehicle(
-                                  id: 'veh_${DateTime.now().millisecondsSinceEpoch}',
-                                  userId: 'current_user',
-                                  vehicleType: selectedType,
-                                  vehicleNumber: numberController.text.trim(),
-                                  vehicleModel: modelController.text.trim(),
-                                  verificationStatus: VerificationStatus.verified,
-                                ),
-                              );
-                            }
+                              if (isEdit) {
+                                ride.updateVehicle(
+                                  Vehicle(
+                                    id: vehicle.id,
+                                    userId: vehicle.userId,
+                                    vehicleType: selectedType,
+                                    vehicleNumber: numberController.text.trim(),
+                                    vehicleModel: modelController.text.trim(),
+                                    verificationStatus: vehicle.verificationStatus,
+                                  ),
+                                );
+                              } else {
+                                ride.addVehicle(
+                                  Vehicle(
+                                    id: 'veh_${DateTime.now().millisecondsSinceEpoch}',
+                                    userId: 'current_user',
+                                    vehicleType: selectedType,
+                                    vehicleNumber: numberController.text.trim(),
+                                    vehicleModel: modelController.text.trim(),
+                                    verificationStatus: VerificationStatus.verified,
+                                  ),
+                                );
+                              }
 
-                            Navigator.pop(sheetContext);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(isEdit ? 'Vehicle updated' : 'Vehicle added')),
-                            );
-                          },
+                              Navigator.pop(sheetContext);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(isEdit ? 'Vehicle updated' : 'Vehicle added')),
+                              );
+                            },
+                            style: FilledButton.styleFrom(
+                              backgroundColor: palette.primary,
+                              foregroundColor: palette.onPrimary,
+                              shape: const StadiumBorder(),
+                            ),
+                            child: Text(
+                              isEdit ? 'Save Changes' : 'Add Vehicle',
+                              style: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -238,13 +280,14 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
-    return GlassScaffold(
+    return Scaffold(
+      backgroundColor: palette.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: const BackButton(color: DSColors.textPrimary),
-        title: Text('My Vehicles', style: DSTypography.headline),
+        leading: BackButton(color: palette.textPrimary),
+        title: Text('My Vehicles', style: DSTypography.headline.copyWith(color: palette.textPrimary)),
         centerTitle: true,
       ),
       body: Stack(
@@ -252,20 +295,34 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
           ListView(
             padding: const EdgeInsets.all(DSSpacing.lg),
             children: [
-              Text('Add, edit, or select your active vehicle for traveler offerings.', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+              Text(
+                'Add, edit, or select your active vehicle.',
+                style: DSTypography.body.copyWith(color: palette.textSecondary),
+              ),
               const SizedBox(height: DSSpacing.xl),
-              
+
               if (ride.vehicles.isEmpty)
-                GlassCard(
+                Container(
                   padding: const EdgeInsets.all(DSSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: palette.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: palette.border),
+                  ),
                   child: Center(
                     child: Column(
                       children: [
-                        const Icon(Icons.directions_car_filled_outlined, size: 48, color: DSColors.textSecondary),
+                        Icon(CupertinoIcons.car_detailed, size: 48, color: palette.textSecondary),
                         const SizedBox(height: DSSpacing.md),
-                        Text('No vehicles added yet', style: DSTypography.headline),
+                        Text(
+                          'No vehicles added yet',
+                          style: DSTypography.headline.copyWith(color: palette.textPrimary),
+                        ),
                         const SizedBox(height: DSSpacing.sm),
-                        Text('Add a vehicle below to start offering trips.', style: DSTypography.caption),
+                        Text(
+                          'Add a vehicle below to start offering trips.',
+                          style: DSTypography.caption.copyWith(color: palette.textSecondary),
+                        ),
                       ],
                     ),
                   ),
@@ -275,61 +332,102 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                   final isSelected = ride.selectedVehicleId == vehicle.id;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: DSSpacing.md),
-                    child: GlassCard(
+                    child: InkWell(
                       onTap: () => _openVehicleFormSheet(context, vehicle),
-                      padding: const EdgeInsets.all(DSSpacing.md),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: DSColors.surface,
-                              borderRadius: BorderRadius.circular(DSRadius.sm),
-                            ),
-                            child: Icon(_getVehicleIcon(vehicle.vehicleType), color: DSColors.primaryDark, size: 24),
+                      child: Container(
+                        padding: const EdgeInsets.all(DSSpacing.md),
+                        decoration: BoxDecoration(
+                          color: palette.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected ? palette.primary : palette.border,
+                            width: isSelected ? 1.5 : 1.0,
                           ),
-                          const SizedBox(width: DSSpacing.md),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: palette.surfaceVariant,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                _getVehicleIcon(vehicle.vehicleType),
+                                color: palette.textPrimary,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: DSSpacing.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    vehicle.vehicleModel,
+                                    style: DSTypography.body.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: palette.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    vehicle.vehicleNumber,
+                                    style: DSTypography.caption.copyWith(color: palette.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(vehicle.vehicleModel, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold, color: DSColors.textPrimary)),
-                                const SizedBox(height: 2),
-                                Text(vehicle.vehicleNumber, style: DSTypography.caption),
+                                StatusChip(
+                                  label: _getVerificationLabel(vehicle.verificationStatus),
+                                  status: _getVerificationStatusType(vehicle.verificationStatus),
+                                ),
+                                const SizedBox(height: DSSpacing.sm),
+                                if (isSelected)
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(CupertinoIcons.checkmark_circle_fill, color: palette.primary, size: 16),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Active',
+                                        style: DSTypography.caption.copyWith(
+                                          color: palette.textPrimary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                else
+                                  InkWell(
+                                    onTap: () {
+                                      ride.setSelectedVehicle(vehicle.id);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            '${vehicle.vehicleModel} set as active vehicle.',
+                                            style: TextStyle(color: palette.onPrimary),
+                                          ),
+                                          backgroundColor: palette.primary,
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Set Active',
+                                      style: DSTypography.caption.copyWith(
+                                        color: palette.textSecondary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              StatusChip(
-                                label: _getVerificationLabel(vehicle.verificationStatus),
-                                status: _getVerificationStatusType(vehicle.verificationStatus),
-                              ),
-                              const SizedBox(height: DSSpacing.sm),
-                              if (isSelected)
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(Icons.check_circle_rounded, color: DSColors.success, size: 16),
-                                    const SizedBox(width: 4),
-                                    Text('Active', style: DSTypography.caption.copyWith(color: DSColors.success, fontWeight: FontWeight.bold)),
-                                  ],
-                                )
-                              else
-                                InkWell(
-                                  onTap: () {
-                                    ride.setSelectedVehicle(vehicle.id);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('${vehicle.vehicleModel} set as active vehicle.')),
-                                    );
-                                  },
-                                  child: Text('Set Active', style: DSTypography.caption.copyWith(color: DSColors.primaryDark, fontWeight: FontWeight.bold)),
-                                ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -341,9 +439,20 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
             bottom: DSSpacing.lg,
             left: DSSpacing.lg,
             right: DSSpacing.lg,
-            child: SpottButton.primary(
-              label: 'Add Vehicle',
-              onPressed: () => _openVehicleFormSheet(context),
+            child: SizedBox(
+              height: 56,
+              child: FilledButton(
+                onPressed: () => _openVehicleFormSheet(context),
+                style: FilledButton.styleFrom(
+                  backgroundColor: palette.primary,
+                  foregroundColor: palette.onPrimary,
+                  shape: const StadiumBorder(),
+                ),
+                child: const Text(
+                  'Add Vehicle',
+                  style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
           ),
         ],

@@ -4,62 +4,66 @@ import 'package:flutter/material.dart';
 class DSColors {
   DSColors._();
 
-  // Backgrounds & surfaces
-  static const Color background = Color(0xFFF8F8F8);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF5F5F5);
-  static const Color card = Color(0xFFFFFFFF);
-  static const Color elevatedSurface = Color(0xFFFFFFFF);
-  static const Color overlay = Color(0xCCF8F8F8);
+  // Backgrounds & surfaces (Canvas)
+  static const Color background = Color(0xFFFFFFFF); // Canvas
+  static const Color surface = Color(0xFFFFFFFF); // Canvas
+  static const Color surfaceVariant = Color(0xFFEFEFEF); // Canvas Soft
+  static const Color card = Color(0xFFFFFFFF); // Canvas
+  static const Color elevatedSurface = Color(0xFFFFFFFF); // Canvas
+  static const Color overlay = Color(0xCCFFFFFF);
   static const Color scrim = Color(0x4D000000);
 
-  // Primary brand
-  static const Color primary = Color(0xFFD84E55);
-  static const Color primaryDark = Color(0xFFB73D45);
-  static const Color primaryLight = Color(0xFFE57373);
-  static const Color primarySoft = Color(0xFFFFEBEE);
-  static const Color onPrimary = Color(0xFFFFFFFF);
+  // Brand & Accent
+  static const Color primary = Color(0xFF000000); // Ink Black
+  static const Color primaryDark = Color(0xFF000000); // Ink Black
+  static const Color primaryLight = Color(0xFF282828); // Black Elevated
+  static const Color primarySoft = Color(0xFFEFEFEF); // Canvas Soft
+  static const Color onPrimary = Color(0xFFFFFFFF); // On Dark
 
-  // Secondary / accent
-  static const Color accent = Color(0xFF2563EB);
-  static const Color accentSoft = Color(0xFFDBEAFE);
+  // Accent mapping
+  static const Color accent = Color(0xFF000000); // Ink Black
+  static const Color accentSoft = Color(0xFFEFEFEF); // Canvas Soft
+  static const Color surfacePressed = Color(0xFFE2E2E2); // Surface Pressed
+  static const Color blackElevated = Color(0xFF282828); // Black Elevated
+  static const Color canvasSofter = Color(0xFFF3F3F3); // Canvas Softer
 
   // Semantic status
-  static const Color success = Color(0xFF16A34A);
+  static const Color success = Color(0xFF05A357);
   static const Color successSoft = Color(0xFFDCFCE7);
   static const Color warning = Color(0xFFD97706);
   static const Color warningSoft = Color(0xFFFEF3C7);
-  static const Color danger = Color(0xFFDC2626);
+  static const Color danger = Color(0xFFE11900);
   static const Color dangerSoft = Color(0xFFFEE2E2);
-  static const Color info = Color(0xFF2563EB);
-  static const Color infoSoft = Color(0xFFDBEAFE);
+  static const Color info = Color(0xFF276EF1);
+  static const Color infoSoft = Color(0xFFEAF2FF);
 
   // Text and icons
-  static const Color textPrimary = Color(0xFF111827);
-  static const Color textSecondary = Color(0xFF4B5563);
-  static const Color textTertiary = Color(0xFF6B7280);
-  static const Color textMuted = Color(0xFF9CA3AF);
-  static const Color iconPrimary = Color(0xFF111827);
-  static const Color iconSecondary = Color(0xFF4B5563);
+  static const Color textPrimary = Color(0xFF000000); // Ink
+  static const Color textSecondary = Color(0xFF5E5E5E); // Body
+  static const Color textTertiary = Color(0xFF4B4B4B); // Hairline Mid
+  static const Color textMuted = Color(0xFFAFAFAF); // Mute
+  static const Color iconPrimary = Color(0xFF000000); // Ink
+  static const Color iconSecondary = Color(0xFF5E5E5E); // Body
 
   // Borders and dividers
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color borderSubtle = Color(0xFFF3F4F6);
-  static const Color divider = Color(0xFFE5E7EB);
+  static const Color border = Color(0xFFE2E2E2); // Surface Pressed
+  static const Color borderSubtle = Color(0xFFF3F3F3); // Canvas Softer
+  static const Color divider = Color(0xFFE2E2E2); // Surface Pressed
 
   // Glass and low-contrast layers
   static const Color glass = Color(0xFFFFFFFF);
   static const Color glassHigh = Color(0xFFFFFFFF);
-  static const Color glassBorder = Color(0xFFE5E7EB);
+  static const Color glassBorder = Color(0xFFE2E2E2);
 
   // Skeleton/shimmer
-  static const Color shimmerBase = Color(0xFFE5E7EB);
-  static const Color shimmerHighlight = Color(0xFFF3F4F6);
+  static const Color shimmerBase = Color(0xFFEFEFEF); // Canvas Soft
+  static const Color shimmerHighlight = Color(0xFFF3F3F3); // Canvas Softer
 
   // Legacy aliases for migration
   static const Color backgroundElevated = elevatedSurface;
   static const Color cardBackground = card;
   static const Color inputBackground = surface;
+
 }
 
 /// A complete semantic palette for a brightness mode.
@@ -214,20 +218,20 @@ class DSPalettes {
 
   static const DSColorPalette light = DSColorPalette(
     brightness: Brightness.light,
-    background: DSColors.background,
-    surface: DSColors.surface,
-    surfaceVariant: DSColors.surfaceVariant,
-    card: DSColors.card,
-    elevatedSurface: DSColors.elevatedSurface,
-    overlay: DSColors.overlay,
-    scrim: DSColors.scrim,
-    primary: DSColors.primary,
-    primaryDark: DSColors.primaryDark,
-    primaryLight: DSColors.primaryLight,
-    primarySoft: DSColors.primarySoft,
-    onPrimary: DSColors.onPrimary,
-    accent: DSColors.accent,
-    accentSoft: DSColors.accentSoft,
+    background: Color(0xFFFFFFFF),
+    surface: Color(0xFFFFFFFF),
+    surfaceVariant: Color(0xFFEDE2E6),
+    card: Color(0xFFFFFFFF),
+    elevatedSurface: Color(0xFFFFFFFF),
+    overlay: Color(0xCCF8F9FA),
+    scrim: Color(0x4D000000),
+    primary: Color(0xFF14262A),
+    primaryDark: Color(0xFF0F1B1E),
+    primaryLight: Color(0xFF244147),
+    primarySoft: Color(0xFFD2E5EA),
+    onPrimary: Color(0xFFFFFFFF),
+    accent: Color(0xFF14262A),
+    accentSoft: Color(0xFFD2E5EA),
     success: DSColors.success,
     successSoft: DSColors.successSoft,
     warning: DSColors.warning,
@@ -236,59 +240,59 @@ class DSPalettes {
     dangerSoft: DSColors.dangerSoft,
     info: DSColors.info,
     infoSoft: DSColors.infoSoft,
-    textPrimary: DSColors.textPrimary,
-    textSecondary: DSColors.textSecondary,
-    textTertiary: DSColors.textTertiary,
-    textMuted: DSColors.textMuted,
-    iconPrimary: DSColors.iconPrimary,
-    iconSecondary: DSColors.iconSecondary,
-    border: DSColors.border,
-    borderSubtle: DSColors.borderSubtle,
-    divider: DSColors.divider,
-    glass: DSColors.glass,
-    glassHigh: DSColors.glassHigh,
-    glassBorder: DSColors.glassBorder,
-    shimmerBase: DSColors.shimmerBase,
-    shimmerHighlight: DSColors.shimmerHighlight,
+    textPrimary: Color(0xFF14262A),
+    textSecondary: Color(0xFF5E5E5E),
+    textTertiary: Color(0xFF7E8C8E),
+    textMuted: Color(0xFFAFAFAF),
+    iconPrimary: Color(0xFF14262A),
+    iconSecondary: Color(0xFF5E5E5E),
+    border: Color(0xFFE5D9DB),
+    borderSubtle: Color(0xFFF3EDEE),
+    divider: Color(0xFFE5D9DB),
+    glass: Color(0xCCFFFFFF),
+    glassHigh: Color(0xE6FFFFFF),
+    glassBorder: Color(0xFFE5D9DB),
+    shimmerBase: Color(0xFFEDE2E6),
+    shimmerHighlight: Color(0xFFF8F9FA),
   );
 
   static const DSColorPalette dark = DSColorPalette(
     brightness: Brightness.dark,
-    background: Color(0xFF0B0D10),
-    surface: Color(0xFF111418),
-    surfaceVariant: Color(0xFF191D23),
-    card: Color(0xFF15191F),
-    elevatedSurface: Color(0xFF1B2028),
-    overlay: Color(0xCC0B0D10),
+    background: Color(0xFF0F1114),      // Rich Obsidian background
+    surface: Color(0xFF1E352F),         // Deep Forest surface
+    surfaceVariant: Color(0xFF25413A),  // Lighter forest green variant
+    card: Color(0xFF1E352F),
+    elevatedSurface: Color(0xFF2C4C44),  // Elevated green surface
+    overlay: Color(0xCC0F1114),
     scrim: Color(0x99000000),
-    primary: Color(0xFFFF6B72),
-    primaryDark: Color(0xFFD84E55),
-    primaryLight: Color(0xFFFFA0A5),
-    primarySoft: Color(0xFF3A171B),
-    onPrimary: Color(0xFFFFFFFF),
-    accent: Color(0xFF78A6FF),
-    accentSoft: Color(0xFF102544),
-    success: Color(0xFF4ADE80),
+    primary: Color(0xFF397B70),          // Muted Emerald/Teal brand color
+    primaryDark: Color(0xFF2D6259),
+    primaryLight: Color(0xFF4C988C),
+    primarySoft: Color(0x26397B70),      // 15% opacity primary brand color
+    onPrimary: Color(0xFFFFFFFF),         // White text on brand buttons
+    accent: Color(0xFF397B70),           // Accent same as primary brand color
+    accentSoft: Color(0x26397B70),
+    success: Color(0xFF05A357),
     successSoft: Color(0xFF0F2A19),
     warning: Color(0xFFFBBF24),
     warningSoft: Color(0xFF30220A),
-    danger: Color(0xFFF87171),
+    danger: Color(0xFFE11900),
     dangerSoft: Color(0xFF321515),
-    info: Color(0xFF60A5FA),
+    info: Color(0xFF276EF1),
     infoSoft: Color(0xFF102544),
-    textPrimary: Color(0xFFF9FAFB),
-    textSecondary: Color(0xFFD1D5DB),
-    textTertiary: Color(0xFF9CA3AF),
-    textMuted: Color(0xFF6B7280),
-    iconPrimary: Color(0xFFF9FAFB),
-    iconSecondary: Color(0xFFD1D5DB),
-    border: Color(0xFF2B313A),
-    borderSubtle: Color(0xFF20252D),
-    divider: Color(0xFF2B313A),
-    glass: Color(0xCC15191F),
-    glassHigh: Color(0xE61B2028),
-    glassBorder: Color(0xFF303743),
-    shimmerBase: Color(0xFF20252D),
-    shimmerHighlight: Color(0xFF2B313A),
+    textPrimary: Color(0xFFFFFFFF),      // Pure white
+    textSecondary: Color(0xFFB2C5C1),    // Premium teal-gray secondary text
+    textTertiary: Color(0xFF7E938F),     // Mid teal-gray text
+    textMuted: Color(0xFF536662),        // Dark teal-gray text
+    iconPrimary: Color(0xFFFFFFFF),
+    iconSecondary: Color(0xFFB2C5C1),
+    border: Color(0xFF29413B),           // Soft green border
+    borderSubtle: Color(0xFF1E352F),
+    divider: Color(0xFF29413B),
+    glass: Color(0xCC1E352F),            // Glass with deep forest green base
+    glassHigh: Color(0xE61E352F),
+    glassBorder: Color(0x33FFFFFF),      // Subtle overlay border for glass
+    shimmerBase: Color(0xFF1E352F),
+    shimmerHighlight: Color(0xFF25413A),
   );
 }

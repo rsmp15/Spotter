@@ -33,3 +33,4 @@ class SpottSpacing {
   /// Horizontal page margins
   static const double pageHorizontal = 12.0;
 }
+

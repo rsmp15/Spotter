@@ -147,3 +147,4 @@ class MockRideRepository implements RideRepository {
   @override
   Future<void> submitRating({required int rating, required int tip}) async {}
 }
+

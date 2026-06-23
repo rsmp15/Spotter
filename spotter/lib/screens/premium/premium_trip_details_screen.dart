@@ -341,3 +341,4 @@ class PremiumTripDetailsScreen extends StatelessWidget {
     );
   }
 }
+

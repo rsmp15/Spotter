@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
-import '../../theme/spott_theme.dart';
+import '../../design_system/design_system.dart';
+
+enum PremiumButtonVariant {
+  primary, // button-primary (black pill)
+  secondary, // button-secondary (white pill)
+  subtle, // button-subtle (gray pill)
+  largeRounded, // button-large-rounded (black 16px radius)
+}
 
 class PremiumButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
-  final bool isPrimary;
+  final bool isPrimary; // Kept for backward compatibility
+  final PremiumButtonVariant? variant;
   final IconData? icon;
   final bool isLoading;
 
@@ -13,6 +21,7 @@ class PremiumButton extends StatefulWidget {
     required this.text,
     required this.onPressed,
     this.isPrimary = true,
+    this.variant,
     this.icon,
     this.isLoading = false,
   });
@@ -60,6 +69,46 @@ class _PremiumButtonState extends State<PremiumButton>
 
   @override
   Widget build(BuildContext context) {
+    final effectiveVariant = widget.variant ??
+        (widget.isPrimary
+            ? PremiumButtonVariant.primary
+            : PremiumButtonVariant.subtle);
+
+    Color? backgroundColor;
+    Color textColor;
+    double borderRadiusVal = DSRadius.pill;
+    List<BoxShadow> shadows = DSShadows.level0;
+    Border? border;
+
+    switch (effectiveVariant) {
+      case PremiumButtonVariant.primary:
+        backgroundColor = DSColors.primary; // Ink Black
+        textColor = DSColors.onPrimary; // On Dark (white)
+        borderRadiusVal = DSRadius.pill;
+        break;
+      case PremiumButtonVariant.secondary:
+        backgroundColor = DSColors.background; // Canvas White
+        textColor = DSColors.textPrimary; // Ink Black
+        borderRadiusVal = DSRadius.pill;
+        border = Border.all(color: DSColors.border);
+        shadows = DSShadows.level3; // Pill Float
+        break;
+      case PremiumButtonVariant.subtle:
+        backgroundColor = DSColors.surfaceVariant; // Canvas Soft (#efefef)
+        textColor = DSColors.textPrimary; // Ink Black
+        borderRadiusVal = DSRadius.pill;
+        break;
+      case PremiumButtonVariant.largeRounded:
+        backgroundColor = DSColors.primary; // Ink Black
+        textColor = DSColors.onPrimary; // On Dark (white)
+        borderRadiusVal = DSRadius.xl; // 16px
+        break;
+    }
+
+    final TextStyle textStyle = effectiveVariant == PremiumButtonVariant.largeRounded
+        ? DSTypography.buttonLarge.copyWith(color: textColor)
+        : DSTypography.buttonMD.copyWith(color: textColor);
+
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
@@ -70,27 +119,25 @@ class _PremiumButtonState extends State<PremiumButton>
             Transform.scale(scale: _scaleAnimation.value, child: child),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            vertical: SpottTheme.spacingMedium,
+          padding: EdgeInsets.symmetric(
+            vertical: effectiveVariant == PremiumButtonVariant.largeRounded
+                ? DSSpacing.lg
+                : DSSpacing.md,
+            horizontal: DSSpacing.lg,
           ),
           decoration: BoxDecoration(
-            borderRadius: SpottTheme.borderRadiusLarge,
-            gradient: widget.isPrimary ? SpottTheme.primaryGradient : null,
-            color: widget.isPrimary ? null : SpottTheme.surface,
-            border: widget.isPrimary
-                ? null
-                : Border.all(color: Colors.white.withValues(alpha: 0.1)),
-            boxShadow: widget.isPrimary
-                ? SpottTheme.glowingShadow
-                : SpottTheme.premiumShadow,
+            borderRadius: BorderRadius.circular(borderRadiusVal),
+            color: backgroundColor,
+            border: border,
+            boxShadow: shadows,
           ),
           child: Center(
             child: widget.isLoading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
-                      color: Colors.white,
+                      color: textColor,
                       strokeWidth: 2,
                     ),
                   )
@@ -98,15 +145,12 @@ class _PremiumButtonState extends State<PremiumButton>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (widget.icon != null) ...[
-                        Icon(widget.icon, color: Colors.white, size: 20),
-                        const SizedBox(width: SpottTheme.spacingSmall),
+                        Icon(widget.icon, color: textColor, size: 20),
+                        const SizedBox(width: DSSpacing.sm),
                       ],
                       Text(
                         widget.text,
-                        style: SpottTheme.textTheme.labelLarge?.copyWith(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
+                        style: textStyle,
                       ),
                     ],
                   ),
@@ -116,3 +160,4 @@ class _PremiumButtonState extends State<PremiumButton>
     );
   }
 }
+

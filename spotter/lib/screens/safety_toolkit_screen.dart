@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class PremiumSosAlertScreen extends StatefulWidget {
@@ -94,6 +95,7 @@ class _PremiumSosAlertScreenState extends State<PremiumSosAlertScreen> with Sing
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 4.0,
+                                fontFamily: 'Inter',
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -106,6 +108,7 @@ class _PremiumSosAlertScreenState extends State<PremiumSosAlertScreen> with Sing
                                 color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 16,
                                 height: 1.5,
+                                fontFamily: 'Inter',
                               ),
                             ),
                           ],
@@ -144,7 +147,7 @@ class _PremiumSosAlertScreenState extends State<PremiumSosAlertScreen> with Sing
                                       color: Color(0xFFCC0000), // Solid red core
                                     ),
                                     child: Icon(
-                                      Icons.shield_rounded,
+                                      CupertinoIcons.shield_fill,
                                       color: Colors.white,
                                       size: shieldIconSize,
                                     ),
@@ -173,7 +176,7 @@ class _PremiumSosAlertScreenState extends State<PremiumSosAlertScreen> with Sing
                                       color: Colors.white.withValues(alpha: 0.1),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(Icons.security_update_warning_rounded, color: Colors.white),
+                                    child: const Icon(CupertinoIcons.exclamationmark_shield_fill, color: Colors.white),
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
@@ -186,6 +189,7 @@ class _PremiumSosAlertScreenState extends State<PremiumSosAlertScreen> with Sing
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
+                                            fontFamily: 'Inter',
                                           ),
                                         ),
                                         const SizedBox(height: 4),
@@ -194,6 +198,7 @@ class _PremiumSosAlertScreenState extends State<PremiumSosAlertScreen> with Sing
                                           style: TextStyle(
                                             color: Colors.white.withValues(alpha: 0.6),
                                             fontSize: 14,
+                                            fontFamily: 'Inter',
                                           ),
                                         ),
                                       ],
@@ -229,7 +234,7 @@ class _PremiumSosAlertScreenState extends State<PremiumSosAlertScreen> with Sing
                   top: 8,
                   left: 8,
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                    icon: const Icon(CupertinoIcons.arrow_left, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -343,7 +348,7 @@ class _SlideToActivateState extends State<_SlideToActivate> {
                       ],
                     ),
                     child: Icon(
-                      _activated ? Icons.check_rounded : Icons.sos_rounded,
+                      _activated ? CupertinoIcons.checkmark : CupertinoIcons.phone_fill,
                       color: _activated ? Colors.white : const Color(0xFF8B0000),
                       size: 28,
                     ),
@@ -380,9 +385,11 @@ class _CancelSosButton extends StatelessWidget {
             fontSize: 16,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
+            fontFamily: 'Inter',
           ),
         ),
       ),
     );
   }
 }
+

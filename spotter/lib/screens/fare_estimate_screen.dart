@@ -69,3 +69,4 @@ class FareEstimateScreen extends StatelessWidget {
     );
   }
 }
+

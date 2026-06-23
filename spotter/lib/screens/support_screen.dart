@@ -1,16 +1,11 @@
-import 'package:spotter/design_system/design_system.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:spotter/design_system/design_system.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../models/production_readiness_models.dart';
-import '../core/components/glass_card.dart';
-import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_buttons.dart';
-
-
-
-
+import '../core/components/glass_scaffold.dart';
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
@@ -18,6 +13,8 @@ class SupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     final supportCase = SupportCase.forRide(
       rideReference: ride.shareLink.split('/').last.isNotEmpty
           ? ride.shareLink.split('/').last
@@ -32,9 +29,22 @@ class SupportScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Navigator.canPop(context)
-            ? const BackButton(color: DSColors.textPrimary)
+            ? CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: Icon(
+                  CupertinoIcons.arrow_left,
+                  color: palette.textPrimary,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+              )
             : null,
-        title: Text('Help center', style: DSTypography.headline),
+        title: Text(
+          'Help center',
+          style: DSTypography.headline.copyWith(
+            color: palette.textPrimary,
+            letterSpacing: 1.2,
+          ),
+        ),
         centerTitle: true,
       ),
       body: CustomScrollView(
@@ -48,22 +58,34 @@ class SupportScreen extends StatelessWidget {
                 Text(
                   'How can we help?',
                   textAlign: TextAlign.center,
-                  style: DSTypography.headline.copyWith(fontSize: 40),
+                  style: DSTypography.headline.copyWith(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                    color: palette.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: DSSpacing.xl),
-                GlassCard(
-                  padding: const EdgeInsets.all(DSSpacing.sm),
+                Container(
+                  padding: const EdgeInsets.all(DSSpacing.xs),
+                  decoration: BoxDecoration(
+                    color: palette.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: palette.border),
+                  ),
                   child: Row(
                     children: [
                       const SizedBox(width: DSSpacing.sm),
-                      const Icon(Icons.search_rounded, color: DSColors.textSecondary),
+                      Icon(CupertinoIcons.search, color: palette.textSecondary),
                       const SizedBox(width: DSSpacing.md),
                       Expanded(
                         child: TextField(
+                          style: TextStyle(color: palette.textPrimary, fontFamily: 'Inter'),
                           decoration: InputDecoration(
                             hintText: 'Search for articles, topics...',
                             border: InputBorder.none,
-                            hintStyle: DSTypography.body.copyWith(color: DSColors.textSecondary),
+                            hintStyle: DSTypography.body.copyWith(
+                              color: palette.textSecondary,
+                            ),
                           ),
                         ),
                       ),
@@ -79,8 +101,13 @@ class SupportScreen extends StatelessWidget {
                 const SizedBox(height: DSSpacing.xl),
                 
                 // Recent Case Details Card
-                GlassCard(
+                Container(
                   padding: const EdgeInsets.all(DSSpacing.md),
+                  decoration: BoxDecoration(
+                    color: palette.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: palette.border),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -90,15 +117,16 @@ class SupportScreen extends StatelessWidget {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: DSColors.surface,
+                          color: palette.textPrimary,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Recent case',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
-                            color: DSColors.textPrimary,
+                            color: palette.background,
+                            fontFamily: 'Inter',
                           ),
                         ),
                       ),
@@ -107,18 +135,18 @@ class SupportScreen extends StatelessWidget {
                         label: 'Ride reference',
                         value: supportCase.rideReference,
                       ),
-                      const Divider(height: 20, color: DSColors.border),
+                      Divider(height: 20, color: palette.border),
                       _CaseInfoRow(label: 'Role', value: supportCase.roleLabel),
-                      const Divider(height: 20, color: DSColors.border),
+                      Divider(height: 20, color: palette.border),
                       _CaseInfoRow(
                         label: 'Issue category',
                         value: supportCase.categoryLabel,
                       ),
-                      const Divider(height: 20, color: DSColors.border),
+                      Divider(height: 20, color: palette.border),
                       _CaseInfoRow(
                         label: 'Status',
                         value: supportCase.statusLabel,
-                        valueColor: DSColors.textPrimary,
+                        valueColor: palette.textPrimary,
                       ),
                     ],
                   ),
@@ -126,7 +154,14 @@ class SupportScreen extends StatelessWidget {
                 const SizedBox(height: DSSpacing.xxl),
 
                 // Popular Topics
-                Text('Popular Topics', style: DSTypography.headline.copyWith(fontSize: 24)),
+                Text(
+                  'Popular Topics',
+                  style: DSTypography.headline.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: palette.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: DSSpacing.lg),
               ]),
             ),
@@ -141,37 +176,37 @@ class SupportScreen extends StatelessWidget {
               childAspectRatio: 1.1,
               children: [
                 _TopicCard(
-                  icon: Icons.directions_car_rounded,
+                  icon: CupertinoIcons.car_detailed,
                   title: 'Trips & Rides',
                   subtitle: 'Booking and tracking.',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.dispute),
                 ),
                 _TopicCard(
-                  icon: Icons.local_shipping_rounded,
+                  icon: CupertinoIcons.cube_box,
                   title: 'Parcels',
                   subtitle: 'Delivery status & insurance.',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.dispute),
                 ),
                 _TopicCard(
-                  icon: Icons.payments_rounded,
+                  icon: CupertinoIcons.creditcard,
                   title: 'Payments',
                   subtitle: 'Billing and refunds.',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.dispute),
                 ),
                 _TopicCard(
-                  icon: Icons.security_rounded,
+                  icon: CupertinoIcons.shield,
                   title: 'Safety',
                   subtitle: 'Emergency contacts.',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.safetyToolkit),
                 ),
                 _TopicCard(
-                  icon: Icons.account_circle_rounded,
+                  icon: CupertinoIcons.person,
                   title: 'Account',
                   subtitle: 'Profile settings.',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
                 ),
                 _TopicCard(
-                  icon: Icons.verified_rounded,
+                  icon: CupertinoIcons.doc_checkmark,
                   title: 'Verification',
                   subtitle: 'ID checks.',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.kyc),
@@ -187,22 +222,33 @@ class SupportScreen extends StatelessWidget {
                 const SizedBox(height: DSSpacing.xxl),
 
                 // FAQ
-                Text('Frequently Asked', style: DSTypography.headline.copyWith(fontSize: 24)),
+                Text(
+                  'Frequently Asked',
+                  style: DSTypography.headline.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: palette.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: DSSpacing.lg),
-                GlassCard(
-                  padding: EdgeInsets.zero,
+                Container(
+                  decoration: BoxDecoration(
+                    color: palette.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: palette.border),
+                  ),
                   child: Column(
                     children: [
                       const _FAQTile(
                         question: 'How do I book a trip in advance?',
                         answer: 'To schedule a trip for later, simply open the app, enter your destination, and tap the calendar icon next to the "Book Now" button.',
                       ),
-                      const Divider(height: 1, color: DSColors.borderSubtle),
+                      Divider(height: 1, color: palette.border),
                       const _FAQTile(
                         question: 'What is covered by Parcel Insurance?',
                         answer: 'Basic parcel insurance covers up to ₹5,000 in loss or damage during transit.',
                       ),
-                      const Divider(height: 1, color: DSColors.borderSubtle),
+                      Divider(height: 1, color: palette.border),
                       const _FAQTile(
                         question: 'How do I become a verified driver?',
                         answer: 'Navigate to Profile > Driver Dashboard and follow the onboarding steps.',
@@ -213,73 +259,152 @@ class SupportScreen extends StatelessWidget {
                 const SizedBox(height: DSSpacing.xxl),
 
                 // Need More Help
-                Text('Need More Help?', style: DSTypography.headline.copyWith(fontSize: 24)),
+                Text(
+                  'Need More Help?',
+                  style: DSTypography.headline.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: palette.textPrimary,
+                  ),
+                ),
                 const SizedBox(height: DSSpacing.lg),
 
                 // Recent Ticket
-                GlassCard(
+                Container(
                   padding: const EdgeInsets.all(DSSpacing.lg),
+                  decoration: BoxDecoration(
+                    color: palette.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: palette.border),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('RECENT TICKET', style: DSTypography.labelLarge.copyWith(color: DSColors.textSecondary, letterSpacing: 1.2)),
+                          Text(
+                            'RECENT TICKET',
+                            style: DSTypography.labelLarge.copyWith(
+                              color: palette.textSecondary,
+                              letterSpacing: 1.2,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: DSColors.surface,
-                              borderRadius: BorderRadius.circular(DSRadius.pill),
-                              border: Border.all(color: DSColors.borderSubtle),
+                              color: palette.textPrimary,
+                              borderRadius: BorderRadius.circular(4),
                             ),
                             child: Row(
                               children: [
                                 Container(
                                   width: 6, height: 6,
-                                  decoration: const BoxDecoration(color: DSColors.primary, shape: BoxShape.circle),
+                                  decoration: BoxDecoration(
+                                    color: palette.background,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
                                 const SizedBox(width: 6),
-                                Text('In Progress', style: DSTypography.labelLarge.copyWith(color: DSColors.primary)),
+                                Text(
+                                  'In Progress',
+                                  style: DSTypography.labelLarge.copyWith(
+                                    color: palette.background,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: DSSpacing.md),
-                      Text('${supportCase.categoryLabel} #${supportCase.rideReference}', style: DSTypography.titleLarge.copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                        '${supportCase.categoryLabel} #${supportCase.rideReference}',
+                        style: DSTypography.titleLarge.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: palette.textPrimary,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text('Updated 2 hours ago', style: DSTypography.caption.copyWith(color: DSColors.textSecondary)),
+                      Text(
+                        'Updated 2 hours ago',
+                        style: DSTypography.caption.copyWith(
+                          color: palette.textSecondary,
+                        ),
+                      ),
                       const SizedBox(height: DSSpacing.md),
                       InkWell(
                         onTap: () {},
-                        child: Text('View Updates →', style: DSTypography.labelLarge.copyWith(color: DSColors.primary, fontWeight: FontWeight.bold)),
+                        child: Text(
+                          'View Updates →',
+                          style: DSTypography.labelLarge.copyWith(
+                            color: palette.textPrimary,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
                       ),
                       if (supportCase.isReviewable) ...[
                         const SizedBox(height: DSSpacing.md),
-                        const Divider(color: DSColors.borderSubtle),
+                        Divider(color: palette.border),
                         const SizedBox(height: DSSpacing.md),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Ride reference', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
-                            Text(supportCase.rideReference, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold)),
+                            Text(
+                              'Ride reference',
+                              style: DSTypography.body.copyWith(
+                                color: palette.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              supportCase.rideReference,
+                              style: DSTypography.body.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: palette.textPrimary,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: DSSpacing.xs),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Role', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
-                            Text(supportCase.roleLabel, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold)),
+                            Text(
+                              'Role',
+                              style: DSTypography.body.copyWith(
+                                color: palette.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              supportCase.roleLabel,
+                              style: DSTypography.body.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: palette.textPrimary,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: DSSpacing.xs),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Status', style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
-                            Text(supportCase.statusLabel, style: DSTypography.body.copyWith(fontWeight: FontWeight.bold, color: DSColors.success)),
+                            Text(
+                              'Status',
+                              style: DSTypography.body.copyWith(
+                                color: palette.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              supportCase.statusLabel,
+                              style: DSTypography.body.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: palette.textPrimary,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -289,8 +414,13 @@ class SupportScreen extends StatelessWidget {
                 const SizedBox(height: DSSpacing.md),
 
                 // Live Support
-                GlassCard(
+                Container(
                   padding: const EdgeInsets.all(DSSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: palette.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: palette.border),
+                  ),
                   child: Column(
                     children: [
                       Stack(
@@ -299,29 +429,44 @@ class SupportScreen extends StatelessWidget {
                           Container(
                             width: 80, height: 80,
                             decoration: BoxDecoration(
-                              color: DSColors.surface,
+                              color: palette.border,
                               shape: BoxShape.circle,
-                              border: Border.all(color: DSColors.borderSubtle),
                             ),
-                            child: const Icon(Icons.support_agent_rounded, color: DSColors.primary, size: 40),
+                            child: Icon(
+                              CupertinoIcons.person_2_fill,
+                              color: palette.textPrimary,
+                              size: 40,
+                            ),
                           ),
                           Container(
                             width: 20, height: 20,
                             decoration: BoxDecoration(
-                              color: DSColors.success,
+                              color: palette.textPrimary,
                               shape: BoxShape.circle,
-                              border: Border.all(color: DSColors.surface, width: 3),
+                              border: Border.all(
+                                color: palette.surfaceVariant,
+                                width: 3,
+                              ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: DSSpacing.lg),
-                      Text('Live Support', style: DSTypography.headline.copyWith(fontSize: 20)),
+                      Text(
+                        'Live Support',
+                        style: DSTypography.headline.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: palette.textPrimary,
+                        ),
+                      ),
                       const SizedBox(height: DSSpacing.sm),
                       Text(
                         'Our team is online and ready to assist you instantly.',
                         textAlign: TextAlign.center,
-                        style: DSTypography.body.copyWith(color: DSColors.textSecondary),
+                        style: DSTypography.body.copyWith(
+                          color: palette.textSecondary,
+                        ),
                       ),
                       const SizedBox(height: DSSpacing.lg),
                       SizedBox(
@@ -354,26 +499,48 @@ class _TopicCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
+    return GestureDetector(
       onTap: onTap,
-      padding: const EdgeInsets.all(DSSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: DSColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: DSColors.borderSubtle),
+      child: Container(
+        padding: const EdgeInsets.all(DSSpacing.md),
+        decoration: BoxDecoration(
+          color: palette.surfaceVariant,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: palette.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: palette.border,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: palette.textPrimary, size: 24),
             ),
-            child: Icon(icon, color: DSColors.primary, size: 28),
-          ),
-          const Spacer(),
-          Text(title, style: DSTypography.titleLarge.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(subtitle, style: DSTypography.caption.copyWith(color: DSColors.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis),
-        ],
+            const Spacer(),
+            Text(
+              title,
+              style: DSTypography.titleLarge.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: palette.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: DSTypography.caption.copyWith(
+                color: palette.textSecondary,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -387,15 +554,30 @@ class _FAQTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
-        title: Text(question, style: DSTypography.titleLarge.copyWith(fontWeight: FontWeight.bold)),
-        iconColor: DSColors.primary,
-        collapsedIconColor: DSColors.primary,
+        title: Text(
+          question,
+          style: DSTypography.titleLarge.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: palette.textPrimary,
+          ),
+        ),
+        iconColor: palette.textPrimary,
+        collapsedIconColor: palette.textPrimary,
         childrenPadding: const EdgeInsets.only(left: DSSpacing.md, right: DSSpacing.md, bottom: DSSpacing.md),
         children: [
-          Text(answer, style: DSTypography.body.copyWith(color: DSColors.textSecondary)),
+          Text(
+            answer,
+            style: DSTypography.body.copyWith(
+              color: palette.textSecondary,
+              height: 1.4,
+            ),
+          ),
         ],
       ),
     );
@@ -415,26 +597,32 @@ class _CaseInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: DSColors.textSecondary,
+          style: TextStyle(
+            color: palette.textSecondary,
             fontSize: 14,
             fontWeight: FontWeight.w500,
+            fontFamily: 'Inter',
           ),
         ),
         Text(
           value,
           style: TextStyle(
-            color: valueColor ?? DSColors.textPrimary,
+            color: valueColor ?? palette.textPrimary,
             fontSize: 14,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'Inter',
           ),
         ),
       ],
     );
   }
 }
+
+

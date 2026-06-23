@@ -92,3 +92,4 @@ class _MarketplaceCardState extends State<MarketplaceCard>
     );
   }
 }
+

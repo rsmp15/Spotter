@@ -165,3 +165,4 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
     );
   }
 }
+

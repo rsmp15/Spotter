@@ -15,9 +15,30 @@ void main() {
 
     await _tapText(tester, 'Where to?');
     await tester.pumpAndSettle();
-    expect(find.text('Find a Trip'), findsOneWidget);
+    
+    // Tap the "Where to?" banner to expand the sheet (min state to max state)
+    await _tapText(tester, 'Where to?');
+    await tester.pumpAndSettle();
 
+    // Select the first suggestion (e.g. "Select Citywalk Mall" or "Home")
+    await _tapText(tester, 'Home');
+    await tester.pumpAndSettle();
+
+    // Verify we are on the fare estimation screen (SpotterFarePanel)
+    expect(find.text('Price estimate'), findsOneWidget);
+
+    // Tap "Find drivers" to start searching
+    await _tapText(tester, 'Find drivers');
+    await tester.pumpAndSettle();
+    expect(find.text('Driver matches'), findsOneWidget);
+
+    // Tap the first driver card (e.g., Amit Sharma)
     await _tapText(tester, 'Amit Sharma');
+    await tester.pumpAndSettle();
+    expect(find.text('Traveler Profile'), findsOneWidget);
+
+    // Choose the traveler
+    await _tapText(tester, 'Choose This Traveler');
     await tester.pumpAndSettle();
     expect(find.text('Confirm ride'), findsOneWidget);
 
@@ -44,6 +65,12 @@ void main() {
 
   testWidgets('destination screen accepts a typed destination', (tester) async {
     final controller = await pumpSpotterRoute(tester, AppRoutes.destination);
+
+    // Expand the sheet if it's collapsed
+    if (find.byType(EditableText).evaluate().isEmpty) {
+      await tester.tap(find.text('Where to?'));
+      await tester.pumpAndSettle();
+    }
 
     await tester.enterText(find.byType(EditableText).last, 'India Gate');
     await tester.pumpAndSettle();

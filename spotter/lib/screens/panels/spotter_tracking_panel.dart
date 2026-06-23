@@ -1,12 +1,12 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
-
-import 'package:spotter/design_system/design_system.dart';
+import '../../design_system/design_system.dart';
 
 class SpotterTrackingPanel extends StatelessWidget {
   const SpotterTrackingPanel({super.key});
@@ -14,15 +14,14 @@ class SpotterTrackingPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final driver =
-        ride.selectedDriver ??
-        (ride.drivers.isNotEmpty ? ride.drivers.first : null);
+    final driver = ride.selectedDriver ?? (ride.drivers.isNotEmpty ? ride.drivers.first : null);
     final isDark = ride.isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
     Widget content = Container(
       decoration: BoxDecoration(
         color: isDark
-            ? DSColors.surfaceVariant.withValues(alpha: 0.95)
+            ? palette.surface.withValues(alpha: 0.9)
             : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
@@ -30,7 +29,7 @@ class SpotterTrackingPanel extends StatelessWidget {
         ),
         border: isDark
             ? Border.all(
-                color: DSColors.border,
+                color: palette.border,
                 width: 1.5,
               )
             : null,
@@ -40,13 +39,14 @@ class SpotterTrackingPanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Drag handle
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 12),
               width: 40,
               height: 4.5,
               decoration: BoxDecoration(
-                color: isDark ? Colors.grey[700] : Colors.grey[300],
+                color: palette.border,
                 borderRadius: BorderRadius.circular(999),
               ),
             ),
@@ -61,21 +61,35 @@ class SpotterTrackingPanel extends StatelessWidget {
                   children: [
                     Text(
                       'Live tracking',
-                      style: TextStyle(
-                        color: isDark ? Colors.white : DSColors.textPrimary,
+                      style: DSTypography.titleLarge.copyWith(
+                        color: palette.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                    StatusChip(
-                      label: ride.status == TripStatus.arriving
-                          ? 'Arriving soon'
-                          : 'In progress',
-                      color: isDark ? const Color(0xFF38BDF8) : Colors.black,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: palette.surfaceVariant,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: palette.border,
+                        ),
+                      ),
+                      child: Text(
+                        ride.status == TripStatus.arriving ? 'Arriving soon' : 'In progress',
+                        style: DSTypography.labelLarge.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: palette.textPrimary,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
+                
                 if (ride.actionState.isFailure) ...[
                   RecoveryBanner(
                     state: ride.actionState,
@@ -83,253 +97,202 @@ class SpotterTrackingPanel extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                 ],
-                // Active Driver particulars card
-                if (driver != null)
-                  SpotterCard(
-                    color: isDark
-                        ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-                        : Helper.cardColor,
-                    padding: const EdgeInsets.all(14),
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor: isDark
-                                ? const Color(0xFF1E293B)
-                                : Colors.grey[200],
-                            child: Text(
-                              driver.name[0],
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  driver.name,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : Colors.black,
-                                  ),
-                                ),
-                                Text(
-                                  '${driver.vehicle} â€¢ â˜… ${driver.rating}',
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Helper.muted,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0xFF1E293B)
-                                  : const Color(0xFFF3F4F6),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              driver.eta,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                // Trip Context Row
-                _ResponsiveRideContextCard(
-                  route: ride.routeLabel,
-                  fare: ride.fareLabel,
-                  driver: driver?.name ?? 'Matching',
-                  status: ride.status.name,
-                  isDark: isDark,
-                ),
-                const SizedBox(height: 12),
-                
-                // Prominent Safety Toolkit & SOS button
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: DSColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.safetyToolkit);
-                    },
-                    icon: const Icon(Icons.shield_rounded, size: 18),
-                    label: const Text(
-                      'Safety Toolkit & SOS',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
 
-                // Quick actions grid
+                // Driver card
+                if (driver != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: palette.surfaceVariant,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: palette.border,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 22,
+                          backgroundColor: palette.surface,
+                          child: Text(
+                            driver.name[0],
+                            style: DSTypography.bodySMStrong.copyWith(
+                              color: palette.textPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                driver.name,
+                                style: DSTypography.labelLarge.copyWith(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: palette.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      driver.vehicle,
+                                      style: DSTypography.caption.copyWith(
+                                        color: palette.textSecondary,
+                                        fontSize: 12,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Icon(
+                                    CupertinoIcons.star_fill,
+                                    size: 11,
+                                    color: Color(0xFFFACC15),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    driver.rating.toString(),
+                                    style: DSTypography.caption.copyWith(
+                                      color: palette.textPrimary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: palette.surface,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: palette.border,
+                            ),
+                          ),
+                          child: Text(
+                            driver.eta,
+                            style: DSTypography.labelLarge.copyWith(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                              color: palette.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
+                // Action grid: Chat, Support, Share, Cancel (Clean borders, Sora, Cupertino icons)
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
-                          side: BorderSide(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.1)
-                                : const Color(0xFFE2E8F0),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () =>
-                            Navigator.pushNamed(context, AppRoutes.chat),
-                        icon: Icon(
-                          Icons.chat_bubble_rounded,
-                          size: 16,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        label: Text(
-                          'Chat',
-                          style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      child: _ActionTile(
+                        icon: CupertinoIcons.chat_bubble_fill,
+                        label: 'Chat',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.chat),
+                        palette: palette,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 8),
                     Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
-                          side: BorderSide(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.1)
-                                : const Color(0xFFE2E8F0),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () =>
-                            Navigator.pushNamed(context, AppRoutes.support),
-                        icon: Icon(
-                          Icons.help_outline_rounded,
-                          size: 16,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        label: Text(
-                          'Support',
-                          style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      child: _ActionTile(
+                        icon: CupertinoIcons.question_circle_fill,
+                        label: 'Support',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.support),
+                        palette: palette,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
-                          side: BorderSide(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.1)
-                                : const Color(0xFFE2E8F0),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () =>
-                            Navigator.pushNamed(context, AppRoutes.shareTrip),
-                        icon: Icon(
-                          Icons.share_rounded,
-                          size: 16,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        label: Text(
-                          'Share',
-                          style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      child: _ActionTile(
+                        icon: CupertinoIcons.share,
+                        label: 'Share trip',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.shareTrip),
+                        palette: palette,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 8),
                     Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
-                          side: BorderSide(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.1)
-                                : const Color(0xFFE2E8F0),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () =>
-                            Navigator.pushNamed(context, AppRoutes.cancelRide),
-                        icon: const Icon(
-                          Icons.cancel_outlined,
-                          size: 16,
-                          color: Colors.red,
-                        ),
-                        label: const Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      child: _ActionTile(
+                        icon: CupertinoIcons.xmark_circle_fill,
+                        label: 'Cancel',
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.cancelRide),
+                        palette: palette,
+                        isDanger: true,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                PrimaryAction(
-                  label: 'Show ride OTP',
-                  routeName: AppRoutes.rideOtp,
+
+                // SOS Button (Clean pill)
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.safetyToolkit),
+                  child: Container(
+                    width: double.infinity,
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: palette.danger,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(CupertinoIcons.shield_fill, color: Colors.white, size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          'Safety Toolkit & SOS',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // OTP Display button
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.rideOtp),
+                  child: Container(
+                    width: double.infinity,
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: palette.primary,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      'Show ride OTP',
+                      textAlign: TextAlign.center,
+                      style: DSTypography.labelLarge.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: palette.onPrimary,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -355,54 +318,55 @@ class SpotterTrackingPanel extends StatelessWidget {
   }
 }
 
-class _ResponsiveRideContextCard extends StatelessWidget {
-  final String route;
-  final String fare;
-  final String driver;
-  final String status;
-  final bool isDark;
+class _ActionTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final DSColorPalette palette;
+  final bool isDanger;
 
-  const _ResponsiveRideContextCard({
-    required this.route,
-    required this.fare,
-    required this.driver,
-    required this.status,
-    required this.isDark,
+  const _ActionTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    required this.palette,
+    this.isDanger = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SpotterCard(
-      color: isDark
-          ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-          : const Color(0xFFF8FAFC),
-      children: [
-        StatusChip(
-          label: 'Trip context',
-          color: isDark ? const Color(0xFF38BDF8) : Helper.primary,
+    final textCol = isDanger
+        ? palette.danger
+        : palette.textPrimary;
+    final iconCol = isDanger
+        ? palette.danger
+        : palette.iconSecondary;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: palette.surfaceVariant,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: palette.border, width: 1),
         ),
-        const SizedBox(height: 12),
-        InfoRow(
-          label: 'Route',
-          value: route,
-          valueColor: isDark ? Colors.white : DSColors.textPrimary,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: iconCol, size: 16),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: DSTypography.labelLarge.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: textCol,
+              ),
+            ),
+          ],
         ),
-        InfoRow(
-          label: 'Fare',
-          value: fare,
-          valueColor: isDark ? const Color(0xFF38BDF8) : DSColors.primary,
-        ),
-        InfoRow(
-          label: 'Driver',
-          value: driver,
-          valueColor: isDark ? Colors.white : DSColors.textPrimary,
-        ),
-        InfoRow(
-          label: 'Status',
-          value: status,
-          valueColor: isDark ? Colors.white : DSColors.textPrimary,
-        ),
-      ],
+      ),
     );
   }
 }

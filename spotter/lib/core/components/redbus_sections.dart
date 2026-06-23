@@ -35,6 +35,9 @@ class RBSectionContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
+
     BoxDecoration decoration;
     EdgeInsetsGeometry defaultPadding = const EdgeInsets.symmetric(
       horizontal: 12.0,
@@ -48,11 +51,7 @@ class RBSectionContainer extends StatelessWidget {
     switch (style) {
       case RBSectionStyle.brandHero:
         decoration = BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [DSColors.primary, Color(0xFFB73D45)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: isDark ? const Color(0xFF1C1C1C) : const Color(0xFF000000),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(tRadius),
             topRight: Radius.circular(tRadius),
@@ -63,43 +62,43 @@ class RBSectionContainer extends StatelessWidget {
         break;
       case RBSectionStyle.white:
         decoration = BoxDecoration(
-          color: Colors.white,
+          color: palette.surface,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(tRadius),
             topRight: Radius.circular(tRadius),
             bottomLeft: Radius.circular(bRadius),
             bottomRight: Radius.circular(bRadius),
           ),
-          border: showBorder ? Border.all(color: DSColors.border) : null,
+          border: showBorder ? Border.all(color: palette.border) : null,
         );
         break;
       case RBSectionStyle.rewards:
         decoration = BoxDecoration(
-          color: const Color(0xFFFFF8F8),
+          color: palette.surfaceVariant,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(tRadius),
             topRight: Radius.circular(tRadius),
             bottomLeft: Radius.circular(bRadius),
             bottomRight: Radius.circular(bRadius),
           ),
-          border: Border.all(color: const Color(0xFFFFEBEE), width: 1),
+          border: Border.all(color: palette.border, width: 1),
         );
         break;
       case RBSectionStyle.community:
         decoration = BoxDecoration(
-          color: const Color(0xFFF9F6FC),
+          color: palette.surfaceVariant,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(tRadius),
             topRight: Radius.circular(tRadius),
             bottomLeft: Radius.circular(bRadius),
             bottomRight: Radius.circular(bRadius),
           ),
-          border: Border.all(color: const Color(0xFFF3E8FF), width: 1),
+          border: Border.all(color: palette.border, width: 1),
         );
         break;
       case RBSectionStyle.marketplace:
         decoration = BoxDecoration(
-          color: const Color(0xFFF3F4F6),
+          color: palette.surfaceVariant,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(tRadius),
             topRight: Radius.circular(tRadius),
@@ -125,12 +124,12 @@ class RBSectionContainer extends StatelessWidget {
         break;
       case RBSectionStyle.floating:
         decoration = BoxDecoration(
-          color: Colors.white,
+          color: palette.surface,
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: DSColors.border, width: 1),
+          border: Border.all(color: palette.border, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -395,3 +394,4 @@ class _RBCarouselSectionState extends State<RBCarouselSection> {
     );
   }
 }
+

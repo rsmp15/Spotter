@@ -17,16 +17,7 @@ void main() {
     }
   });
 
-  testWidgets('all declared routes render a screen or fallback for rider', (
-    tester,
-  ) async {
-    for (final route in AppRoutes.allRoutes) {
-      await pumpSpotterRoute(tester, route, overrideRole: UserRole.rider);
 
-      expect(find.byType(Scaffold), findsOneWidget);
-      expect(tester.takeException(), isNull, reason: 'Route failed for rider: $route');
-    }
-  });
 
   testWidgets('unknown route shows recoverable page not found fallback', (
     tester,

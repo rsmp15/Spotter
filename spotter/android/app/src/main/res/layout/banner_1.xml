@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/banner_1"
+    android:layout_width="358dp"
+    android:layout_height="150dp"
+    android:clipToOutline="true"
+    android:background="@drawable/banner_1" />

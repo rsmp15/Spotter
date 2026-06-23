@@ -1,12 +1,12 @@
-import 'package:spotter/design_system/design_system.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
-
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
+import '../../design_system/design_system.dart';
 
 class SpotterMatchingPanel extends StatefulWidget {
   const SpotterMatchingPanel({super.key});
@@ -43,11 +43,12 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
     final isDark = ride.isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
     Widget content = Container(
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF0C0F14).withValues(alpha: 0.82)
+            ? palette.surface.withValues(alpha: 0.9)
             : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
@@ -55,7 +56,7 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
         ),
         border: isDark
             ? Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: palette.border,
                 width: 1.5,
               )
             : null,
@@ -65,13 +66,14 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Drag handle
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 12),
               width: 40,
               height: 4.5,
               decoration: BoxDecoration(
-                color: isDark ? Colors.grey[700] : Colors.grey[300],
+                color: palette.border,
                 borderRadius: BorderRadius.circular(999),
               ),
             ),
@@ -83,30 +85,35 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
               children: [
                 Row(
                   children: [
-                    IconButton(
-                      onPressed: () => Navigator.maybePop(context),
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: isDark ? Colors.white : Helper.ink,
+                    GestureDetector(
+                      onTap: () => Navigator.maybePop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        color: Colors.transparent,
+                        child: Icon(
+                          CupertinoIcons.arrow_left,
+                          color: palette.iconPrimary,
+                          size: 24,
+                        ),
                       ),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
                     ),
                     Expanded(
                       child: Text(
                         'Driver matches',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: isDark ? Colors.white : DSColors.textPrimary,
-                          fontSize: 20,
+                        style: DSTypography.titleLarge.copyWith(
+                          color: palette.textPrimary,
+                          fontSize: 18,
                           fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 24),
+                    const SizedBox(width: 28),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
+                
                 if (ride.actionState.isFailure) ...[
                   RecoveryBanner(
                     state: ride.actionState,
@@ -114,7 +121,8 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
                   ),
                   const SizedBox(height: 12),
                 ],
-                // Elite pulsing matching radar representation
+                
+                // Pulsing radar matching visualization
                 Center(
                   child: Stack(
                     alignment: Alignment.center,
@@ -123,16 +131,15 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
                         animation: _animationController,
                         builder: (context, child) {
                           return Container(
-                            width: 140,
-                            height: 140,
+                            width: 120,
+                            height: 120,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: (isDark ? Colors.white : Colors.black)
-                                    .withValues(
-                                      alpha: 1.0 - _animationController.value,
-                                    ),
-                                width: 2 + 10 * _animationController.value,
+                                color: palette.iconPrimary.withValues(
+                                  alpha: 1.0 - _animationController.value,
+                                ),
+                                width: 2 + 8 * _animationController.value,
                               ),
                             ),
                           );
@@ -142,17 +149,15 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
                         animation: _animationController,
                         builder: (context, child) {
                           return Container(
-                            width: 80,
-                            height: 80,
+                            width: 70,
+                            height: 70,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: (isDark ? Colors.white : Colors.black)
-                                    .withValues(
-                                      alpha: (1.0 - _animationController.value)
-                                          .clamp(0.0, 1.0),
-                                    ),
-                                width: 1 + 5 * _animationController.value,
+                                color: palette.iconPrimary.withValues(
+                                  alpha: (1.0 - _animationController.value).clamp(0.0, 1.0),
+                                ),
+                                width: 1.5 + 4 * _animationController.value,
                               ),
                             ),
                           );
@@ -162,65 +167,93 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white : Colors.black,
+                          color: palette.primary,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          Icons.radar_rounded,
-                          color: isDark ? Colors.black : Colors.white,
-                          size: 24,
+                          CupertinoIcons.search,
+                          color: palette.onPrimary,
+                          size: 22,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
+                
                 Center(
                   child: Text(
-                    'Finding the best ride for you...',
-                    style: TextStyle(
-                      fontSize: 14,
+                    'Connecting with drivers nearby...',
+                    style: DSTypography.body.copyWith(
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? Colors.grey[300]
-                          : const Color(0xFF5E5E5E),
+                      color: palette.textSecondary,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                // Driver Cards
-                for (var i = 0; i < ride.drivers.length; i++)
-                  _DriverPanelCard(
+                const SizedBox(height: 20),
+
+                // Driver match cards
+                for (var i = 0; i < ride.drivers.length; i++) ...[
+                  _DriverMatchRow(
                     driver: ride.drivers[i],
                     fare: ride.fareLabel,
-                    isDark: isDark,
-                    color: isDark
-                        ? [
-                            const Color(0xFF38BDF8),
-                            const Color(0xFFFACC15),
-                            const Color(0xFF10B981),
-                          ][i % 3]
-                        : [
-                            const Color(0xFF000000),
-                            const Color(0xFF5E5E5E),
-                            const Color(0xFF8F8F8F),
-                          ][i % 3],
+                    palette: palette,
                     onTap: () {
                       ride.selectDriver(ride.drivers[i]);
                       Navigator.pushNamed(context, AppRoutes.driverProfile);
                     },
                   ),
+                  const SizedBox(height: 10),
+                ],
                 const SizedBox(height: 12),
-                PrimaryAction(
-                  label: 'View best driver',
-                  onPressed: () {
-                    // Automatically choose first driver if not selected
-                    if (ride.selectedDriver == null &&
-                        ride.drivers.isNotEmpty) {
+
+                // Best driver pill button
+                GestureDetector(
+                  onTap: () {
+                    if (ride.selectedDriver == null && ride.drivers.isNotEmpty) {
                       ride.selectDriver(ride.drivers.first);
                     }
                     Navigator.pushNamed(context, AppRoutes.driverProfile);
                   },
+                  child: Container(
+                    width: double.infinity,
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: palette.primary,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      'View best driver',
+                      textAlign: TextAlign.center,
+                      style: DSTypography.labelLarge.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: palette.onPrimary,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Cancel Button
+                GestureDetector(
+                  onTap: () => Navigator.maybePop(context),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      'Cancel request',
+                      textAlign: TextAlign.center,
+                      style: DSTypography.labelLarge.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: palette.danger,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -246,38 +279,44 @@ class _SpotterMatchingPanelState extends State<SpotterMatchingPanel>
   }
 }
 
-class _DriverPanelCard extends StatelessWidget {
+class _DriverMatchRow extends StatelessWidget {
   final Driver driver;
   final String fare;
-  final Color color;
-  final bool isDark;
-  final VoidCallback? onTap;
+  final DSColorPalette palette;
+  final VoidCallback onTap;
 
-  const _DriverPanelCard({
+  const _DriverMatchRow({
     required this.driver,
+    required this.palette,
     required this.fare,
-    required this.color,
-    required this.isDark,
-    this.onTap,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SpotterCard(
+    return GestureDetector(
       onTap: onTap,
-      color: isDark
-          ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-          : Helper.cardColor,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      children: [
-        Row(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: palette.surfaceVariant,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: palette.border,
+            width: 1,
+          ),
+        ),
+        child: Row(
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundColor: color.withValues(alpha: 0.14),
+              backgroundColor: palette.surface,
               child: Text(
                 driver.name[0],
-                style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                style: DSTypography.bodySMStrong.copyWith(
+                  color: palette.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -287,33 +326,67 @@ class _DriverPanelCard extends StatelessWidget {
                 children: [
                   Text(
                     driver.name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black,
+                    style: DSTypography.labelLarge.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: palette.textPrimary,
                     ),
                   ),
-                  Text(
-                    '${driver.vehicle} • rating ${driver.rating}',
-                    style: TextStyle(
-                      color: isDark ? Colors.grey[400] : Helper.muted,
-                      fontSize: 13,
-                    ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(
+                        driver.vehicle,
+                        style: DSTypography.caption.copyWith(
+                          color: palette.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      const Icon(
+                        CupertinoIcons.star_fill,
+                        size: 11,
+                        color: Color(0xFFFACC15),
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        driver.rating.toString(),
+                        style: DSTypography.caption.copyWith(
+                          color: palette.textPrimary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            Text(
-              fare,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  fare,
+                  style: DSTypography.labelLarge.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: palette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  driver.eta,
+                  style: DSTypography.caption.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF4CAF50),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }

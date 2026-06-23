@@ -3,7 +3,7 @@ import '../models/production_readiness_models.dart';
 class AppConfig {
   static const String appName = String.fromEnvironment(
     'APP_NAME',
-    defaultValue: 'Spott',
+    defaultValue: 'SPOTT',
   );
 
   static const String environment = String.fromEnvironment(
@@ -47,3 +47,4 @@ class AppConfig {
 
   static bool get isProduction => releaseMode.isProduction;
 }
+

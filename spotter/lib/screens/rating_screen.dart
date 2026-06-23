@@ -1,19 +1,14 @@
-import 'package:spotter/design_system/design_system.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:spotter/design_system/design_system.dart';
 
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../spotter_widgets.dart';
-import '../core/components/glass_card.dart';
-import '../core/components/glass_scaffold.dart';
 import '../core/components/spott_avatar.dart';
 import '../core/components/spott_buttons.dart';
-
-
-
-
-
+import '../core/components/glass_scaffold.dart';
 
 class RatingScreen extends StatefulWidget {
   const RatingScreen({super.key});
@@ -30,22 +25,42 @@ class _RatingScreenState extends State<RatingScreen> {
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
     final driver = ride.selectedDriver;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
     return GlassScaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: DSColors.textPrimary),
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: Icon(
+            CupertinoIcons.arrow_left,
+            color: palette.textPrimary,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: DSSpacing.lg),
-            Text('Rate your ride', style: DSTypography.headline),
+            Text(
+              'Rate your ride',
+              style: DSTypography.headline.copyWith(
+                fontWeight: FontWeight.w800,
+                color: palette.textPrimary,
+              ),
+            ),
             const SizedBox(height: DSSpacing.sm),
-            Text('Help keep Spott reliable.', style: DSTypography.body),
+            Text(
+              'Help keep SPOTT reliable.',
+              style: DSTypography.body.copyWith(
+                color: palette.textSecondary,
+              ),
+            ),
             const SizedBox(height: DSSpacing.xl),
             RecoveryBanner(
               state: ride.actionState,
@@ -61,8 +76,13 @@ class _RatingScreenState extends State<RatingScreen> {
             ),
             const SizedBox(height: DSSpacing.md),
 
-            GlassCard(
-              padding: const EdgeInsets.all(DSSpacing.card),
+            Container(
+              padding: const EdgeInsets.all(DSSpacing.md),
+              decoration: BoxDecoration(
+                color: palette.surfaceVariant,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: palette.border),
+              ),
               child: Column(
                 children: [
                   Row(
@@ -76,7 +96,10 @@ class _RatingScreenState extends State<RatingScreen> {
                       Expanded(
                         child: Text(
                           driver?.name ?? 'Amit Sharma',
-                          style: DSTypography.titleLarge,
+                          style: DSTypography.titleLarge.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: palette.textPrimary,
+                          ),
                         ),
                       ),
                     ],
@@ -86,17 +109,18 @@ class _RatingScreenState extends State<RatingScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(5, (index) {
                       final starIndex = index + 1;
+                      final isSelected = starIndex <= rating;
                       return GestureDetector(
                         onTap: () {
                           HapticFeedback.selectionClick();
                           setState(() => rating = starIndex);
                         },
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
                           child: Icon(
-                            starIndex <= rating ? Icons.star_rounded : Icons.star_border_rounded,
-                            color: DSColors.warning,
-                            size: 40,
+                            isSelected ? CupertinoIcons.star_fill : CupertinoIcons.star,
+                            color: isSelected ? palette.textPrimary : palette.textSecondary.withValues(alpha: 0.4),
+                            size: 36,
                           ),
                         ),
                       );
@@ -107,12 +131,24 @@ class _RatingScreenState extends State<RatingScreen> {
             ),
             const SizedBox(height: DSSpacing.md),
             
-            GlassCard(
-              padding: const EdgeInsets.all(DSSpacing.card),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(DSSpacing.md),
+              decoration: BoxDecoration(
+                color: palette.surfaceVariant,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: palette.border),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Add tip', style: DSTypography.titleLarge),
+                  Text(
+                    'Add tip',
+                    style: DSTypography.titleLarge.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: palette.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: DSSpacing.md),
                   Wrap(
                     spacing: DSSpacing.sm,
@@ -128,16 +164,18 @@ class _RatingScreenState extends State<RatingScreen> {
                           duration: const Duration(milliseconds: 200),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
-                            color: isSelected ? DSColors.primarySoft : DSColors.surface,
-                            borderRadius: BorderRadius.circular(DSRadius.pill),
+                            color: isSelected ? palette.textPrimary : palette.surfaceVariant,
+                            borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: isSelected ? DSColors.primary : DSColors.border,
+                              color: isSelected ? Colors.transparent : palette.border,
                             ),
                           ),
                           child: Text(
                             amount == 0 ? 'No tip' : '₹$amount',
                             style: DSTypography.labelLarge.copyWith(
-                              color: isSelected ? DSColors.primary : DSColors.textPrimary,
+                              color: isSelected ? palette.background : palette.textPrimary,
+                              fontFamily: 'Inter',
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                             ),
                           ),
                         ),
@@ -147,12 +185,13 @@ class _RatingScreenState extends State<RatingScreen> {
                 ],
               ),
             ),
+            const SizedBox(height: DSSpacing.xl),
           ],
         ),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(16.0),
           child: SpottButton.primary(
             label: 'Submit rating',
             onPressed: () async {
@@ -162,8 +201,12 @@ class _RatingScreenState extends State<RatingScreen> {
               if (!success) {
                 messenger.showSnackBar(
                   const SnackBar(
-                    content: Text('Rating failed. Please try again.'),
-                    backgroundColor: DSColors.danger,
+                    behavior: SnackBarBehavior.floating,
+                    content: Text(
+                      'Rating failed. Please try again.',
+                      style: TextStyle(fontFamily: 'Inter', color: Colors.white),
+                    ),
+                    backgroundColor: Colors.black,
                   ),
                 );
                 return;
@@ -175,8 +218,12 @@ class _RatingScreenState extends State<RatingScreen> {
               );
               messenger.showSnackBar(
                 const SnackBar(
-                  content: Text('Thanks for rating your ride'),
-                  backgroundColor: DSColors.success,
+                  behavior: SnackBarBehavior.floating,
+                  content: Text(
+                    'Thanks for rating your ride',
+                    style: TextStyle(fontFamily: 'Inter', color: Colors.white),
+                  ),
+                  backgroundColor: Colors.black,
                 ),
               );
             },
@@ -186,3 +233,5 @@ class _RatingScreenState extends State<RatingScreen> {
     );
   }
 }
+
+

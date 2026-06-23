@@ -545,3 +545,4 @@ class FigmaPluginSandboxScreen extends StatelessWidget {
     );
   }
 }
+

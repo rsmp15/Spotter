@@ -86,3 +86,4 @@ class _DisputeCaseScreenState extends State<DisputeCaseScreen> {
     ).showSnackBar(const SnackBar(content: Text('Issue report submitted')));
   }
 }
+

@@ -1,6 +1,7 @@
 import 'package:spotter/design_system/design_system.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../controllers/ride_controller.dart';
 
 class GlassContainer extends StatelessWidget {
   final Widget child;
@@ -22,29 +23,31 @@ class GlassContainer extends StatelessWidget {
     this.margin,
     this.width,
     this.height,
-    this.hasBorder = true,
+    this.hasBorder = false,
     this.gradient,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = RideScope.of(context).isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     final hasBlur = blurSigma > 0.0;
     
     final decoration = BoxDecoration(
       color: hasBlur
           ? Colors.white.withValues(alpha: 0.8) // Frosted glass overlay
-          : DSColors.surface,
+          : palette.surface,
       borderRadius: BorderRadius.circular(borderRadius),
       border: hasBorder
           ? Border.all(
-              color: DSColors.border,
+              color: palette.border,
               width: 1.0,
             )
           : null,
       gradient: gradient,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.03),
+          color: Colors.black.withValues(alpha: isDark ? 0.0 : 0.03),
           blurRadius: 10,
           offset: const Offset(0, 2),
         ),
@@ -80,3 +83,5 @@ class GlassContainer extends StatelessWidget {
     );
   }
 }
+
+

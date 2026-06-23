@@ -4,7 +4,7 @@ import 'package:spotter/models/production_readiness_models.dart';
 
 void main() {
   test('default app config is development release mode', () {
-    expect(AppConfig.appName, 'Spott');
+    expect(AppConfig.appName, 'SPOTT');
     expect(AppConfig.releaseMode.name, AppReleaseMode.development);
     expect(AppConfig.isProduction, isFalse);
   });

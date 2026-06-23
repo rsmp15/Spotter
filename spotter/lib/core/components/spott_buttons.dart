@@ -339,3 +339,4 @@ class _SpottButtonState extends State<SpottButton>
     );
   }
 }
+

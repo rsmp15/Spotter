@@ -321,3 +321,4 @@ class _ShimmerSweepState extends State<ShimmerSweep>
     );
   }
 }
+

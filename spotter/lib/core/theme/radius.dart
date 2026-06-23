@@ -24,3 +24,4 @@ class SpottRadius {
   static const double nav = DSRadius.lg;
   static const double floatingSurface = DSRadius.bottomSheet;
 }
+

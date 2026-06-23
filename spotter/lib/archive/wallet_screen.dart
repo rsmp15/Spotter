@@ -295,3 +295,4 @@ class _TransactionTile extends StatelessWidget {
     );
   }
 }
+

@@ -21,23 +21,7 @@ Future<RideController> pumpSpotterRoute(
 
   final controller = RideController(repository: repository);
   
-  if (overrideRole != null) {
-    controller.currentUserRole = overrideRole;
-  } else if (routeName == AppRoutes.driverHome ||
-      routeName == AppRoutes.kyc ||
-      routeName == AppRoutes.createTrip ||
-      routeName == AppRoutes.jobRequests ||
-      routeName == AppRoutes.jobDetail ||
-      routeName == AppRoutes.pickupTask ||
-      routeName == AppRoutes.dropTask ||
-      routeName == AppRoutes.passengerRequests ||
-      routeName == AppRoutes.vehicleManagement) {
-    controller.currentUserRole = UserRole.rider;
-  } else if (routeName == AppRoutes.parcelBooking ||
-      routeName == AppRoutes.parcelTracking ||
-      routeName == AppRoutes.parcelComplete) {
-    controller.currentUserRole = UserRole.user;
-  }
+
 
   await controller.initialize();
 

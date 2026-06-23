@@ -391,3 +391,4 @@ class SpottAppliCard extends StatelessWidget {
     return Container(width: 1, height: 24, color: DSColors.border);
   }
 }
+

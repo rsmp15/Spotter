@@ -137,3 +137,4 @@ class SpottAvatar extends StatelessWidget {
     return null;
   }
 }
+

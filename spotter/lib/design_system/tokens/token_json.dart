@@ -58,3 +58,4 @@ class DSTokenJson {
     return encoder.convert(asMap());
   }
 }
+

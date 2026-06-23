@@ -261,3 +261,4 @@ class RecoverableActionState {
 
   bool get isFailure => status == RecoverableActionStatus.failure;
 }
+

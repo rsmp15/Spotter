@@ -2,8 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spotter/controllers/ride_controller.dart';
 import 'package:spotter/models/ride_models.dart';
 import 'package:spotter/repositories/ride_repository.dart';
-import 'package:spotter/models/spott_models.dart' hide TripStatus;
-import 'package:spotter/models/spott_models.dart' as spott;
+import 'package:spotter/models/spott_models.dart';
 
 void main() {
   test('initializes from repository and preserves safe defaults', () async {
@@ -107,41 +106,7 @@ void main() {
     expect(controller.selectedVehicleId, isNot('veh_test'));
   });
 
-  test('traveler trip CRUD operations', () {
-    final controller = RideController();
 
-    // Initial seeded traveler trip
-    expect(controller.travelerTrips.length, 1);
-    expect(controller.activeTrips.any((t) => t.id == 'trip_traveler_01'), isTrue);
-
-    // Add Trip
-    final newTrip = Trip(
-      id: 'trip_test',
-      travelerId: 'current_user',
-      source: 'Pune',
-      destination: 'Mumbai',
-      departureTime: DateTime.now().add(const Duration(hours: 4)),
-      availableSeats: 3,
-      pricePerSeat: 500,
-      parcelAllowed: true,
-      status: spott.TripStatus.active,
-    );
-    controller.addTrip(newTrip);
-    expect(controller.travelerTrips.length, 2);
-    expect(controller.travelerTrips.last.id, 'trip_test');
-    expect(controller.activeTrips.any((t) => t.id == 'trip_test'), isTrue);
-
-    // Update Trip
-    final updatedTrip = newTrip.copyWith(pricePerSeat: 550);
-    controller.updateTrip(updatedTrip);
-    expect(controller.travelerTrips.last.pricePerSeat, 550);
-    expect(controller.activeTrips.firstWhere((t) => t.id == 'trip_test').pricePerSeat, 550);
-
-    // Delete Trip
-    controller.deleteTrip('trip_test');
-    expect(controller.travelerTrips.length, 1);
-    expect(controller.activeTrips.any((t) => t.id == 'trip_test'), isFalse);
-  });
 }
 
 class _FakeRideRepository implements RideRepository {

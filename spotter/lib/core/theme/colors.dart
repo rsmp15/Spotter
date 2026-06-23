@@ -103,3 +103,4 @@ class SpottColors {
     isDark = dark;
   }
 }
+

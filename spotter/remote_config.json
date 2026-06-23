@@ -1,0 +1,42 @@
+{
+  "show_promo_banner": true,
+  "promo_banner_text": "Get 20% off your next ride!",
+  "maintenance_mode": false,
+  "show_offers": true,
+  "offer_title": "Offers & Deals",
+  "offer_subtitle": "Get best deals and discounts",
+  "home_offer_cards": [
+    {
+      "title": "Flat 20% OFF",
+      "subtitle": "Use code: SPOTT20",
+      "icon": "local_offer_rounded",
+      "startColor": "#E21E4A",
+      "endColor": "#FFDADA",
+      "route": "/parcel-booking"
+    },
+    {
+      "title": "First Ride Free",
+      "subtitle": "New users only",
+      "icon": "card_giftcard_rounded",
+      "startColor": "#0070EB",
+      "endColor": "#D8E2FF",
+      "route": "/parcel-booking"
+    },
+    {
+      "title": "Refer & Earn",
+      "subtitle": "₹100 per referral",
+      "icon": "share_rounded",
+      "startColor": "#00875A",
+      "endColor": "#D2F4E4",
+      "route": "/parcel-booking"
+    }
+  ],
+  "parcel_banner": {
+    "title": "Send Parcels from ₹99",
+    "subtitle": "Fast peer-to-peer dispatch via verified travelers.",
+    "startColor": "#7C3AED",
+    "endColor": "#4C1D95",
+    "buttonText": "Send Parcel Now",
+    "tagText": "PARCEL DELIVERY"
+  }
+}

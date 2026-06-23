@@ -42,6 +42,10 @@ void main() {
     await _tapText(tester, 'Upload Package Photo');
     await tester.pumpAndSettle();
 
+    // Clear SnackBar so it does not block the bottom button
+    ScaffoldMessenger.of(tester.element(find.byType(Checkbox))).clearSnackBars();
+    await tester.pumpAndSettle();
+
     await tester.tap(find.byType(Checkbox));
     await tester.pumpAndSettle();
 

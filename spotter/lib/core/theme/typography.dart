@@ -150,3 +150,4 @@ class SpottTextStyles {
   static const TextStyle screenTitle = display;
   static const TextStyle sectionTitle = headline;
 }
+

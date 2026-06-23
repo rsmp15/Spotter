@@ -69,3 +69,4 @@ class Helper {
     return isDarkMode ? AppTheme.dark : AppTheme.light;
   }
 }
+

@@ -90,11 +90,11 @@ class AppTheme {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DSRadius.input),
-          borderSide: BorderSide(color: palette.border),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DSRadius.input),
-          borderSide: BorderSide(color: palette.border),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DSRadius.input),
@@ -160,3 +160,4 @@ class AppTheme {
     );
   }
 }
+

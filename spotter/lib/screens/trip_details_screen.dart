@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../app/app_routes.dart';
 import 'package:spotter/design_system/design_system.dart';
+import '../controllers/ride_controller.dart';
 import '../core/components/redbus_sections.dart';
 
 class TripDetailsScreen extends StatefulWidget {
@@ -45,8 +46,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final palette = RideScope.of(context).isDarkMode ? DSPalettes.dark : DSPalettes.light;
     return Scaffold(
-      backgroundColor: DSColors.background,
+      backgroundColor: palette.background,
       body: Column(
         children: [
           _buildHeader(context),
@@ -1075,3 +1077,4 @@ class _StatBox extends StatelessWidget {
     );
   }
 }
+

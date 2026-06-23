@@ -13,3 +13,4 @@ class EmptyStateScreen extends StatelessWidget {
     );
   }
 }
+

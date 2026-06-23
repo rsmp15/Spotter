@@ -55,3 +55,4 @@ class ShareTripScreen extends StatelessWidget {
     );
   }
 }
+

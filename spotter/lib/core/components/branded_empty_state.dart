@@ -133,3 +133,4 @@ class BrandedEmptyState extends StatelessWidget {
     );
   }
 }
+

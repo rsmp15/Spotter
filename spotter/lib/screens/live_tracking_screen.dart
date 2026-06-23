@@ -561,3 +561,4 @@ class _RoutePathPainter extends CustomPainter {
   bool shouldRepaint(covariant _RoutePathPainter oldDelegate) =>
       oldDelegate.progress != progress;
 }
+

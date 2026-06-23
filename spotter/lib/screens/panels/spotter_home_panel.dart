@@ -1,14 +1,13 @@
-import 'package:spotter/design_system/design_system.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../app/app_assets.dart';
 import '../../app/app_config.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
-
 import '../../models/ride_models.dart';
-import '../../spotter_widgets.dart';
+import '../../design_system/design_system.dart';
 
 class SpotterHomePanel extends StatefulWidget {
   const SpotterHomePanel({super.key});
@@ -18,230 +17,110 @@ class SpotterHomePanel extends StatefulWidget {
 }
 
 class _SpotterHomePanelState extends State<SpotterHomePanel> {
-  String _selectedVehicleClass = 'Car'; // 'Car', 'Bike', 'Rickshaw'
-
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
     final isDark = ride.isDarkMode;
-    final appName = AppConfig.appName;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
-    final decoration = BoxDecoration(
+    final sheetDecoration = BoxDecoration(
       color: isDark
-          ? const Color(0xFF121212).withValues(alpha: 0.88)
-          : Colors.white.withValues(alpha: 0.88),
+          ? palette.surface.withValues(alpha: 0.96)
+          : Colors.white,
       borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(28),
-        topRight: Radius.circular(28),
-      ),
-      border: Border.all(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.08)
-            : const Color(0xFFE5E7EB),
-        width: 1.0,
+        topLeft: Radius.circular(24),
+        topRight: Radius.circular(24),
       ),
       boxShadow: Helper.premiumShadows,
     );
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.44, // Peek size matching Spott mockup (45%)
-      minChildSize: 0.44,
+    Widget sheet = DraggableScrollableSheet(
+      initialChildSize: 0.38,
+      minChildSize: 0.38,
       maxChildSize: 0.88,
       snap: true,
-      snapSizes: const [0.44, 0.88],
-      builder: (BuildContext context, ScrollController scrollController) {
+      snapSizes: const [0.38, 0.88],
+      builder: (context, scrollController) {
         Widget content = Container(
-          decoration: decoration,
+          decoration: sheetDecoration,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Sleek drag handle (Stitch design handle)
-              Center(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 10, bottom: 12),
-                  width: 48,
-                  height: 5.0,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.12)
-                        : const Color(0xFFD1D5DB),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-              ),
+              // Drag handle
+              _DragHandle(palette: palette),
 
-              // 2. Vehicle Selector Horizontal Row
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  height: 38,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _buildVehicleSelectorChip(
-                        'Car',
-                        AppAssets.car,
-                        Icons.directions_car_rounded,
-                      ),
-                      const SizedBox(width: 8),
-                      _buildVehicleSelectorChip(
-                        'Bike',
-                        AppAssets.bike,
-                        Icons.motorcycle_rounded,
-                      ),
-                      const SizedBox(width: 8),
-                      _buildVehicleSelectorChip(
-                        'Rickshaw',
-                        AppAssets.rikshaw,
-                        Icons.electric_rickshaw_rounded,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // 3. ListView contents containing Carousel + Rails
+              // Scrollable content
               Expanded(
                 child: ListView(
                   controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
                   children: [
-                    // Carousel Header Title
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Suggestions',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: isDark ? Colors.white : Colors.black,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.services,
-                            ),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text(
-                              'View All',
-                              style: TextStyle(
-                                color: DSColors.textPrimary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    // ── WHERE TO search bar ─────────────────────────
+                    _WhereToBar(palette: palette),
+                    const SizedBox(height: 24),
+
+                    // ── Service grid (Ride, Package, Moto, Auto) ────
+                    _SectionHeader(title: 'Suggestions', palette: palette),
+                    const SizedBox(height: 12),
+                    _ServiceGrid(palette: palette),
+                    const SizedBox(height: 24),
+
+                    // ── Recent / Saved Places ───────────────────────
+                    _SectionHeader(title: 'Recent Places', palette: palette),
+                    const SizedBox(height: 8),
+                    _RecentPlace(
+                      icon: CupertinoIcons.house_fill,
+                      title: 'Home',
+                      subtitle: 'Koregaon Park, Pune',
+                      palette: palette,
+                      onTap: () {
+                        ride.updateDestination(const LocationPoint(
+                          title: 'Home',
+                          detail: 'Koregaon Park, Pune, Maharashtra',
+                        ));
+                        Navigator.pushNamed(context, AppRoutes.destination);
+                      },
                     ),
-
-                    // 4. Horizontal Option Cards Carousel
-                    SizedBox(
-                      height: 252,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        children: _buildCarouselCards(context, ride),
-                      ),
+                    _RecentPlace(
+                      icon: CupertinoIcons.building_2_fill,
+                      title: 'Office',
+                      subtitle: 'Viman Nagar, Pune',
+                      palette: palette,
+                      onTap: () {
+                        ride.updateDestination(const LocationPoint(
+                          title: 'Office',
+                          detail: 'Viman Nagar, Pune, Maharashtra',
+                        ));
+                        Navigator.pushNamed(context, AppRoutes.destination);
+                      },
                     ),
-
-                    // Additional promo content when sheet is dragged upwards
-                    if (ride.actionState.isFailure) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        child: RecoveryBanner(
-                          state: ride.actionState,
-                          onRetry: ride.retryInitialize,
-                        ),
-                      ),
-                    ],
-
-                    if (_PaymentBanner._shouldShow) ...[
-                      const SizedBox(height: 20),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: _PaymentBanner(),
-                      ),
-                    ],
-
+                    _RecentPlace(
+                      icon: CupertinoIcons.clock_fill,
+                      title: 'Decathlon Wagholi',
+                      subtitle: 'Wagholi, Pune',
+                      palette: palette,
+                      onTap: () {
+                        ride.updateDestination(const LocationPoint(
+                          title: 'Decathlon Wagholi',
+                          detail: 'Wagholi, Pune, Maharashtra',
+                        ));
+                        Navigator.pushNamed(context, AppRoutes.destination);
+                      },
+                    ),
                     const SizedBox(height: 28),
-                    _CardRailSection(
-                      title: 'Ways to save with $appName',
-                      cards: const [
-                        _RailCardData(
-                          title: 'Spott Moto rides',
-                          subtitle: 'Affordable motorcycle pick-ups',
-                          assetPath: AppAssets.bike,
-                        ),
-                        _RailCardData(
-                          title: 'Shuttle rides',
-                          subtitle: 'Low fares, premium travel',
-                          assetPath: AppAssets.car,
-                        ),
-                      ],
-                    ),
 
-                    const SizedBox(height: 28),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: _PremierBanner(),
+                    // ── Ways to plan with Spott ──────────────────────
+                    _SectionHeader(
+                      title: 'Plan with ${AppConfig.appName}',
+                      palette: palette,
                     ),
+                    const SizedBox(height: 14),
+                    _PlanCardRow(palette: palette),
+                    const SizedBox(height: 28),
 
+                    // ── Around You map preview ───────────────────────
+                    _AroundYouCard(palette: palette),
                     const SizedBox(height: 28),
-                    _CardRailSection(
-                      title: 'Ways to plan with $appName',
-                      cards: const [
-                        _RailCardData(
-                          title: 'Travel intercity',
-                          subtitle: 'Get to remote locations with ease',
-                          assetPath: AppAssets.rikshawClock,
-                          routeName: AppRoutes.intercity,
-                        ),
-                        _RailCardData(
-                          title: 'Hourly rentals',
-                          subtitle: 'Ride from 1 to 12 hours',
-                          assetPath: AppAssets.carClock,
-                          routeName: AppRoutes.rentals,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 28),
-                    _CardRailSection(
-                      title: 'More ways to use $appName',
-                      cards: const [
-                        _RailCardData(
-                          title: 'Safety Toolkit',
-                          subtitle: 'Share trip status and get urgent help',
-                          assetPath: AppAssets.car,
-                          routeName: AppRoutes.safetyToolkit,
-                        ),
-                        _RailCardData(
-                          title: 'Send a package',
-                          subtitle: 'On-demand delivery around town',
-                          assetPath: AppAssets.parcel,
-                          routeName: AppRoutes.parcelBooking,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 28),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: _AroundYouSection(),
-                    ),
                   ],
                 ),
               ),
@@ -249,14 +128,15 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
           ),
         );
 
+        // Glass-blur for dark mode
         if (isDark) {
           content = ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(28),
-              topRight: Radius.circular(28),
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
             child: BackdropFilter(
-              filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              filter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: content,
             ),
           );
@@ -265,74 +145,107 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
         return content;
       },
     );
+
+    return sheet;
   }
+}
 
-  Widget _buildVehicleSelectorChip(
-    String label,
-    String assetPath,
-    IconData fallbackIcon,
-  ) {
-    final ride = RideScope.of(context);
-    final isSelected = _selectedVehicleClass == label;
-    final isDark = ride.isDarkMode;
+// ─────────────────────────────────────────────────────────────────────────────
+// Sub-Widgets
+// ─────────────────────────────────────────────────────────────────────────────
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(999),
-      onTap: () {
-        setState(() {
-          _selectedVehicleClass = label;
-        });
-      },
+class _DragHandle extends StatelessWidget {
+  final DSColorPalette palette;
+  const _DragHandle({required this.palette});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.only(top: 10, bottom: 16),
+        width: 44,
+        height: 4,
         decoration: BoxDecoration(
-          color: isSelected
-              ? DSColors.textPrimary
-              : (isDark ? const Color(0xFF1A1A1A) : const Color(0xFFF3F4F6)),
+          color: palette.border,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: isSelected
-                ? DSColors.textPrimary
-                : (isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.transparent),
-            width: 1.0,
-          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── "Where to?" search bar ────────────────────────────────────────────────────
+class _WhereToBar extends StatelessWidget {
+  final DSColorPalette palette;
+  const _WhereToBar({required this.palette});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.destination),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: BoxDecoration(
+          color: palette.surfaceVariant,
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 22,
-              height: 22,
-              child: Image.asset(
-                assetPath,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    fallbackIcon,
-                    size: 18,
-                    color: isSelected
-                        ? Colors.white
-                        : (isDark
-                              ? const Color(0xFFC4C5D9)
-                              : const Color(0xFF5E5E5E)),
-                  );
-                },
+            Icon(
+              CupertinoIcons.search,
+              color: palette.iconPrimary,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Where to?',
+                style: DSTypography.labelLarge.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: palette.textSecondary,
+                ),
               ),
             ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isSelected
-                    ? Colors.white
-                    : (isDark
-                          ? const Color(0xFFC4C5D9)
-                          : const Color(0xFF111827)),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: palette.surface,
+                borderRadius: BorderRadius.circular(999),
+                boxShadow: palette.isDark
+                    ? []
+                    : [
+                        const BoxShadow(
+                          color: Color(0x12000000),
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    CupertinoIcons.clock,
+                    color: palette.iconPrimary,
+                    size: 13,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Now',
+                    style: DSTypography.labelLarge.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: palette.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Icon(
+                    CupertinoIcons.chevron_down,
+                    color: palette.iconPrimary,
+                    size: 10,
+                  ),
+                ],
               ),
             ),
           ],
@@ -340,373 +253,103 @@ class _SpotterHomePanelState extends State<SpotterHomePanel> {
       ),
     );
   }
+}
 
-  List<Widget> _buildCarouselCards(BuildContext context, RideController ride) {
-    if (_selectedVehicleClass == 'Car') {
-      return [
-        _CarouselRideCard(
-          title: 'Empire Tech Prime',
-          rating: '4.8',
-          distance: '0.2 km • 5 mins away',
-          fare: '₹140',
-          badgeText: 'AVAILABLE',
-          badgeColor: Helper.success,
-          badgeTextColor: Colors.black,
-          assetPath: AppAssets.car,
-          fallbackIcon: Icons.directions_car_filled_rounded,
-          onBookTap: () {
-            ride.updateDestination(
-              const LocationPoint(
-                title: 'Empire Tech Park',
-                detail: 'Saket, New Delhi',
-              ),
-            );
-            Navigator.pushNamed(context, AppRoutes.destination);
-          },
+// ── 2×2 Service Grid ──────────────────────────────────────────────────────────
+class _ServiceGrid extends StatelessWidget {
+  final DSColorPalette palette;
+  const _ServiceGrid({required this.palette});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 4,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 0,
+      childAspectRatio: 0.78,
+      children: [
+        _ServiceTile(
+          label: 'Ride',
+          asset: AppAssets.car,
+          fallback: CupertinoIcons.car_detailed,
+          palette: palette,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.destination),
         ),
-        const SizedBox(width: 14),
-        _CarouselRideCard(
-          title: 'Skyline Sedan',
-          rating: '4.5',
-          distance: '0.8 km • 12 mins away',
-          fare: '₹210',
-          badgeText: 'FILLING FAST',
-          badgeColor: const Color(0xFFFF8A00),
-          badgeTextColor: Colors.black,
-          assetPath: AppAssets.car,
-          fallbackIcon: Icons.directions_car_filled_rounded,
-          onBookTap: () {
-            ride.updateDestination(
-              const LocationPoint(
-                title: 'Skyline Plaza',
-                detail: 'Vasant Kunj, New Delhi',
-              ),
-            );
-            Navigator.pushNamed(context, AppRoutes.destination);
-          },
+        _ServiceTile(
+          label: 'Package',
+          asset: AppAssets.parcel,
+          fallback: CupertinoIcons.cube_box_fill,
+          palette: palette,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.parcelBooking),
         ),
-      ];
-    } else if (_selectedVehicleClass == 'Bike') {
-      return [
-        _CarouselRideCard(
-          title: 'Spott Moto',
-          rating: '4.9',
-          distance: '0.1 km • 3 mins away',
-          fare: '₹50',
-          badgeText: 'AVAILABLE',
-          badgeColor: Helper.success,
-          badgeTextColor: Colors.black,
-          assetPath: AppAssets.bike,
-          fallbackIcon: Icons.motorcycle_rounded,
-          onBookTap: () {
-            ride.updateDestination(
-              const LocationPoint(
-                title: 'Spott Junction',
-                detail: 'Sector 12, Dwarka',
-              ),
-            );
-            Navigator.pushNamed(context, AppRoutes.destination);
-          },
+        _ServiceTile(
+          label: 'Moto',
+          asset: AppAssets.bike,
+          fallback: CupertinoIcons.arrow_right_circle_fill,
+          palette: palette,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.destination),
         ),
-        const SizedBox(width: 14),
-        _CarouselRideCard(
-          title: 'Swift Shuttle',
-          rating: '4.7',
-          distance: '0.4 km • 6 mins away',
-          fare: '₹30',
-          badgeText: 'PROMO ACTIVE',
-          badgeColor: const Color(0xFFFF8A00),
-          badgeTextColor: Colors.black,
-          assetPath: AppAssets.bikeClock,
-          fallbackIcon: Icons.directions_bus_rounded,
-          onBookTap: () {
-            ride.updateDestination(
-              const LocationPoint(
-                title: 'Dwarka Interchange',
-                detail: 'New Delhi',
-              ),
-            );
-            Navigator.pushNamed(context, AppRoutes.destination);
-          },
+        _ServiceTile(
+          label: 'Auto',
+          asset: AppAssets.rikshaw,
+          fallback: CupertinoIcons.map_fill,
+          palette: palette,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.destination),
         ),
-      ];
-    } else {
-      // Rickshaw
-      return [
-        _CarouselRideCard(
-          title: 'Spott Auto Rickshaw',
-          rating: '4.6',
-          distance: '0.3 km • 4 mins away',
-          fare: '₹70',
-          badgeText: 'AVAILABLE',
-          badgeColor: Helper.success,
-          badgeTextColor: Colors.black,
-          assetPath: AppAssets.rikshaw,
-          fallbackIcon: Icons.electric_rickshaw_rounded,
-          onBookTap: () {
-            ride.updateDestination(
-              const LocationPoint(
-                title: 'Saket Spott Station',
-                detail: 'New Delhi',
-              ),
-            );
-            Navigator.pushNamed(context, AppRoutes.destination);
-          },
-        ),
-        const SizedBox(width: 14),
-        _CarouselRideCard(
-          title: 'E-Auto Express',
-          rating: '4.8',
-          distance: '0.6 km • 8 mins away',
-          fare: '₹80',
-          badgeText: 'AVAILABLE',
-          badgeColor: Helper.success,
-          badgeTextColor: Colors.black,
-          assetPath: AppAssets.rikshawClock,
-          fallbackIcon: Icons.electric_rickshaw_rounded,
-          onBookTap: () {
-            ride.updateDestination(
-              const LocationPoint(
-                title: 'Pushp Vihar Block C',
-                detail: 'New Delhi',
-              ),
-            );
-            Navigator.pushNamed(context, AppRoutes.destination);
-          },
-        ),
-      ];
-    }
+      ],
+    );
   }
 }
 
-class _CarouselRideCard extends StatelessWidget {
-  final String title;
-  final String rating;
-  final String distance;
-  final String fare;
-  final String badgeText;
-  final Color badgeColor;
-  final Color badgeTextColor;
-  final String assetPath;
-  final IconData fallbackIcon;
-  final VoidCallback onBookTap;
+class _ServiceTile extends StatelessWidget {
+  final String label;
+  final String asset;
+  final IconData fallback;
+  final DSColorPalette palette;
+  final VoidCallback onTap;
 
-  const _CarouselRideCard({
-    required this.title,
-    required this.rating,
-    required this.distance,
-    required this.fare,
-    required this.badgeText,
-    required this.badgeColor,
-    required this.badgeTextColor,
-    required this.assetPath,
-    required this.fallbackIcon,
-    required this.onBookTap,
+  const _ServiceTile({
+    required this.label,
+    required this.asset,
+    required this.fallback,
+    required this.palette,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-
-    return Container(
-      width: 260, // Set width to 260 to fit horizontal test constraints
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C1C24) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFE5E7EB),
-          width: 1.0,
-        ),
-      ),
+    return GestureDetector(
+      onTap: onTap,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Graphic Image Section with top-right Badge
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: SizedBox(
-                  height: 124,
-                  width: double.infinity,
-                  child: _AssetIllustration(
-                    assetPath: assetPath,
-                    fit: BoxFit.contain,
-                    fallbackIcon: fallbackIcon,
-                  ),
-                ),
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: palette.surfaceVariant,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Image.asset(
+              asset,
+              fit: BoxFit.contain,
+              errorBuilder: (_, _, _) => Icon(
+                fallback,
+                size: 28,
+                color: palette.iconPrimary,
               ),
-              // Top-right availability badge
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: badgeColor,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    badgeText,
-                    style: TextStyle(
-                      color: badgeTextColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Title & Rating Row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.star_rounded,
-                      color: Color(0xFFFF8A00),
-                      size: 16,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      rating,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? const Color(0xFFE5E2E1) : Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
           ),
-          const SizedBox(height: 4),
-
-          // Distance / ETA Row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.navigation_outlined,
-                  size: 14,
-                  color: isDark
-                      ? const Color(0xFF8E90A2)
-                      : const Color(0xFF5E5E5E),
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    distance,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 12,
-                      color: isDark
-                          ? const Color(0xFF8E90A2)
-                          : const Color(0xFF5E5E5E),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Pricing and Booking CTA Row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: RichText(
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: fare,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: isDark ? Colors.white : DSColors.textPrimary,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '/ride',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            color: isDark
-                                ? const Color(0xFF8E90A2)
-                                : const Color(0xFF5E5E5E),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                ElevatedButton(
-                  onPressed: onBookTap,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: DSColors.textPrimary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        999,
-                      ), // Fully pill button
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Book Now',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: DSTypography.labelLarge.copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: palette.textPrimary,
             ),
           ),
         ],
@@ -715,233 +358,84 @@ class _CarouselRideCard extends StatelessWidget {
   }
 }
 
-class _PaymentBanner extends StatelessWidget {
-  static const bool _shouldShow = false;
-  const _PaymentBanner();
+// ── Section header ─────────────────────────────────────────────────────────────
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final DSColorPalette palette;
+
+  const _SectionHeader({required this.title, required this.palette});
 
   @override
   Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-
-    return InkWell(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.wallet),
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 110),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFFF59E0B) : const Color(0xFFFACC15),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              right: -42,
-              top: -42,
-              child: Container(
-                width: 170,
-                height: 170,
-                decoration: BoxDecoration(
-                  color:
-                      (isDark
-                              ? const Color(0xFFD97706)
-                              : const Color(0xFFFDE047))
-                          .withValues(alpha: 0.55),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Finalize payment:',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Rs 170.71',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Text(
-                            'Pay',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(
-                            Icons.chevron_right_rounded,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.notifications_active_rounded,
-                    color: isDark
-                        ? const Color(0xFFD97706)
-                        : const Color(0xFFEAB308),
-                    size: 26,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+    return Text(
+      title,
+      style: DSTypography.titleLarge.copyWith(
+        fontSize: 17,
+        fontWeight: FontWeight.w800,
+        color: palette.textPrimary,
+        letterSpacing: -0.3,
       ),
     );
   }
 }
 
-class _CardRailSection extends StatelessWidget {
-  final String title;
-  final List<_RailCardData> cards;
-
-  const _CardRailSection({required this.title, required this.cards});
-
-  @override
-  Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            title,
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-          ),
-        ),
-        const SizedBox(height: 14),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              for (var index = 0; index < cards.length; index++) ...[
-                _RailCard(data: cards[index]),
-                if (index != cards.length - 1) const SizedBox(width: 14),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RailCardData {
+// ── Recent Place Row ───────────────────────────────────────────────────────────
+class _RecentPlace extends StatelessWidget {
+  final IconData icon;
   final String title;
   final String subtitle;
-  final String assetPath;
-  final String? routeName;
+  final DSColorPalette palette;
+  final VoidCallback onTap;
 
-  const _RailCardData({
+  const _RecentPlace({
+    required this.icon,
     required this.title,
     required this.subtitle,
-    required this.assetPath,
-    this.routeName,
+    required this.palette,
+    required this.onTap,
   });
-}
-
-class _RailCard extends StatelessWidget {
-  final _RailCardData data;
-
-  const _RailCard({required this.data});
 
   @override
   Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: data.routeName == null
-          ? null
-          : () => Navigator.pushNamed(context, data.routeName!),
-      child: SizedBox(
-        width: 280,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        child: Row(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: SizedBox(
-                height: 158,
-                width: 280,
-                child: _AssetIllustration(
-                  assetPath: data.assetPath,
-                  fit: BoxFit.contain,
-                  fallbackIcon: Icons.directions_car_filled_rounded,
-                ),
-              ),
+            Icon(
+              icon,
+              size: 20,
+              color: palette.iconPrimary,
             ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    data.title,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: isDark ? Colors.white : Colors.black,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: DSTypography.labelLarge.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: palette.textPrimary,
                     ),
                   ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 18,
-                  color: isDark ? Colors.white : Colors.black,
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              data.subtitle,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                color: isDark
-                    ? const Color(0xFF8E90A2)
-                    : const Color(0xFF5E5E5E),
-                fontSize: 12,
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: DSTypography.caption.copyWith(
+                      fontSize: 12,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
               ),
+            ),
+            Icon(
+              CupertinoIcons.chevron_right,
+              size: 14,
+              color: palette.textMuted,
             ),
           ],
         ),
@@ -950,95 +444,188 @@ class _RailCard extends StatelessWidget {
   }
 }
 
-class _AroundYouSection extends StatelessWidget {
-  const _AroundYouSection();
+// ── Plan with Spott cards row ─────────────────────────────────────────────────
+class _PlanCardRow extends StatelessWidget {
+  final DSColorPalette palette;
+  const _PlanCardRow({required this.palette});
 
   @override
   Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Around you',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : Colors.black,
-          ),
-        ),
-        const SizedBox(height: 14),
-        InkWell(
-          borderRadius: BorderRadius.circular(24),
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Nearby mobility map opened')),
-          ),
-          child: Container(
-            height: 208,
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFE5E7EB),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : const Color(0xFFE5E7EB),
-              ),
-            ),
-            child: Stack(
+    return SizedBox(
+      height: 108,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final screenWidth = MediaQuery.of(context).size.width;
+          return OverflowBox(
+            minWidth: screenWidth,
+            maxWidth: screenWidth,
+            minHeight: 108,
+            maxHeight: 108,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               children: [
-                Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: _NetworkIllustration(
-                      imageUrl:
-                          'https://lh3.googleusercontent.com/aida-public/AB6AXuC4sJsG0NX8AjTT9YOxDBWT1UMCHXS4LQMr0irhu_u9GNM_Fg4uQCWx4HLdozGiz2bXJfZ3wUEBNjJkWAC5cxsGAfZXXlmHVlB_8QH7k0byosC9KPJBlY39-_pm4rJeUISG_W2bX8oMXjvh-IGX-hkSM4qMPDiCnGyIddslSgXvk4dCLybROpNahKczV7ZG6SLOPEDgGxT3HhHBWX3epupv3aLpHX3NnU_xZo1xyNbbATzo-fKaIsqwyg4_QjKH0YYA_rVClskZBBc',
-                      fit: BoxFit.cover,
-                      fallbackIcon: Icons.map_rounded,
-                    ),
-                  ),
+                _PlanCard(
+                  title: 'Safety Toolkit',
+                  subtitle: 'Share your trip status',
+                  icon: CupertinoIcons.shield_fill,
+                  palette: palette,
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.safetyToolkit),
                 ),
-                Center(
-                  child: Container(
-                    width: 122,
-                    height: 122,
-                    decoration: BoxDecoration(
-                      color: DSColors.textPrimary.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
+                const SizedBox(width: 12),
+                _PlanCard(
+                  title: 'Send a Package',
+                  subtitle: 'Deliver locally, fast',
+                  icon: CupertinoIcons.cube_box_fill,
+                  palette: palette,
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.parcelBooking),
                 ),
-                Center(
-                  child: Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: DSColors.textPrimary,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  top: 42,
-                  left: 64,
-                  child: _MapChip(
-                    icon: Icons.directions_car_filled_rounded,
-                    label: '3 min',
-                  ),
-                ),
-                const Positioned(
-                  bottom: 38,
-                  right: 42,
-                  child: _MapChip(
-                    icon: Icons.local_parking_rounded,
-                    label: '₹40/hr',
-                  ),
+                const SizedBox(width: 12),
+                _PlanCard(
+                  title: 'Intercity Rides',
+                  subtitle: 'Travel beyond the city',
+                  icon: CupertinoIcons.map_fill,
+                  palette: palette,
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.destination),
                 ),
               ],
             ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _PlanCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final DSColorPalette palette;
+  final VoidCallback onTap;
+
+  const _PlanCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.palette,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 180,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: palette.surfaceVariant,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(icon, size: 22, color: palette.iconPrimary),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: DSTypography.labelLarge.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: palette.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: DSTypography.caption.copyWith(
+                    fontSize: 11,
+                    color: palette.textSecondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Around You card ────────────────────────────────────────────────────────────
+class _AroundYouCard extends StatelessWidget {
+  final DSColorPalette palette;
+  const _AroundYouCard({required this.palette});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(title: 'Around You', palette: palette),
+        const SizedBox(height: 14),
+        Container(
+          height: 130,
+          decoration: BoxDecoration(
+            color: palette.surfaceVariant,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Stack(
+            children: [
+              // Decorative concentric circles
+              Center(
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: palette.iconPrimary.withValues(alpha: 0.06),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: palette.primary,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: palette.background,
+                      width: 3,
+                    ),
+                  ),
+                ),
+              ),
+              // Info chips
+              Positioned(
+                top: 24,
+                left: 60,
+                child: _MapChip(
+                  icon: CupertinoIcons.car_detailed,
+                  label: '3 min',
+                  palette: palette,
+                ),
+              ),
+              Positioned(
+                bottom: 20,
+                right: 48,
+                child: _MapChip(
+                  icon: CupertinoIcons.cube_box,
+                  label: 'Nearby',
+                  palette: palette,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -1049,190 +636,44 @@ class _AroundYouSection extends StatelessWidget {
 class _MapChip extends StatelessWidget {
   final IconData icon;
   final String label;
+  final DSColorPalette palette;
 
-  const _MapChip({required this.icon, required this.label});
+  const _MapChip({
+    required this.icon,
+    required this.label,
+    required this.palette,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(999),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x22000000),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+            color: Color(0x1F000000),
+            blurRadius: 10,
+            offset: Offset(0, 3),
           ),
         ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: Colors.black),
+          Icon(icon, size: 14, color: palette.iconPrimary),
           const SizedBox(width: 5),
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.black,
+            style: DSTypography.labelLarge.copyWith(
+              color: palette.textPrimary,
               fontSize: 12,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _PremierBanner extends StatelessWidget {
-  const _PremierBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: 152,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: const Color(0xFF8B6D2A),
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
-                      'Comfortable sedan rides',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        height: 1.05,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Book Premier',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(width: 4),
-                        Icon(
-                          Icons.chevron_right_rounded,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: _AssetIllustration(
-                  assetPath: AppAssets.car,
-                  fallbackIcon: Icons.directions_car_filled_rounded,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            5,
-            (index) => Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              decoration: BoxDecoration(
-                color: index == 0 ? DSColors.textPrimary : const Color(0xFFD1D5DB),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AssetIllustration extends StatelessWidget {
-  final String assetPath;
-  final IconData fallbackIcon;
-  final BoxFit fit;
-
-  const _AssetIllustration({
-    required this.assetPath,
-    required this.fallbackIcon,
-    this.fit = BoxFit.contain,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: const Color(0xFFF3F4F6),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Image.asset(
-          assetPath,
-          fit: fit,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Icon(
-                fallbackIcon,
-                size: 42,
-                color: const Color(0xFF6B7280),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _NetworkIllustration extends StatelessWidget {
-  final String imageUrl;
-  final IconData fallbackIcon;
-  final BoxFit fit;
-
-  const _NetworkIllustration({
-    required this.imageUrl,
-    required this.fallbackIcon,
-    this.fit = BoxFit.contain,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (WidgetsBinding.instance.toString().contains('Test')) {
-      return Center(
-        child: Icon(fallbackIcon, size: 42, color: const Color(0xFF6B7280)),
-      );
-    }
-    return Image.network(
-      imageUrl,
-      fit: fit,
-      errorBuilder: (context, error, stackTrace) {
-        return Center(
-          child: Icon(fallbackIcon, size: 42, color: const Color(0xFF6B7280)),
-        );
-      },
     );
   }
 }

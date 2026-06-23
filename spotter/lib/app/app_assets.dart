@@ -11,6 +11,8 @@ class AppAssets {
   static const String safety = 'safety.png';
   static const String verification = 'verification.png';
   static const String support = 'Support.png';
+  static const String headOut = 'head_out.png';
+  static const String addMemberCard = 'add_member_card.png';
 
   static String forRideId(String id) {
     switch (id.toLowerCase()) {
@@ -39,3 +41,4 @@ class AppAssets {
     return car;
   }
 }
+

@@ -13,3 +13,4 @@ class DSBreakpoints {
   static bool isExpanded(double width) => width >= expanded;
   static bool isLarge(double width) => width >= large;
 }
+

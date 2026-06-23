@@ -15,3 +15,4 @@ class DSMotion {
   static const Curve easeOut = Curves.easeOut;
   static const Curve spring = Curves.easeOutBack;
 }
+

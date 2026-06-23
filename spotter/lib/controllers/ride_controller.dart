@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../models/production_readiness_models.dart' hide UserRole;
 import '../models/ride_models.dart';
-import '../models/spott_models.dart' hide TripStatus;
-import '../models/spott_models.dart' as spott;
+import '../models/spott_models.dart';
 import '../repositories/ride_repository.dart';
 
 enum RideLoadState { idle, loading, ready, failure }
@@ -14,13 +13,8 @@ enum RideLoadState { idle, loading, ready, failure }
 class RideController extends ChangeNotifier {
   final RideRepository _repository;
 
-  UserRole currentUserRole = UserRole.user;
+  final UserRole currentUserRole = UserRole.user;
   KycStatus kycStatus = KycStatus.notStarted;
-
-  void updateUserRole(UserRole role) {
-    currentUserRole = role;
-    notifyListeners();
-  }
 
   void submitKyc() {
     kycStatus = KycStatus.submitted;
@@ -29,7 +23,6 @@ class RideController extends ChangeNotifier {
 
   void approveKyc() {
     kycStatus = KycStatus.verified;
-    currentUserRole = UserRole.rider;
     notifyListeners();
   }
 
@@ -53,7 +46,27 @@ class RideController extends ChangeNotifier {
   String shareLink = MockRideRepository.seedData.shareLink;
   RecoverableActionState actionState = RecoverableActionState.idle;
   bool isDarkMode = false;
+  bool isRiderMode = false;
   int activeTabIndex = 0;
+
+  // Profile settings
+  String userName = 'Arjun Sharma';
+  String userPhone = '+91 98765 43210';
+  String userEmail = 'arjun.sharma@example.com';
+
+  // Saved places
+  LocationPoint homeLocation = const LocationPoint(
+    title: 'Home',
+    detail: 'Koregaon Park, Pune, Maharashtra',
+  );
+  LocationPoint workLocation = const LocationPoint(
+    title: 'Work',
+    detail: 'Viman Nagar, Pune, Maharashtra',
+  );
+
+  // Privacy settings
+  bool shareLocation = true;
+  bool personalizedAds = false;
 
   // Parcel delivery states
   ParcelPackage? activeParcel;
@@ -61,25 +74,10 @@ class RideController extends ChangeNotifier {
   Driver? assignedParcelDriver;
   String parcelVerificationPin = _generatePin();
 
-  // Active trips search result
-  List<Trip> activeTrips = [];
-
   // Vehicle Management State
   List<Vehicle> vehicles = [];
   String? selectedVehicleId;
 
-  // Traveler Trips Management State
-  List<Trip> travelerTrips = [];
-
-  // Mock passenger DB for requests mapping
-  static const Map<String, Map<String, dynamic>> mockPassengerDb = {
-    'usr_psg_01': {'name': 'Sneha Patil', 'rating': 4.7, 'seats': 2},
-    'usr_psg_02': {'name': 'Vikram Joshi', 'rating': 4.5, 'seats': 1},
-    'usr_psg_03': {'name': 'Meera Rao', 'rating': 4.9, 'seats': 1},
-  };
-
-  // Traveler flow: incoming seat-requests from passengers
-  List<TripRequest> tripRequests = [];
   bool isParcelBookingActive = false;
 
   void createParcelBooking({
@@ -125,31 +123,16 @@ class RideController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Accept a pending trip request (Traveler flow).
-  void acceptRequest(String id) {
-    tripRequests = tripRequests.map((req) {
-      if (req.id == id && req.status == TripRequestStatus.pending) {
-        return req.copyWith(status: TripRequestStatus.accepted);
-      }
-      return req;
-    }).toList();
-    notifyListeners();
-  }
 
-  /// Reject a pending trip request (Traveler flow).
-  void rejectRequest(String id) {
-    tripRequests = tripRequests.map((req) {
-      if (req.id == id && req.status == TripRequestStatus.pending) {
-        return req.copyWith(status: TripRequestStatus.rejected);
-      }
-      return req;
-    }).toList();
-    notifyListeners();
-  }
 
   void toggleDarkMode() {
     isDarkMode = !isDarkMode;
     
+    notifyListeners();
+  }
+
+  void toggleRiderMode() {
+    isRiderMode = !isRiderMode;
     notifyListeners();
   }
 
@@ -203,78 +186,6 @@ class RideController extends ChangeNotifier {
         eta: 'Departs 10:00 PM',
         rating: 5.0,
         completedRides: 147,
-      ),
-    ];
-
-    // Seed traveler trips
-    travelerTrips = [
-      Trip(
-        id: 'trip_traveler_01',
-        travelerId: 'current_user',
-        source: 'Pune',
-        destination: 'Kolhapur',
-        departureTime: DateTime.now().add(const Duration(hours: 5)),
-        availableSeats: 2,
-        pricePerSeat: 450,
-        parcelAllowed: true,
-        status: spott.TripStatus.active,
-      ),
-    ];
-
-    // Seed active trips for search
-    activeTrips = [
-      Trip(
-        id: 'trip_01',
-        travelerId: 'tvl_sedan_01', // Demo Traveler A
-        source: 'Pune',
-        destination: 'Mumbai',
-        departureTime: DateTime.now().add(const Duration(hours: 2)),
-        availableSeats: 3,
-        pricePerSeat: 350,
-        parcelAllowed: true,
-        status: spott.TripStatus.active,
-      ),
-      Trip(
-        id: 'trip_02',
-        travelerId: 'tvl_suv_02', // Demo Traveler B
-        source: 'Pune',
-        destination: 'Mumbai',
-        departureTime: DateTime.now().add(const Duration(hours: 3)),
-        availableSeats: 5,
-        pricePerSeat: 1200,
-        parcelAllowed: false,
-        status: spott.TripStatus.active,
-      ),
-      Trip(
-        id: 'trip_03',
-        travelerId: 'tvl_bike_03', // Demo Traveler C
-        source: 'Pune',
-        destination: 'Mumbai',
-        departureTime: DateTime.now().add(const Duration(hours: 1)),
-        availableSeats: 1,
-        pricePerSeat: 800,
-        parcelAllowed: true,
-        status: spott.TripStatus.active,
-      ),
-      ...travelerTrips,
-    ];
-
-    // Seed incoming requests for Traveler flow
-    tripRequests = [
-      const TripRequest(
-        id: 'req_01',
-        tripId: 'trip_pune_mumbai',
-        passengerId: 'usr_psg_01',
-      ),
-      const TripRequest(
-        id: 'req_02',
-        tripId: 'trip_pune_mumbai',
-        passengerId: 'usr_psg_02',
-      ),
-      const TripRequest(
-        id: 'req_03',
-        tripId: 'trip_pune_mumbai',
-        passengerId: 'usr_psg_03',
       ),
     ];
   }
@@ -339,6 +250,33 @@ class RideController extends ChangeNotifier {
 
   void updateDestination(LocationPoint value) {
     destination = value;
+    notifyListeners();
+  }
+
+  void updateProfile({required String name, required String phone, required String email}) {
+    userName = name;
+    userPhone = phone;
+    userEmail = email;
+    notifyListeners();
+  }
+
+  void updateHomeLocation(LocationPoint point) {
+    homeLocation = point;
+    notifyListeners();
+  }
+
+  void updateWorkLocation(LocationPoint point) {
+    workLocation = point;
+    notifyListeners();
+  }
+
+  void toggleShareLocation(bool value) {
+    shareLocation = value;
+    notifyListeners();
+  }
+
+  void togglePersonalizedAds(bool value) {
+    personalizedAds = value;
     notifyListeners();
   }
 
@@ -553,26 +491,7 @@ class RideController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // --- Trip CRUD ---
-  void addTrip(Trip trip) {
-    travelerTrips = [...travelerTrips, trip];
-    activeTrips = [...activeTrips, trip];
-    notifyListeners();
-  }
 
-  void updateTrip(Trip trip) {
-    travelerTrips = travelerTrips
-        .map((t) => t.id == trip.id ? trip : t)
-        .toList();
-    activeTrips = activeTrips.map((t) => t.id == trip.id ? trip : t).toList();
-    notifyListeners();
-  }
-
-  void deleteTrip(String id) {
-    travelerTrips = travelerTrips.where((t) => t.id != id).toList();
-    activeTrips = activeTrips.where((t) => t.id != id).toList();
-    notifyListeners();
-  }
 
   @override
   void dispose() {
@@ -594,3 +513,4 @@ class RideScope extends InheritedNotifier<RideController> {
     return scope!.notifier!;
   }
 }
+

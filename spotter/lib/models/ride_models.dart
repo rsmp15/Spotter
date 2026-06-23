@@ -90,3 +90,4 @@ class ParcelPackage {
 
   String get fareLabel => 'Rs $fare';
 }
+

@@ -177,7 +177,7 @@ class RouteCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Clean Route Dots (Google Maps / Uber Inspired)
+                // Clean Route Dots
                 Padding(
                   padding: const EdgeInsets.only(top: 4, left: 4),
                   child: Column(
@@ -362,3 +362,4 @@ class RouteCard extends StatelessWidget {
     }
   }
 }
+

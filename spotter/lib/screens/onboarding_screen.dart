@@ -1,238 +1,217 @@
-import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../app/app_routes.dart';
 
-
-
-
-import '../core/components/spott_buttons.dart';
-
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  final List<OnboardingPageData> _pages = [
+    const OnboardingPageData(
+      icon: CupertinoIcons.car_detailed,
+      title: 'Go anywhere',
+      description: 'Get a reliable ride in minutes. Tap a button, go anywhere, anytime.',
+    ),
+    const OnboardingPageData(
+      icon: CupertinoIcons.cube_box,
+      title: 'Send anything',
+      description: 'Send packages, documents, or items across town safely and instantly.',
+    ),
+    const OnboardingPageData(
+      icon: CupertinoIcons.briefcase,
+      title: 'Earn with SPOTT',
+      description: 'Drive, deliver, and earn. Turn your spare time into extra income on your schedule.',
+    ),
+  ];
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onNext() {
+    if (_currentPage < _pages.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DSColors.background,
-      body: Column(
-        children: [
-          // Full-bleed Top Hero Section with subtle premium gradient
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [DSColors.surface, DSColors.background],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'SPOTT',
-                      style: DSTypography.headline.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: DSColors.primary,
-                        letterSpacing: 2.0,
-                      ),
+      backgroundColor: const Color(0xFF000000),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Top App Bar with skip button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'SPOTT',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -1.0,
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Share your journey\nwith Spott',
-                      style: DSTypography.displayLarge.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: DSColors.textPrimary,
-                        height: 1.15,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Main Scrollable Content area
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 430),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 12),
-                      
-                      // Premium Card surface (replacing route painter placeholder)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: DSColors.surface,
-                          borderRadius: BorderRadius.circular(DSRadius.card),
-                          boxShadow: DSShadows.elevation1,
-                          border: Border.all(color: DSColors.border),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    const CircleAvatar(
-                                      radius: 18,
-                                      backgroundColor: DSColors.primarySoft,
-                                      child: Icon(Icons.person_rounded, color: DSColors.primary, size: 18),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Arjun K.',
-                                          style: DSTypography.labelLarge.copyWith(fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          '4.9 ★ Verified Driver',
-                                          style: DSTypography.caption.copyWith(color: DSColors.success),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  '₹450',
-                                  style: DSTypography.titleLarge.copyWith(
-                                    color: DSColors.primary,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            const Divider(color: DSColors.divider),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Column(
-                                  children: [
-                                    const Icon(Icons.radio_button_checked_rounded, color: DSColors.success, size: 16),
-                                    Container(width: 1.5, height: 24, color: DSColors.border),
-                                    const Icon(Icons.location_on_rounded, color: DSColors.primary, size: 16),
-                                  ],
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Pune',
-                                        style: DSTypography.body.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: DSColors.textPrimary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 18),
-                                      Text(
-                                        'Mumbai',
-                                        style: DSTypography.body.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: DSColors.textPrimary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 24),
-                      Text(
-                        "Reduce travel costs by sharing seats on trips you're already making.",
-                        style: DSTypography.bodyLarge.copyWith(
-                          color: DSColors.textSecondary,
-                          height: 1.45,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      
-                      // Feature list inside elevated container
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: DSColors.surface,
-                          borderRadius: BorderRadius.circular(DSRadius.card),
-                          boxShadow: DSShadows.elevation1,
-                          border: Border.all(color: DSColors.border),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildFeatureRow(Icons.search_rounded, 'Search intercity trips at a fraction of the cost'),
-                            const SizedBox(height: 16),
-                            _buildFeatureRow(Icons.verified_user_rounded, 'Find route matches with verified co-travelers'),
-                            const SizedBox(height: 16),
-                            _buildFeatureRow(Icons.local_shipping_rounded, 'Send parcels same-day through travelers'),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
                   ),
-                ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, AppRoutes.login);
+                    },
+                    child: const Text(
+                      'Skip',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFACACAC),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          
-          // Sticky CTA inside bottom safe area
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 430),
-                child: SpottButton.primary(
-                  label: 'Get Started',
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.login);
-                  },
-                ),
+            
+            // Slider
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemCount: _pages.length,
+                itemBuilder: (context, index) {
+                  final page = _pages[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Icon wrapper with clean border/bg
+                        Icon(
+                          page.icon,
+                          size: 96,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(height: 48),
+                        Text(
+                          page.title,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: -1.0,
+                            height: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          page.description,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFFACACAC),
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
-          ),
-        ],
+
+            // Indicator and CTA Area
+            Padding(
+              padding: const EdgeInsets.fromLTRB(28, 0, 28, 32),
+              child: Column(
+                children: [
+                  // Dot indicators
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _pages.length,
+                      (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: _currentPage == index ? 24 : 12,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: _currentPage == index ? Colors.white : const Color(0xFF222222),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  
+                  // CTA button
+                  Center(
+                    child: GestureDetector(
+                      onTap: _onNext,
+                      child: Container(
+                        width: 200,
+                        height: 52,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          _currentPage == _pages.length - 1 ? 'Get started' : 'Next',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildFeatureRow(IconData icon, String text) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, color: DSColors.primary, size: 22),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Text(
-            text,
-            style: DSTypography.body.copyWith(
-              color: DSColors.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+class OnboardingPageData {
+  final IconData icon;
+  final String title;
+  final String description;
+
+  const OnboardingPageData({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
 }

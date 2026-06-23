@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 
 import '../controllers/ride_controller.dart';
-import '../models/spott_models.dart';
 import '../core/components/floating_bottom_nav.dart';
 import '../design_system/design_system.dart';
 
@@ -10,12 +10,6 @@ import 'home_screen.dart';
 import 'services_screen.dart';
 import 'activity_screen.dart';
 import 'profile_screen.dart';
-
-// Traveler Screens
-import 'driver_home_screen.dart';
-import 'passenger_requests_screen.dart';
-import 'traveler_trips_screen.dart';
-import 'vehicle_management_screen.dart';
 
 class MainNavigationShell extends StatefulWidget {
   final int? initialTab;
@@ -34,11 +28,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           final ride = RideScope.of(context);
-          int tab = widget.initialTab!;
-          if (tab == 3 && ride.currentUserRole == UserRole.rider) {
-            tab = 4;
-          }
-          ride.switchTab(tab);
+          ride.switchTab(widget.initialTab!);
         }
       });
     }
@@ -51,11 +41,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           final ride = RideScope.of(context);
-          int tab = widget.initialTab!;
-          if (tab == 3 && ride.currentUserRole == UserRole.rider) {
-            tab = 4;
-          }
-          ride.switchTab(tab);
+          ride.switchTab(widget.initialTab!);
         }
       });
     }
@@ -64,82 +50,91 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final role = ride.currentUserRole;
+    final isDark = ride.isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
     final List<Widget> userScreens = const [
       HomeScreen(),
       ServicesScreen(),
-      ActivityScreen(), // Passenger Trips
+      ActivityScreen(),
       ProfileScreen(),
     ];
 
-    final List<Widget> riderScreens = const [
-      DriverHomeScreen(),
-      PassengerRequestsScreen(),
-      TravelerTripsScreen(),
-      VehicleManagementScreen(),
-      ProfileScreen(),
-    ];
-
-    final screens = role == UserRole.user ? userScreens : riderScreens;
+    final screens = userScreens;
 
     // Ensure index doesn't crash if it exceeds length
     final safeIndex = ride.activeTabIndex < screens.length ? ride.activeTabIndex : 0;
 
+    final shellBg = (safeIndex == 0 && !isDark)
+        ? const Color(0xFFE4DCDF)
+        : palette.background;
+
     return Scaffold(
-      backgroundColor: DSColors.background,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeIn,
-              layoutBuilder: (currentChild, previousChildren) {
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    for (final child in previousChildren)
-                      IgnorePointer(
-                        ignoring: true,
-                        child: child,
-                      ),
-                    ?currentChild,
-                  ],
-                );
-              },
-              transitionBuilder: (child, animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.0, 0.05),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  ),
-                );
-              },
-              child: KeyedSubtree(
-                key: ValueKey<int>(safeIndex),
-                child: screens[safeIndex],
+      backgroundColor: shellBg,
+      body: BottomBar(
+        layout: BottomBarLayout(
+          width: MediaQuery.of(context).size.width - 32, // Floating margin
+          offset: MediaQuery.of(context).padding.bottom + 12.0, // Dynamic float offset
+          borderRadius: BorderRadius.circular(30),
+          respectSafeArea: false, // Turn off safe area stretching to float the bar
+        ),
+        theme: BottomBarThemeData(
+          barDecoration: BoxDecoration(
+            color: palette.surface,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
+            ],
+            border: Border.all(
+              color: isDark ? const Color(0xFF29413B) : const Color(0xFFEEEEEE),
+              width: 1.0,
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Listener(
-              behavior: HitTestBehavior.opaque,
-              child: FloatingBottomNav(
-                role: role,
-                currentIndex: safeIndex,
-                onTap: (index) => ride.switchTab(index),
-              ),
+        ),
+        body: SizedBox.expand(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
+            layoutBuilder: (currentChild, previousChildren) {
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  for (final child in previousChildren)
+                    IgnorePointer(
+                      ignoring: true,
+                      child: child,
+                    ),
+                  ?currentChild,
+                ],
+              );
+            },
+            transitionBuilder: (child, animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.0, 0.05),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              );
+            },
+            child: KeyedSubtree(
+              key: ValueKey<int>(safeIndex),
+              child: screens[safeIndex],
             ),
           ),
-        ],
+        ),
+        child: FloatingBottomNav(
+          currentIndex: safeIndex,
+          onTap: (index) => ride.switchTab(index),
+        ),
       ),
     );
   }

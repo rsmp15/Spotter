@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/spott_theme.dart';
+import '../../design_system/design_system.dart';
 import 'glassmorphism.dart';
 import 'trust_badge.dart';
 
@@ -13,11 +13,11 @@ class TripResultCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: SpottTheme.spacingLarge),
+        margin: const EdgeInsets.only(bottom: DSSpacing.xxl), // 24.0
         decoration: BoxDecoration(
-          borderRadius: SpottTheme.borderRadiusLarge,
-          color: SpottTheme.surface,
-          boxShadow: SpottTheme.premiumShadow,
+          borderRadius: BorderRadius.circular(DSRadius.xl), // 16.0
+          color: DSColors.background, // Canvas
+          boxShadow: DSShadows.level1, // Level 1 Subtle Drop
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -32,25 +32,24 @@ class TripResultCard extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
                 Positioned(
-                  top: 16,
-                  right: 16,
+                  top: DSSpacing.lg,
+                  right: DSSpacing.lg,
                   child: Glassmorphism(
-                    borderRadius: SpottTheme.radiusMedium,
+                    borderRadius: DSRadius.lg,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     child: Text(
                       '₹ 450',
-                      style: SpottTheme.textTheme.titleMedium?.copyWith(
+                      style: DSTypography.displaySM.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
                 Positioned(
-                  bottom: 16,
-                  left: 16,
+                  bottom: DSSpacing.lg,
+                  left: DSSpacing.lg,
                   child: Glassmorphism(
-                    borderRadius: SpottTheme.radiusSmall,
+                    borderRadius: DSRadius.md,
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -59,7 +58,7 @@ class TripResultCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '2 Mutual Travelers',
-                          style: SpottTheme.textTheme.labelMedium?.copyWith(color: Colors.white),
+                          style: DSTypography.bodySMStrong.copyWith(color: Colors.white),
                         ),
                       ],
                     ),
@@ -69,7 +68,7 @@ class TripResultCard extends StatelessWidget {
             ),
             
             Padding(
-              padding: const EdgeInsets.all(SpottTheme.spacingMedium),
+              padding: const EdgeInsets.all(DSSpacing.xxl), // 24.0 (card interior padding)
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -78,35 +77,35 @@ class TripResultCard extends StatelessWidget {
                     children: [
                       Column(
                         children: [
-                          const Icon(Icons.circle, size: 10, color: SpottTheme.primary),
-                          Container(height: 20, width: 2, color: SpottTheme.card),
-                          const Icon(Icons.location_on, size: 14, color: SpottTheme.success),
+                          const Icon(Icons.circle, size: 10, color: DSColors.primary),
+                          Container(height: 20, width: 2, color: DSColors.border),
+                          const Icon(Icons.location_on, size: 14, color: DSColors.success),
                         ],
                       ),
-                      const SizedBox(width: SpottTheme.spacingSmall),
+                      const SizedBox(width: DSSpacing.sm),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Pune, Maharashtra", style: SpottTheme.textTheme.bodyMedium),
+                            Text("Pune, Maharashtra", style: DSTypography.bodyMD.copyWith(color: DSColors.textSecondary)),
                             const SizedBox(height: 8),
-                            Text("Kolhapur, Maharashtra", style: SpottTheme.textTheme.titleMedium),
+                            Text("Kolhapur, Maharashtra", style: DSTypography.bodyMDStrong.copyWith(color: DSColors.textPrimary)),
                           ],
                         ),
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text("10:30 AM", style: SpottTheme.textTheme.titleMedium),
-                          Text("3h 45m", style: SpottTheme.textTheme.bodyMedium),
+                          Text("10:30 AM", style: DSTypography.bodyMDStrong.copyWith(color: DSColors.textPrimary)),
+                          Text("3h 45m", style: DSTypography.bodySM.copyWith(color: DSColors.textSecondary)),
                         ],
                       ),
                     ],
                   ),
                   
                   const Padding(
-                    padding: EdgeInsets.symmetric(vertical: SpottTheme.spacingMedium),
-                    child: Divider(color: SpottTheme.card),
+                    padding: EdgeInsets.symmetric(vertical: DSSpacing.lg),
+                    child: Divider(color: DSColors.divider),
                   ),
                   
                   // Driver & Vehicle
@@ -116,38 +115,38 @@ class TripResultCard extends StatelessWidget {
                         radius: 24,
                         backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=a042581f4e29026704d'),
                       ),
-                      const SizedBox(width: SpottTheme.spacingMedium),
+                      const SizedBox(width: DSSpacing.lg),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Text("Rohan M.", style: SpottTheme.textTheme.titleMedium),
+                                Text("Rohan M.", style: DSTypography.bodyMDStrong.copyWith(color: DSColors.textPrimary)),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.star, size: 14, color: SpottTheme.warning),
-                                Text(" 4.9", style: SpottTheme.textTheme.bodyMedium),
+                                const Icon(Icons.star, size: 14, color: DSColors.warning),
+                                Text(" 4.9", style: DSTypography.bodyMD.copyWith(color: DSColors.textSecondary)),
                               ],
                             ),
-                            Text("White Hyundai Creta • SUV", style: SpottTheme.textTheme.bodyMedium),
+                            Text("White Hyundai Creta • SUV", style: DSTypography.bodySM.copyWith(color: DSColors.textSecondary)),
                           ],
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: SpottTheme.card,
-                          borderRadius: BorderRadius.circular(12),
+                          color: DSColors.surfaceVariant, // Canvas Soft
+                          borderRadius: BorderRadius.circular(DSRadius.lg),
                         ),
                         child: Text(
                           "3 Seats",
-                          style: SpottTheme.textTheme.labelLarge?.copyWith(color: SpottTheme.primary),
+                          style: DSTypography.bodySMStrong.copyWith(color: DSColors.textPrimary),
                         ),
                       )
                     ],
                   ),
                   
-                  const SizedBox(height: SpottTheme.spacingMedium),
+                  const SizedBox(height: DSSpacing.lg),
                   
                   // Badges
                   const Wrap(
@@ -155,7 +154,7 @@ class TripResultCard extends StatelessWidget {
                     runSpacing: 8,
                     children: [
                       TrustBadge(label: "Aadhaar Verified"),
-                      TrustBadge(label: "Accepts Parcels", icon: Icons.local_shipping_outlined, color: SpottTheme.warning),
+                      TrustBadge(label: "Accepts Parcels", icon: Icons.local_shipping_outlined, color: DSColors.warning),
                       TrustBadge(label: "Corporate", icon: Icons.business),
                     ],
                   ),
@@ -168,3 +167,4 @@ class TripResultCard extends StatelessWidget {
     );
   }
 }
+

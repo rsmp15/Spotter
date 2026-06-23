@@ -5,6 +5,8 @@ import '../controllers/ride_controller.dart';
 import '../models/ride_models.dart';
 import '../spotter_widgets.dart';
 import '../white_text_field.dart';
+import '../design_system/design_system.dart';
+import 'map_selector.dart';
 
 class PickupLocationScreen extends StatefulWidget {
   const PickupLocationScreen({super.key});
@@ -56,7 +58,33 @@ class _PickupLocationScreenState extends State<PickupLocationScreen> {
           driver: ride.selectedDriver?.name ?? 'Matching',
           status: ride.status.name,
         ),
-        MapPlaceholder(height: 165),
+        GestureDetector(
+          onTap: () {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final palette = isDark ? DSPalettes.dark : DSPalettes.light;
+            showModalBottomSheet<String>(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => MapPickerSheet(
+                isDark: isDark,
+                palette: palette,
+                title: 'Set Pickup Location',
+                onSelected: (loc) {
+                  Navigator.pop(context, loc);
+                },
+              ),
+            ).then((result) {
+              if (result != null && mounted) {
+                setState(() {
+                  _pickupController.text = result;
+                });
+                _savePickup(context, showMessage: true);
+              }
+            });
+          },
+          child: const MapPlaceholder(height: 165),
+        ),
         WhiteTextField(
           controller: _pickupController,
           labelText: 'Pickup',
@@ -108,3 +136,4 @@ class _PickupLocationScreenState extends State<PickupLocationScreen> {
     }
   }
 }
+

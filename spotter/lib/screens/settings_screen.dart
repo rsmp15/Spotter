@@ -1,10 +1,13 @@
 import 'package:spotter/design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 import '../controllers/ride_controller.dart';
-import '../core/components/glass_card.dart';
-import '../core/components/glass_scaffold.dart';
+import '../app/app_routes.dart';
+import '../models/ride_models.dart';
+import 'profile_screen.dart';
+
 
 
 
@@ -18,144 +21,148 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
     final isDark = ride.isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
-    return GlassScaffold(
+    return Scaffold(
+      backgroundColor: palette.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: palette.background,
         elevation: 0,
-        leading: const BackButton(color: DSColors.textPrimary),
-        title: Text('Settings', style: DSTypography.titleLarge),
+        scrolledUnderElevation: 0,
+        leading: BackButton(color: palette.textPrimary),
+        title: Text(
+          'Settings',
+          style: DSTypography.titleLarge.copyWith(color: palette.textPrimary),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: DSSpacing.md),
-            Text(
-              'Account, vehicles, privacy, and preferences',
-              style: DSTypography.body,
+            const SizedBox(height: 28),
+
+            // ── GENERAL ──
+            _sectionLabel('GENERAL', palette),
+            const SizedBox(height: 10),
+            _SettingsRow(
+              icon: Icons.person_outline_rounded,
+              title: 'Personal information',
+              palette: palette,
+              onTap: () => showProfileEditSheet(context, ride, isDark),
             ),
-            const SizedBox(height: DSSpacing.xl),
-            
-            Text('GENERAL', style: DSTypography.caption),
-            const SizedBox(height: DSSpacing.md),
-            
-            GlassCard(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  _SettingsRow(
-                    icon: Icons.person_outline_rounded,
-                    title: 'Personal information',
-                    detail: 'Name, phone, email',
-                  ),
-                  _buildDivider(),
-                  _SettingsRow(
-                    icon: Icons.directions_car_outlined,
-                    title: 'Vehicles',
-                    detail: 'My vehicles',
-                  ),
-                  _buildDivider(),
-                  _SettingsRow(
-                    icon: Icons.verified_user_outlined,
-                    title: 'Verification status',
-                    detail: 'KYC & Documents',
-                  ),
-                ],
-              ),
+            _SettingsRow(
+              icon: Icons.directions_car_outlined,
+              title: 'Vehicles',
+              palette: palette,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.vehicleManagement),
             ),
-            
-            const SizedBox(height: DSSpacing.xl),
-            
-            Text('APP SETTINGS', style: DSTypography.caption),
-            const SizedBox(height: DSSpacing.md),
-            
-            GlassCard(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  _SettingsRow(
-                    icon: Icons.bookmark_outline_rounded,
-                    title: 'Saved places',
-                    detail: 'Home, work',
-                  ),
-                  _buildDivider(),
-                  _SettingsRow(
-                    icon: Icons.notifications_none_rounded,
-                    title: 'Notifications',
-                    detail: 'Trips, safety',
-                  ),
-                  _buildDivider(),
-                  _SettingsRow(
-                    icon: Icons.privacy_tip_outlined,
-                    title: 'Privacy',
-                    detail: 'Location and account controls',
-                  ),
-                ],
-              ),
+            _SettingsRow(
+              icon: Icons.verified_user_outlined,
+              title: 'Verification status',
+              palette: palette,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.kyc),
             ),
-            
-            const SizedBox(height: DSSpacing.xl),
-            
-            Text('PREFERENCES', style: DSTypography.caption),
-            const SizedBox(height: DSSpacing.md),
-            
-            GlassCard(
-              padding: const EdgeInsets.symmetric(horizontal: DSSpacing.md, vertical: DSSpacing.sm),
+
+            const SizedBox(height: 28),
+
+            // ── APP SETTINGS ──
+            _sectionLabel('APP SETTINGS', palette),
+            const SizedBox(height: 10),
+            _SettingsRow(
+              icon: Icons.bookmark_outline_rounded,
+              title: 'Saved places',
+              palette: palette,
+              onTap: () => _showSavedPlacesSheet(context, ride, isDark),
+            ),
+            _SettingsRow(
+              icon: Icons.notifications_none_rounded,
+              title: 'Notifications',
+              palette: palette,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
+            ),
+            _SettingsRow(
+              icon: Icons.privacy_tip_outlined,
+              title: 'Privacy',
+              palette: palette,
+              onTap: () => _showPrivacySheet(context, ride, isDark),
+            ),
+
+            const SizedBox(height: 28),
+
+            // ── PREFERENCES ──
+            _sectionLabel('PREFERENCES', palette),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: Row(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: DSColors.surface,
-                      borderRadius: BorderRadius.circular(DSRadius.sm),
-                    ),
-                    child: Icon(
-                      isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
-                      color: DSColors.textPrimary,
-                      size: 20,
-                    ),
+                  Icon(
+                    isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                    color: palette.iconPrimary,
+                    size: 20,
                   ),
-                  const SizedBox(width: DSSpacing.md),
+                  const SizedBox(width: 16),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Dark Theme', style: DSTypography.labelLarge),
-                        const SizedBox(height: 2),
-                        Text(
-                          isDark ? 'Dark mode active' : 'Light mode active',
-                          style: DSTypography.caption,
-                        ),
-                      ],
+                    child: Text(
+                      'Dark Theme',
+                      style: DSTypography.labelLarge.copyWith(
+                        color: palette.textPrimary,
+                      ),
                     ),
                   ),
                   Switch(
                     value: isDark,
-                    onChanged: (val) {
-                      ride.toggleDarkMode();
-                    },
-                    activeThumbColor: DSColors.primary,
-                    activeTrackColor: DSColors.primarySoft,
-                    inactiveThumbColor: DSColors.textSecondary,
-                    inactiveTrackColor: DSColors.surface,
+                    onChanged: (_) => ride.toggleDarkMode(),
+                    activeThumbColor: palette.onPrimary,
+                    activeTrackColor: palette.primary,
+                    inactiveThumbColor: palette.textMuted,
+                    inactiveTrackColor: palette.surfaceVariant,
                   ),
                 ],
               ),
             ),
-            
-            const SizedBox(height: DSSpacing.section),
-            
+
+            const SizedBox(height: 48),
+
+            // ── LOG OUT ──
             Center(
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return CupertinoAlertDialog(
+                        title: const Text('Log Out'),
+                        content: const Text('Are you sure you want to log out of Spott?'),
+                        actions: [
+                          CupertinoDialogAction(
+                            child: const Text('Cancel'),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          CupertinoDialogAction(
+                            isDestructiveAction: true,
+                            child: const Text('Log Out'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              ride.switchTab(0);
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                AppRoutes.login,
+                                (route) => false,
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 child: Text(
                   'Log out',
-                  style: DSTypography.labelLarge.copyWith(color: DSColors.danger),
+                  style: DSTypography.labelLarge.copyWith(color: palette.danger),
                 ),
               ),
             ),
@@ -166,11 +173,13 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDivider() {
-    return Container(
-      height: 1,
-      margin: const EdgeInsets.only(left: 72),
-      color: DSColors.borderSubtle,
+  Widget _sectionLabel(String label, DSColorPalette palette) {
+    return Text(
+      label,
+      style: DSTypography.caption.copyWith(
+        color: palette.textMuted,
+        letterSpacing: 0.8,
+      ),
     );
   }
 }
@@ -178,49 +187,486 @@ class SettingsScreen extends StatelessWidget {
 class _SettingsRow extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String detail;
+  final DSColorPalette palette;
+  final VoidCallback? onTap;
 
   const _SettingsRow({
     required this.icon,
     required this.title,
-    required this.detail,
+    required this.palette,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => HapticFeedback.lightImpact(),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        if (onTap != null) onTap!();
+      },
+      borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: DSSpacing.md,
-          vertical: DSSpacing.md,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: DSColors.surface,
-                borderRadius: BorderRadius.circular(DSRadius.sm),
-              ),
-              child: Icon(icon, color: DSColors.textSecondary, size: 20),
-            ),
-            const SizedBox(width: DSSpacing.md),
+            Icon(icon, color: palette.iconPrimary, size: 20),
+            const SizedBox(width: 16),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: DSTypography.labelLarge),
-                  const SizedBox(height: 2),
-                  Text(detail, style: DSTypography.caption),
-                ],
+              child: Text(
+                title,
+                style: DSTypography.labelLarge.copyWith(
+                  color: palette.textPrimary,
+                ),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: DSColors.textTertiary),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: palette.textMuted,
+              size: 20,
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+
+void _showSavedPlacesSheet(BuildContext context, RideController ride, bool isDark) {
+  final homeTitleController = TextEditingController(text: ride.homeLocation.title);
+  final homeDetailController = TextEditingController(text: ride.homeLocation.detail);
+  final workTitleController = TextEditingController(text: ride.workLocation.title);
+  final workDetailController = TextEditingController(text: ride.workLocation.detail);
+
+  final palette = isDark ? DSPalettes.dark : DSPalettes.light;
+
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: palette.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: palette.border,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              Text(
+                'Saved Places',
+                style: DSTypography.titleLarge.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: palette.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              
+              // Home Label & Address
+              Text(
+                'Home Label',
+                style: DSTypography.caption.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: palette.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                decoration: BoxDecoration(
+                  color: palette.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  controller: homeTitleController,
+                  cursorColor: palette.textPrimary,
+                  style: DSTypography.body.copyWith(color: palette.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: InputBorder.none,
+                    hintText: 'e.g. Home',
+                    hintStyle: DSTypography.body.copyWith(color: palette.textMuted),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Home Address',
+                style: DSTypography.caption.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: palette.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                decoration: BoxDecoration(
+                  color: palette.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  controller: homeDetailController,
+                  cursorColor: palette.textPrimary,
+                  style: DSTypography.body.copyWith(color: palette.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: InputBorder.none,
+                    hintText: 'Enter address',
+                    hintStyle: DSTypography.body.copyWith(color: palette.textMuted),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Work Label & Address
+              Text(
+                'Work Label',
+                style: DSTypography.caption.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: palette.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                decoration: BoxDecoration(
+                  color: palette.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  controller: workTitleController,
+                  cursorColor: palette.textPrimary,
+                  style: DSTypography.body.copyWith(color: palette.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: InputBorder.none,
+                    hintText: 'e.g. Work',
+                    hintStyle: DSTypography.body.copyWith(color: palette.textMuted),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Work Address',
+                style: DSTypography.caption.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: palette.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                decoration: BoxDecoration(
+                  color: palette.surfaceVariant,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  controller: workDetailController,
+                  cursorColor: palette.textPrimary,
+                  style: DSTypography.body.copyWith(color: palette.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: InputBorder.none,
+                    hintText: 'Enter address',
+                    hintStyle: DSTypography.body.copyWith(color: palette.textMuted),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Save Button
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: CupertinoButton(
+                  color: palette.primary,
+                  borderRadius: BorderRadius.circular(26),
+                  onPressed: () {
+                    final hTitle = homeTitleController.text.trim();
+                    final hDetail = homeDetailController.text.trim();
+                    final wTitle = workTitleController.text.trim();
+                    final wDetail = workDetailController.text.trim();
+                    if (hTitle.isNotEmpty && hDetail.isNotEmpty && wTitle.isNotEmpty && wDetail.isNotEmpty) {
+                      ride.updateHomeLocation(LocationPoint(title: hTitle, detail: hDetail));
+                      ride.updateWorkLocation(LocationPoint(title: wTitle, detail: wDetail));
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Saved places updated',
+                            style: DSTypography.body.copyWith(color: palette.onPrimary, fontWeight: FontWeight.w600),
+                          ),
+                          backgroundColor: palette.primary,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    'Save Places',
+                    style: DSTypography.labelLarge.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: palette.onPrimary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void _showPrivacySheet(BuildContext context, RideController ride, bool isDark) {
+  final palette = isDark ? DSPalettes.dark : DSPalettes.light;
+
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setModalState) {
+          return Container(
+            decoration: BoxDecoration(
+              color: palette.surface,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    width: 40,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: palette.border,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                Text(
+                  'Privacy Center',
+                  style: DSTypography.titleLarge.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: palette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Location toggle
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: palette.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Share Live Location',
+                              style: DSTypography.labelLarge.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: palette.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Share your location with drivers to ensure accurate pickups.',
+                              style: DSTypography.caption.copyWith(
+                                fontSize: 11,
+                                color: palette.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: ride.shareLocation,
+                        activeThumbColor: palette.onPrimary,
+                        activeTrackColor: palette.primary,
+                        inactiveThumbColor: palette.textMuted,
+                        inactiveTrackColor: palette.border,
+                        onChanged: (val) {
+                          setModalState(() {
+                            ride.toggleShareLocation(val);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Personalized ads toggle
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: palette.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Personalized Ads',
+                              style: DSTypography.labelLarge.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: palette.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Receive targeted ads based on your trip destinations.',
+                              style: DSTypography.caption.copyWith(
+                                fontSize: 11,
+                                color: palette.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: ride.personalizedAds,
+                        activeThumbColor: palette.onPrimary,
+                        activeTrackColor: palette.primary,
+                        inactiveThumbColor: palette.textMuted,
+                        inactiveTrackColor: palette.border,
+                        onChanged: (val) {
+                          setModalState(() {
+                            ride.togglePersonalizedAds(val);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                Text(
+                  'Account Controls',
+                  style: DSTypography.labelLarge.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: palette.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Download archive
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    'Download personal data',
+                    style: DSTypography.body.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: palette.textPrimary,
+                    ),
+                  ),
+                  trailing: Icon(CupertinoIcons.chevron_right, size: 14, color: palette.textMuted),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Data download requested. We will email you your archive shortly.',
+                          style: DSTypography.body.copyWith(color: palette.onPrimary, fontWeight: FontWeight.w600),
+                        ),
+                        backgroundColor: palette.primary,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Delete account
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    'Delete Account',
+                    style: DSTypography.body.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: palette.danger,
+                    ),
+                  ),
+                  trailing: Icon(CupertinoIcons.chevron_right, size: 14, color: palette.danger),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return CupertinoAlertDialog(
+                          title: const Text('Delete Account?'),
+                          content: const Text(
+                            'Are you sure you want to delete your Spott account? This action is permanent and cannot be undone.',
+                          ),
+                          actions: [
+                            CupertinoDialogAction(
+                              child: const Text('Cancel'),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                            CupertinoDialogAction(
+                              isDestructiveAction: true,
+                              child: const Text('Delete'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text(
+                                      'Account deletion request submitted. Process will complete in 30 days.',
+                                      style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w600),
+                                    ),
+                                    backgroundColor: palette.danger,
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+

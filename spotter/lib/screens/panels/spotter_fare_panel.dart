@@ -1,13 +1,13 @@
-import 'package:spotter/design_system/design_system.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../app/app_assets.dart';
 import '../../app/app_routes.dart';
 import '../../controllers/ride_controller.dart';
 import '../../helper.dart';
-
 import '../../models/ride_models.dart';
 import '../../spotter_widgets.dart';
+import '../../design_system/design_system.dart';
 
 class SpotterFarePanel extends StatelessWidget {
   const SpotterFarePanel({super.key});
@@ -15,8 +15,9 @@ class SpotterFarePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
-    final selectedOption = ride.selectedRideOption;
+    final selectedOption = ride.selectedRideOption ?? (ride.rideOptions.isNotEmpty ? ride.rideOptions.first : null);
     final isDark = ride.isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
 
     final fare = selectedOption?.fare ?? 0;
     final base = (fare * 0.52).round();
@@ -26,7 +27,7 @@ class SpotterFarePanel extends StatelessWidget {
     Widget content = Container(
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF0C0F14).withValues(alpha: 0.82)
+            ? palette.surface.withValues(alpha: 0.9)
             : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
@@ -34,7 +35,7 @@ class SpotterFarePanel extends StatelessWidget {
         ),
         border: isDark
             ? Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: palette.border,
                 width: 1.5,
               )
             : null,
@@ -44,13 +45,14 @@ class SpotterFarePanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Drag handle
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 12),
               width: 40,
               height: 4.5,
               decoration: BoxDecoration(
-                color: isDark ? Colors.grey[700] : Colors.grey[300],
+                color: palette.border,
                 borderRadius: BorderRadius.circular(999),
               ),
             ),
@@ -60,32 +62,38 @@ class SpotterFarePanel extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Header Title
                 Row(
                   children: [
-                    IconButton(
-                      onPressed: () => Navigator.maybePop(context),
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: isDark ? Colors.white : DSColors.textPrimary,
+                    GestureDetector(
+                      onTap: () => Navigator.maybePop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        color: Colors.transparent,
+                        child: Icon(
+                          CupertinoIcons.arrow_left,
+                          color: palette.iconPrimary,
+                          size: 24,
+                        ),
                       ),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
                     ),
                     Expanded(
                       child: Text(
                         'Price estimate',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: isDark ? Colors.white : DSColors.textPrimary,
+                        style: DSTypography.titleLarge.copyWith(
+                          color: palette.textPrimary,
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 24),
+                    const SizedBox(width: 28),
                   ],
                 ),
                 const SizedBox(height: 16),
+                
                 if (ride.actionState.isFailure) ...[
                   RecoveryBanner(
                     state: ride.actionState,
@@ -93,240 +101,204 @@ class SpotterFarePanel extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                 ],
-                // Vehicle Options horizontal list
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
+
+                // Vertical Ride Options List
+                Column(
+                  children: [
+                    for (final option in ride.rideOptions) ...[
+                      _RideOptionRow(
+                        option: option,
+                        selected: selectedOption?.id == option.id,
+                        palette: palette,
+                        onTap: () {
+                          ride.selectRideOption(option);
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Fare Breakdown card
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: palette.surfaceVariant,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: palette.border,
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      for (final option in ride.rideOptions) ...[
-                        _VehicleSelectionCard(
-                          option: option,
-                          selected: selectedOption?.id == option.id,
-                          isDark: isDark,
-                          onTap: () {
-                            ride.selectRideOption(option);
-                          },
+                      Text(
+                        'Fare breakup',
+                        style: DSTypography.labelLarge.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: palette.textPrimary,
                         ),
-                        const SizedBox(width: 10),
+                      ),
+                      const SizedBox(height: 10),
+                      _BreakdownRow(label: 'Base fare', value: 'Rs $base', palette: palette),
+                      const SizedBox(height: 6),
+                      _BreakdownRow(label: 'Distance', value: 'Rs $distance', palette: palette),
+                      const SizedBox(height: 6),
+                      _BreakdownRow(label: 'Demand surcharge', value: 'Rs $demand', palette: palette),
+                      if (selectedOption?.id == 'pool' || selectedOption?.id == 'bike_pool') ...[
+                        const SizedBox(height: 6),
+                        _BreakdownRow(
+                          label: 'Multi-rider Split Savings',
+                          value: '-Rs 34',
+                          palette: palette,
+                          valueColor: const Color(0xFF4CAF50),
+                        ),
                       ],
+                      const SizedBox(height: 10),
+                      Divider(color: palette.divider),
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Estimated total',
+                            style: DSTypography.labelLarge.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: palette.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            ride.fareLabel,
+                            style: DSTypography.labelLarge.copyWith(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: palette.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Fare details
-                SpotterCard(
-                  color: isDark
-                      ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-                      : DSColors.surface,
-                  padding: const EdgeInsets.all(14),
-                  children: [
-                    Text(
-                      'Fare breakup',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : Colors.black,
+
+                // Pooling matches (co-riders list)
+                if (selectedOption?.id == 'pool' || selectedOption?.id == 'bike_pool') ...[
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: palette.surfaceVariant,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: palette.border,
+                        width: 1,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    InfoRow(
-                      label: 'Base fare',
-                      value: 'Rs $base',
-                      valueColor: isDark ? Colors.grey[300]! : Helper.ink,
-                    ),
-                    InfoRow(
-                      label: 'Distance',
-                      value: 'Rs $distance',
-                      valueColor: isDark ? Colors.grey[300]! : Helper.ink,
-                    ),
-                    InfoRow(
-                      label: 'Demand',
-                      value: 'Rs $demand',
-                      valueColor: isDark ? Colors.grey[300]! : Helper.ink,
-                    ),
-                    if (selectedOption?.id == 'pool' ||
-                        selectedOption?.id == 'bike_pool') ...[
-                      const InfoRow(
-                        label: 'Multi-rider Split Savings',
-                        value: '-Rs 34',
-                        valueColor: Helper.success,
-                      ),
-                    ],
-                    Divider(
-                      height: 16,
-                      color: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
-                    ),
-                    InfoRow(
-                      label: 'Estimated total',
-                      value: ride.fareLabel,
-                      valueColor: isDark ? Colors.white : Colors.black,
-                    ),
-                  ],
-                ),
-                if (selectedOption?.id == 'pool' ||
-                    selectedOption?.id == 'bike_pool') ...[
-                  const SizedBox(height: 12),
-                  SpotterCard(
-                    color: isDark
-                        ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-                        : Helper.cardColor,
-                    padding: const EdgeInsets.all(14),
-                    children: [
-                      Text(
-                        'Co-Riders Matched',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Co-Riders Matched',
+                          style: DSTypography.labelLarge.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: palette.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundColor: DSColors.surfaceVariant,
-                            child: const Text(
-                              'A',
-                              style: TextStyle(
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 14,
+                              backgroundColor: palette.surface,
+                              child: Text('A', style: DSTypography.bodySMStrong.copyWith(fontSize: 10, color: palette.textPrimary, fontWeight: FontWeight.bold)),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Aarav S. • ★ 4.8',
+                              style: DSTypography.body.copyWith(
                                 fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: DSColors.textPrimary,
+                                color: palette.textPrimary,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Aarav S. • ★ 4.8',
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[300] : Colors.black,
-                              fontSize: 13,
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 14,
+                              backgroundColor: palette.surface,
+                              child: Text('R', style: DSTypography.bodySMStrong.copyWith(fontSize: 10, color: palette.textPrimary, fontWeight: FontWeight.bold)),
                             ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            'Drop off: Koregaon Park',
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[400] : DSColors.textSecondary,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundColor: DSColors.surfaceVariant,
-                            child: const Text(
-                              'R',
-                              style: TextStyle(
+                            const SizedBox(width: 8),
+                            Text(
+                              'Rohit M. • ★ 4.7',
+                              style: DSTypography.body.copyWith(
                                 fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: DSColors.textPrimary,
+                                color: palette.textPrimary,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Rohit M. • ★ 4.7',
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[300] : Colors.black,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            'Drop off: Kalyani Nagar',
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[400] : Helper.muted,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Divider(
-                        color: isDark
-                            ? Colors.white10
-                            : const Color(0xFFE2E8F0),
-                        height: 16,
-                      ),
-                      Text(
-                        'Shared Stop Sequence',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black,
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.check_circle_outline,
-                            color: Helper.success,
-                            size: 16,
+                        const SizedBox(height: 12),
+                        Divider(color: palette.divider),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Shared Stop Sequence',
+                          style: DSTypography.labelLarge.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: palette.textPrimary,
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '1. Pickup You (Baner)',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.grey[300] : Colors.black,
-                            ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '1. Pickup You (Baner)',
+                          style: DSTypography.caption.copyWith(
+                            fontSize: 12,
+                            color: palette.textSecondary,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.arrow_circle_right_outlined,
-                            color: Colors.orange,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '2. Drop Aarav (Koregaon Park)',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.grey[300] : Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on_outlined,
-                            color: Colors.red,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '3. Drop You (Kalyani Nagar)',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.grey[300] : Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(height: 16),
                 ],
-                const SizedBox(height: 8),
-                PrimaryAction(
-                  label: 'Find drivers',
-                  onPressed: () {
-                    // Update state to searching
-                    ride.selectRideOption(
-                      selectedOption ?? ride.rideOptions.first,
-                    );
+
+                // Confirm CTA
+                GestureDetector(
+                  onTap: () {
+                    if (selectedOption != null) {
+                      ride.selectRideOption(selectedOption);
+                    }
                     Navigator.pushNamed(context, AppRoutes.drivers);
                   },
+                  child: Container(
+                    width: double.infinity,
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: palette.primary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Find drivers',
+                      textAlign: TextAlign.center,
+                      style: DSTypography.labelLarge.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: palette.onPrimary,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -352,80 +324,107 @@ class SpotterFarePanel extends StatelessWidget {
   }
 }
 
-class _VehicleSelectionCard extends StatelessWidget {
+class _RideOptionRow extends StatelessWidget {
   final RideOption option;
   final bool selected;
-  final bool isDark;
+  final DSColorPalette palette;
   final VoidCallback onTap;
 
-  const _VehicleSelectionCard({
+  const _RideOptionRow({
     required this.option,
     required this.selected,
-    required this.isDark,
+    required this.palette,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final assetPath = _assetFor(option);
+    final assetPath = AppAssets.forRideId(option.id);
     final fallbackIcon = _fallbackIconFor(option);
 
-    final cardBgColor = selected
-        ? (isDark ? Colors.white : Colors.black)
-        : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F4F6));
+    final rowBgColor = selected
+        ? palette.surfaceVariant
+        : Colors.transparent;
 
-    final textColor = selected
-        ? (isDark ? Colors.black : Colors.white)
-        : (isDark ? Colors.white : Colors.black);
-
-    final subTextColor = selected
-        ? (isDark ? Colors.grey[800]! : Colors.grey[300]!)
-        : (isDark ? Colors.grey[400]! : const Color(0xFF5E5E5E));
-
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
       child: Container(
-        width: 110,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: cardBgColor,
+          color: rowBgColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: selected
-                ? (isDark ? Colors.white : Colors.black)
+                ? palette.primary
                 : Colors.transparent,
             width: 1.5,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
+            // Vehicle Image/Icon left
             Image.asset(
               assetPath,
-              width: 36,
-              height: 28,
+              width: 52,
+              height: 40,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
-                return Icon(fallbackIcon, size: 28, color: textColor);
+                return Icon(fallbackIcon, size: 36, color: palette.iconPrimary);
               },
             ),
-            const SizedBox(height: 8),
-            Text(
-              option.name,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: textColor,
+            const SizedBox(width: 16),
+
+            // Vehicle Details center
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        option.name,
+                        style: DSTypography.labelLarge.copyWith(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: palette.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        CupertinoIcons.person_fill,
+                        size: 12,
+                        color: palette.iconSecondary,
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        _seatsFor(option),
+                        style: DSTypography.caption.copyWith(
+                          fontSize: 12,
+                          color: palette.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    option.detail,
+                    style: DSTypography.caption.copyWith(
+                      fontSize: 12,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 2),
+
+            // Fare right
             Text(
               option.fareLabel,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: subTextColor,
+              style: DSTypography.labelLarge.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: palette.textPrimary,
               ),
             ),
           ],
@@ -434,23 +433,61 @@ class _VehicleSelectionCard extends StatelessWidget {
     );
   }
 
-  String _assetFor(RideOption option) {
-    return AppAssets.forRideId(option.id);
+  String _seatsFor(RideOption option) {
+    if (option.id.contains('moto') || option.id.contains('bike')) return '1';
+    if (option.id.contains('auto')) return '3';
+    if (option.id.contains('xl')) return '6';
+    return '4';
   }
 
   IconData _fallbackIconFor(RideOption option) {
     switch (option.id) {
       case 'moto':
       case 'bike':
-        return Icons.two_wheeler_rounded;
+        return CupertinoIcons.location;
       case 'auto':
       case 'rickshaw':
-      case 'rikshaw':
-        return Icons.electric_rickshaw_rounded;
-      case 'comfort':
-        return Icons.local_taxi_rounded;
+        return CupertinoIcons.square_grid_2x2;
       default:
-        return Icons.directions_car_filled_rounded;
+        return CupertinoIcons.car_detailed;
     }
+  }
+}
+
+class _BreakdownRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final DSColorPalette palette;
+  final Color? valueColor;
+
+  const _BreakdownRow({
+    required this.label,
+    required this.value,
+    required this.palette,
+    this.valueColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: DSTypography.caption.copyWith(
+            fontSize: 12,
+            color: palette.textSecondary,
+          ),
+        ),
+        Text(
+          value,
+          style: DSTypography.caption.copyWith(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: valueColor ?? palette.textPrimary,
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -81,3 +81,4 @@ class _ChatScreenState extends State<ChatScreen> {
     ).showSnackBar(const SnackBar(content: Text('Message sent to driver')));
   }
 }
+

@@ -1,11 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'custom_button.dart';
 import 'helper.dart';
 import 'models/production_readiness_models.dart';
-import 'controllers/ride_controller.dart';
 
 void _handleBack(BuildContext context) {
   final currentRoute = ModalRoute.of(context)?.settings.name;
@@ -70,7 +68,6 @@ class SpotterScreen extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      drawer: showMenu ? const SpotterMenuDrawer() : null,
       bottomNavigationBar: bottomNavigationBar,
       body: SafeArea(
         child: Center(
@@ -85,13 +82,7 @@ class SpotterScreen extends StatelessWidget {
                     builder: (context) {
                       return Row(
                         children: [
-                          if (showMenu)
-                            _SpottIconButton(
-                              icon: Icons.menu_rounded,
-                              onPressed: () =>
-                                  Scaffold.of(context).openDrawer(),
-                            )
-                          else if (showBack)
+                          if (showBack)
                             _SpottIconButton(
                               icon: Icons.arrow_back,
                               onPressed: () => _handleBack(context),
@@ -637,263 +628,5 @@ class PrimaryAction extends StatelessWidget {
   }
 }
 
-class SpotterMenuDrawer extends StatelessWidget {
-  const SpotterMenuDrawer({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final currentRoute = ModalRoute.of(context)?.settings.name;
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
 
-    final driverRoutes = {
-      '/kyc',
-      '/driver-home',
-      '/create-trip',
-      '/job-requests',
-      '/job-detail',
-      '/pickup-task',
-      '/drop-task',
-    };
-    final isDriver = driverRoutes.contains(currentRoute);
-
-    return Drawer(
-      backgroundColor: isDark ? const Color(0xFF0C0F14) : Colors.white,
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Header with User Info
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(2.0),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isDark ? Colors.white : Colors.black,
-                        width: 1.5,
-                      ),
-                    ),
-                    child: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Helper.canvasSoft,
-                      child: Text(
-                        'R',
-                        style: TextStyle(
-                          color: isDark ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Ritesh Mahatme',
-                          style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          isDriver ? 'Traveler account' : 'Passenger account',
-                          style: const TextStyle(
-                            color: Helper.muted,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(color: Helper.lineColor, height: 1),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 16,
-                ),
-                children: [
-                  // Role Switcher Card
-                  SpotterCard(
-                    color: isDark
-                        ? const Color(0xFF1E293B)
-                        : const Color(0xFFF9F9F9),
-                    onTap: () {
-                      Navigator.pop(context); // Close Drawer
-                      if (isDriver) {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          '/home',
-                          (route) => false,
-                        );
-                      } else {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          '/driver-home',
-                          (route) => false,
-                        );
-                      }
-                    },
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            isDriver
-                                ? Icons.person_rounded
-                                : Icons.drive_eta_rounded,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              isDriver
-                                  ? 'Switch to Passenger'
-                                  : 'Switch to Traveler',
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                          Icon(
-                            Icons.chevron_right_rounded,
-                            color: isDark ? Colors.white54 : Colors.black54,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Menu Links
-                  _DrawerLink(
-                    icon: Icons.person_outline_rounded,
-                    label: 'Account profile',
-                    isActive: currentRoute == '/profile',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/profile');
-                    },
-                  ),
-                  _DrawerLink(
-                    icon: Icons.receipt_long_outlined,
-                    label: 'Your activity',
-                    isActive: currentRoute == '/activity',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/activity');
-                    },
-                  ),
-                  _DrawerLink(
-                    icon: Icons.settings_outlined,
-                    label: 'Settings',
-                    isActive: currentRoute == '/settings',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/settings');
-                    },
-                  ),
-                  _DrawerLink(
-                    icon: Icons.grid_view_rounded,
-                    label: 'All services',
-                    isActive: currentRoute == '/services',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/services');
-                    },
-                  ),
-                  _DrawerLink(
-                    icon: Icons.support_agent_rounded,
-                    label: 'Help center',
-                    isActive: currentRoute == '/support',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/support');
-                    },
-                  ),
-                  _DrawerLink(
-                    icon: Icons.security_rounded,
-                    label: 'Safety toolkit',
-                    isActive: currentRoute == '/safety-toolkit',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/safety-toolkit');
-                    },
-                  ),
-                  if (kDebugMode)
-                    _DrawerLink(
-                      icon: Icons.developer_mode_rounded,
-                      label: 'UI Sandbox',
-                      isActive: currentRoute == '/figma-plugin-sandbox',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(context, '/figma-plugin-sandbox');
-                      },
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DrawerLink extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const _DrawerLink({
-    required this.icon,
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final ride = RideScope.of(context);
-    final isDark = ride.isDarkMode;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-        tileColor: isActive ? const Color(0xFFFEE2E2) : Colors.transparent,
-        leading: Icon(
-          icon,
-          color: isActive
-              ? Helper.primary
-              : (isDark ? Colors.white70 : const Color(0xFF5E5E5E)),
-        ),
-        title: Text(
-          label,
-          style: TextStyle(
-            color: isActive
-                ? Helper.primary
-                : (isDark ? Colors.white : Colors.black),
-            fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-            fontSize: 14,
-          ),
-        ),
-        onTap: onTap,
-      ),
-    );
-  }
-}
