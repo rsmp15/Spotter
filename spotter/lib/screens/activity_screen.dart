@@ -67,7 +67,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF0F1114) : const Color(0xFFFAFBFC);
+    final bgColor = isDark ? const Color(0xFF0F1114) : const Color(0xFFFFFFFF);
     final textColor = isDark ? const Color(0xFFF1F3F4) : const Color(0xFF1A1D21);
 
     final filteredItems = _mockActivities.where((item) {
@@ -79,99 +79,143 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title Bar H1 "Activity"
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
-              child: Text(
-                'Activity',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  color: textColor,
-                  letterSpacing: -1.0,
+      body: Stack(
+        children: [
+          if (!isDark) ...[
+            // Top-left soft cyan gradient (A3EEFF)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 200,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.topLeft,
+                    radius: 1.0,
+                    colors: [
+                      Color(0xFFA3EEFF),
+                      Color(0x00A3EEFF),
+                    ],
+                  ),
                 ),
               ),
             ),
-
-            // Segment control pills (All | Rides | Parcels)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    _buildSegmentButton(ActivityFilter.all, 'All Bookings', isDark),
-                    const SizedBox(width: 8),
-                    _buildSegmentButton(ActivityFilter.trips, 'Rides', isDark),
-                    const SizedBox(width: 8),
-                    _buildSegmentButton(ActivityFilter.parcels, 'Parcels', isDark),
-                  ],
+            // Top-right soft blue gradient (79C3FE)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 200,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.topRight,
+                    radius: 1.0,
+                    colors: [
+                      Color(0xFF79C3FE),
+                      Color(0x0079C3FE),
+                    ],
+                  ),
                 ),
               ),
-            ),
-
-            // Section: "Past"
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-              child: Text(
-                'Past',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: textColor,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            // Trip list or empty state
-            Expanded(
-              child: filteredItems.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            CupertinoIcons.calendar_today,
-                            size: 48,
-                            color: isDark ? const Color(0xFF2D3239) : const Color(0xFFE8EAED),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No bookings found',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: isDark ? const Color(0xFFAEB6BD) : const Color(0xFF5F6368),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
-                      itemCount: filteredItems.length,
-                      separatorBuilder: (context, index) => Divider(
-                        color: isDark ? const Color(0xFF2D3239) : const Color(0xFFE8EAED),
-                        height: 1,
-                      ),
-                      itemBuilder: (context, index) {
-                        return _ActivityRow(item: filteredItems[index], isDark: isDark);
-                      },
-                    ),
             ),
           ],
-        ),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title Bar H1 "Activity"
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+                  child: Text(
+                    'Activity',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                      letterSpacing: -1.0,
+                    ),
+                  ),
+                ),
+
+                // Segment control pills (All | Rides | Parcels)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Row(
+                      children: [
+                        _buildSegmentButton(ActivityFilter.all, 'All Bookings', isDark),
+                        const SizedBox(width: 8),
+                        _buildSegmentButton(ActivityFilter.trips, 'Rides', isDark),
+                        const SizedBox(width: 8),
+                        _buildSegmentButton(ActivityFilter.parcels, 'Parcels', isDark),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Section: "Past"
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                  child: Text(
+                    'Past',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: textColor,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Trip list or empty state
+                Expanded(
+                  child: filteredItems.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                CupertinoIcons.calendar_today,
+                                size: 48,
+                                color: isDark ? const Color(0xFF2D3239) : const Color(0xFFE8EAED),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No bookings found',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark ? const Color(0x00AEB6BD) : const Color(0xFF5F6368),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.separated(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
+                          itemCount: filteredItems.length,
+                          separatorBuilder: (context, index) => Divider(
+                            color: isDark ? const Color(0xFF2D3239) : const Color(0xFFE8EAED),
+                            height: 1,
+                          ),
+                          itemBuilder: (context, index) {
+                            return _ActivityRow(item: filteredItems[index], isDark: isDark);
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

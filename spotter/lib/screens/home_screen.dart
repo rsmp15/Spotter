@@ -346,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xFFD2E5EA), // Sky Blue at top
+                      Color(0xFFB3D5E6), // Sky Blue at top
                       Color(0xFFFFFFFF), // Fades to white
                       // Color(0xFFFFFFFF), // Fades to white
                       Color(0xFFE4DCDF), // Smoothly blends into Tan screen background

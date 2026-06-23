@@ -220,7 +220,7 @@ class DSPalettes {
     brightness: Brightness.light,
     background: Color(0xFFFFFFFF),
     surface: Color(0xFFFFFFFF),
-    surfaceVariant: Color(0xFFEDE2E6),
+    surfaceVariant: Color(0xFFE4E7E8),
     card: Color(0xFFFFFFFF),
     elevatedSurface: Color(0xFFFFFFFF),
     overlay: Color(0xCCF8F9FA),

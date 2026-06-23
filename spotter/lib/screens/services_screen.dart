@@ -19,57 +19,101 @@ class _ServicesScreenState extends State<ServicesScreen> {
   Widget build(BuildContext context) {
     final ride = RideScope.of(context);
     final isDark = ride.isDarkMode;
-    final scaffoldBg = isDark ? const Color(0xFF0F1114) : const Color(0xFFFAFBFC);
+    final scaffoldBg = isDark ? const Color(0xFF0F1114) : const Color(0xFFFFFFFF);
     final textCol = isDark ? const Color(0xFFF1F3F4) : const Color(0xFF1A1D21);
     final descCol = isDark ? const Color(0xFFAEB6BD) : const Color(0xFF5F6368);
 
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: scaffoldBg,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Bar
-            _buildHeader(context, isDark, textCol),
-            
-            // Content
-            Expanded(
-              child: ListView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 110),
-                children: [
-                  // H1 and H2
-                  Text(
-                    'Services',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      color: textCol,
-                      letterSpacing: -1.0,
-                    ),
+      body: Stack(
+        children: [
+          if (!isDark) ...[
+            // Top-left soft cyan gradient (A3EEFF)
+            Positioned(
+              top: 0,
+              left: -1,
+              right: 0,
+              height: 200,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.topCenter,
+                    radius: 1.2,
+                    colors: [
+                      Color(0xFFA3EEFF),
+                      Color(0x00A3EEFF),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Go anywhere, get anything',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: descCol,
-                    ),
+                ),
+              ),
+            ),
+            // Top-right soft blue gradient (79C3FE)
+            Positioned(
+              top: 0,
+              left: -20,
+              right: 0,
+              height: 200,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.topRight,
+                    radius: 1.1,
+                    colors: [
+                      Color(0xFF4D9DDD),
+                      Color(0x0079C3FE),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-
-                  // Grid of 8 tiles in 2 rows of 4 columns
-                  _buildServicesGrid(context, isDark),
-                ],
+                ),
               ),
             ),
           ],
-        ),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Bar
+                _buildHeader(context, isDark, textCol),
+                
+                // Content
+                Expanded(
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 110),
+                    children: [
+                      // H1 and H2
+                      Text(
+                        'Services',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: textCol,
+                          letterSpacing: -1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Go anywhere, get anything',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: descCol,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Grid of 8 tiles in 2 rows of 4 columns
+                      _buildServicesGrid(context, isDark),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -79,9 +123,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: borderCol, width: 1.0),
-        ),
+        border: isDark
+            ? Border(
+                bottom: BorderSide(color: borderCol, width: 1.0),
+              )
+            : null, // Remove divider line in Light Mode
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,15 +190,20 @@ class _ServicesScreenState extends State<ServicesScreen> {
       _ServiceItem(title: 'Seniors', icon: CupertinoIcons.person_crop_circle_fill, routeName: AppRoutes.destination),
     ];
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = (screenWidth - 32 - 8) / 2;
+    final cardHeight = 72.0;
+    final double aspectRatio = cardWidth / cardHeight;
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: services.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.9, // Strict equal sizes, slightly taller than wide to prevent text overflow
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: aspectRatio,
       ),
       itemBuilder: (context, index) {
         final s = services[index];
@@ -178,88 +229,105 @@ class _ServicesScreenState extends State<ServicesScreen> {
     required bool isDark,
     String? tag,
   }) {
+    // final bg = isDark ? const Color(0xFF1E2125) : const Color(0xFFF8F6F6);
+    // final textCol = isDark ? const Color(0xFFE0E0E0) : const Color(0xFF444444);
+    // final iconBg = isDark ? const Color(0xFF2C2F34) : Colors.white;
+
     final bg = isDark ? const Color(0xFF1B1B1B) : const Color(0xFFF3F3F3);
     final textCol = isDark ? Colors.white : Colors.black;
-    final tagBg = isDark ? const Color(0xFFFFCA28) : const Color(0xFFFFB300);
+    final iconBg = isDark ? const Color(0xFF2C2F34) : Colors.white;
 
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, routeName),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 72,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            // Icon Container (44x44)
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              alignment: Alignment.center,
+              child: assetPath != null
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Image.asset(
+                        assetPath,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          CupertinoIcons.car_detailed,
+                          color: textCol,
+                          size: 18,
+                        ),
+                      ),
+                    )
+                  : Icon(
+                      icon,
+                      color: textCol,
+                      size: 20,
+                    ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (assetPath != null)
-                  SizedBox(
-                    height: 36,
-                    width: 36,
-                    child: Image.asset(
-                      assetPath,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => Icon(
-                        CupertinoIcons.car_detailed,
+            const SizedBox(width: 16),
+            // Label
+            Expanded(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      title,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500, // Medium (500)
+                        height: 20 / 14, // Line height: 20px
                         color: textCol,
-                        size: 24,
                       ),
                     ),
-                  )
-                else if (icon != null)
-                  Icon(
-                    icon,
-                    color: textCol,
-                    size: 32,
                   ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: textCol,
+                  if (tag != null) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF14262A),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        tag.toLowerCase(),
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (tag != null)
-            Positioned(
-              top: -6,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: tagBg,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    tag,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 8,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+                  ],
+                ],
               ),
             ),
-        ],
+            // Chevron
+            Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: Icon(
+                Icons.chevron_right_rounded,
+                size: 14,
+                color: const Color(0xFF8E8E93),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
