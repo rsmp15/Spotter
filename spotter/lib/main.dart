@@ -85,9 +85,7 @@ class _MyAppState extends State<MyApp> {
               title: AppConfig.appName,
               theme: AppTheme.light,
               darkTheme: AppTheme.dark,
-              themeMode: _rideController.isDarkMode
-                  ? ThemeMode.dark
-                  : ThemeMode.light,
+              themeMode: _rideController.themeMode,
               initialRoute: AppRoutes.splash,
               onGenerateRoute: AppRoutes.onGenerateRoute,
             );

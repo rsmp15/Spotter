@@ -48,19 +48,19 @@ class SettingsScreen extends StatelessWidget {
             _sectionLabel('GENERAL', palette),
             const SizedBox(height: 10),
             _SettingsRow(
-              icon: Icons.person_outline_rounded,
+              icon: Icons.person_rounded,
               title: 'Personal information',
               palette: palette,
               onTap: () => showProfileEditSheet(context, ride, isDark),
             ),
             _SettingsRow(
-              icon: Icons.directions_car_outlined,
+              icon: Icons.directions_car_rounded,
               title: 'Vehicles',
               palette: palette,
               onTap: () => Navigator.pushNamed(context, AppRoutes.vehicleManagement),
             ),
             _SettingsRow(
-              icon: Icons.verified_user_outlined,
+              icon: Icons.verified_user_rounded,
               title: 'Verification status',
               palette: palette,
               onTap: () => Navigator.pushNamed(context, AppRoutes.kyc),
@@ -72,19 +72,19 @@ class SettingsScreen extends StatelessWidget {
             _sectionLabel('APP SETTINGS', palette),
             const SizedBox(height: 10),
             _SettingsRow(
-              icon: Icons.bookmark_outline_rounded,
+              icon: Icons.bookmark_rounded,
               title: 'Saved places',
               palette: palette,
               onTap: () => _showSavedPlacesSheet(context, ride, isDark),
             ),
             _SettingsRow(
-              icon: Icons.notifications_none_rounded,
+              icon: Icons.notifications_rounded,
               title: 'Notifications',
               palette: palette,
               onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
             ),
             _SettingsRow(
-              icon: Icons.privacy_tip_outlined,
+              icon: Icons.privacy_tip_rounded,
               title: 'Privacy',
               palette: palette,
               onTap: () => _showPrivacySheet(context, ride, isDark),
@@ -95,34 +95,24 @@ class SettingsScreen extends StatelessWidget {
             // ── PREFERENCES ──
             _sectionLabel('PREFERENCES', palette),
             const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                children: [
-                  Icon(
-                    isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
-                    color: palette.iconPrimary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      'Dark Theme',
-                      style: DSTypography.labelLarge.copyWith(
-                        color: palette.textPrimary,
-                      ),
-                    ),
-                  ),
-                  Switch(
-                    value: isDark,
-                    onChanged: (_) => ride.toggleDarkMode(),
-                    activeThumbColor: palette.onPrimary,
-                    activeTrackColor: palette.primary,
-                    inactiveThumbColor: palette.textMuted,
-                    inactiveTrackColor: palette.surfaceVariant,
-                  ),
-                ],
-              ),
+            _SettingsRow(
+              icon: Icons.palette_rounded,
+              title: 'Theme',
+              subtitle: 'Appearance',
+              palette: palette,
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  builder: (context) {
+                    return _ThemeSelectionSheet(
+                      ride: ride,
+                      palette: palette,
+                    );
+                  },
+                );
+              },
             ),
 
             const SizedBox(height: 48),
@@ -187,12 +177,14 @@ class SettingsScreen extends StatelessWidget {
 class _SettingsRow extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final DSColorPalette palette;
   final VoidCallback? onTap;
 
   const _SettingsRow({
     required this.icon,
     required this.title,
+    this.subtitle,
     required this.palette,
     this.onTap,
   });
@@ -212,11 +204,26 @@ class _SettingsRow extends StatelessWidget {
             Icon(icon, color: palette.iconPrimary, size: 20),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(
-                title,
-                style: DSTypography.labelLarge.copyWith(
-                  color: palette.textPrimary,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: DSTypography.labelLarge.copyWith(
+                      color: palette.textPrimary,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle!,
+                      style: DSTypography.caption.copyWith(
+                        color: palette.textMuted,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             Icon(
@@ -668,5 +675,154 @@ void _showPrivacySheet(BuildContext context, RideController ride, bool isDark) {
       );
     },
   );
+}
+
+class _ThemeSelectionSheet extends StatefulWidget {
+  final RideController ride;
+  final DSColorPalette palette;
+
+  const _ThemeSelectionSheet({
+    required this.ride,
+    required this.palette,
+  });
+
+  @override
+  State<_ThemeSelectionSheet> createState() => _ThemeSelectionSheetState();
+}
+
+class _ThemeSelectionSheetState extends State<_ThemeSelectionSheet> {
+  late ThemeMode _tempThemeMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _tempThemeMode = widget.ride.themeMode;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = widget.palette;
+    final isDark = widget.ride.isDarkMode;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+      decoration: BoxDecoration(
+        color: isDark ? palette.surface : Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: palette.divider,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Appearance',
+              style: DSTypography.displaySM.copyWith(
+                color: palette.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            _buildThemeOption(ThemeMode.light, 'Light'),
+            const SizedBox(height: 4),
+
+            _buildThemeOption(ThemeMode.dark, 'Dark'),
+            const SizedBox(height: 4),
+
+            _buildThemeOption(ThemeMode.system, 'System'),
+            const SizedBox(height: 20),
+
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF14262A),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  widget.ride.updateThemeMode(_tempThemeMode);
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Select',
+                  style: DSTypography.bodyMDStrong.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOption(ThemeMode mode, String label) {
+    final isSelected = _tempThemeMode == mode;
+    final isDark = widget.ride.isDarkMode;
+    final Color optionColor = isDark ? Colors.white : const Color(0xFF14262A);
+
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _tempThemeMode = mode;
+        });
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: DSTypography.labelLarge.copyWith(
+                color: optionColor,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            Theme(
+              data: ThemeData(
+                unselectedWidgetColor: optionColor.withValues(alpha: 0.5),
+              ),
+              child: Radio<ThemeMode>(
+                value: mode,
+                groupValue: _tempThemeMode,
+                activeColor: optionColor,
+                onChanged: (ThemeMode? value) {
+                  if (value != null) {
+                    setState(() {
+                      _tempThemeMode = value;
+                    });
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 

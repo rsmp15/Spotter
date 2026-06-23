@@ -38,6 +38,7 @@ dependencies:
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
   flutter_floating_bottom_bar: ^2.0.0
+  hugeicons: ^1.1.7
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,7 @@ flutter:
     - Support.png
     - head_out.png
     - add_member_card.png
+    - spott_the_move.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

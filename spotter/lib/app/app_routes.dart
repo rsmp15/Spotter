@@ -35,6 +35,8 @@ import '../screens/network_error_screen.dart';
 import '../screens/trip_details_screen.dart';
 import '../screens/passenger_trips_screen.dart';
 import '../screens/parcel_history_screen.dart';
+import '../screens/accessibility_detail_screen.dart';
+import '../screens/accessibility_view_all_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -63,6 +65,9 @@ class AppRoutes {
   static const String notifications = '/notifications';
   static const String support = '/support';
   static const String safetyToolkit = '/safety-toolkit';
+  static const String accessibilityDetail = '/accessibility-detail';
+  static const String accessibilityViewAll = '/accessibility-view-all';
+  static const String sosAlert = '/sos-alert';
   static const String services = '/services';
   static const String parking = '/parking';
   static const String offers = '/offers';
@@ -119,6 +124,9 @@ class AppRoutes {
     notifications,
     support,
     safetyToolkit,
+    accessibilityDetail,
+    accessibilityViewAll,
+    sosAlert,
     services,
     parking,
     offers,
@@ -151,6 +159,38 @@ class AppRoutes {
         transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 300),
         reverseTransitionDuration: const Duration(milliseconds: 300),
+      );
+    }
+
+    if (settings.name == safetyToolkit) {
+      return buildRoute(
+        const AccessibilityDetailScreen(
+          title: "Safety Toolkit",
+          assetPath: "safety.png", // AppAssets.safety
+          headline: "Your one-stop shop for safety tools",
+          paragraphs: [
+            "Our Safety Toolkit is available on every ride you take with Spotter. Just tap the safety shield on the map to access a variety of safety features.",
+            "Wherever you are, you can always contact emergency services and report a safety concern directly through the app. You can also add one or more loved ones as trusted contacts and receive automatic prompts to share your trip information with them in real time.",
+          ],
+          buttonText: "Add a trusted contact",
+          isDarkTheme: true,
+          actionType: 'sos',
+        ),
+      );
+    }
+
+    if (settings.name == accessibilityDetail) {
+      final args = settings.arguments as Map<String, dynamic>? ?? {};
+      return buildRoute(
+        AccessibilityDetailScreen(
+          title: args['title'] as String? ?? 'Detail',
+          assetPath: args['assetPath'] as String? ?? 'safety.png',
+          headline: args['headline'] as String? ?? '',
+          paragraphs: List<String>.from(args['paragraphs'] as List? ?? []),
+          buttonText: args['buttonText'] as String? ?? 'Close',
+          isDarkTheme: args['isDarkTheme'] as bool? ?? false,
+          actionType: args['actionType'] as String?,
+        ),
       );
     }
 
@@ -252,7 +292,12 @@ class AppRoutes {
       case support:
         return const SupportScreen();
       case safetyToolkit:
+        // Handled in onGenerateRoute to pass custom arguments
+        return const SizedBox();
+      case sosAlert:
         return const PremiumSosAlertScreen();
+      case accessibilityViewAll:
+        return const AccessibilityViewAllScreen();
       case services:
         return const RoleGuard(
           allowedRoles: [UserRole.user],

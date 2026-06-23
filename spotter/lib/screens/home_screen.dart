@@ -1,10 +1,14 @@
+import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../app/app_assets.dart';
 import '../app/app_routes.dart';
 import '../controllers/ride_controller.dart';
 import '../design_system/design_system.dart';
 import 'rider_home.dart';
+import 'map_selector.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,10 +19,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+  String _currentLocation = 'Current Location';
 
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
   late final AnimationController _spinController;
+  late final AnimationController _revealController;
+
+  bool _isAnimating = false;
+  bool _wasRiderMode = false;
+  bool _wasRiderModeInitialized = false;
 
   @override
   void initState() {
@@ -34,13 +46,234 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       duration: const Duration(seconds: 8),
       vsync: this,
     )..repeat();
+
+    _revealController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _revealController.addStatusListener((status) {
+      if (status == AnimationStatus.completed || status == AnimationStatus.dismissed) {
+        if (mounted) {
+          setState(() {
+            _isAnimating = false;
+          });
+        }
+      } else {
+        if (mounted && !_isAnimating) {
+          setState(() {
+            _isAnimating = true;
+          });
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
+    _hideLocationDropdown();
     _pulseController.dispose();
     _spinController.dispose();
+    _revealController.dispose();
     super.dispose();
+  }
+
+  void _showLocationDropdown() {
+    if (_overlayEntry != null) {
+      _hideLocationDropdown();
+      return;
+    }
+    _overlayEntry = _createOverlayEntry();
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _hideLocationDropdown() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    final ride = RideScope.of(context);
+    final isDark = ride.isDarkMode;
+    final palette = isDark ? DSPalettes.dark : DSPalettes.light;
+
+    return OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          GestureDetector(
+            onTap: _hideLocationDropdown,
+            behavior: HitTestBehavior.translucent,
+            child: Container(
+              color: Colors.transparent,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+          Positioned(
+            width: 220,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: const Offset(0, 48),
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.15),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF0F1114).withValues(alpha: 0.7)
+                              : Colors.white.withValues(alpha: 0.75),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.1)
+                                : Colors.black.withValues(alpha: 0.08),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildDropdownOption(
+                              iconWidget: HugeIcon(
+                                icon: HugeIcons.strokeRoundedLocation10,
+                                size: 16.0,
+                                color: _currentLocation == 'Current Location'
+                                    ? palette.primary
+                                    : palette.textPrimary.withValues(alpha: 0.7),
+                                strokeWidth: 2,
+                              ),
+                              label: 'Current Location',
+                              isSelected: _currentLocation == 'Current Location',
+                              onTap: () {
+                                setState(() {
+                                  _currentLocation = 'Current Location';
+                                });
+                                _hideLocationDropdown();
+                              },
+                              palette: palette,
+                              isDark: isDark,
+                            ),
+                            const Divider(height: 1, indent: 12, endIndent: 12),
+                            _buildDropdownOption(
+                              iconWidget: Icon(
+                                CupertinoIcons.map_fill,
+                                size: 16,
+                                color: _currentLocation != 'Current Location'
+                                    ? palette.primary
+                                    : palette.textPrimary.withValues(alpha: 0.7),
+                              ),
+                              label: 'Choose on Map',
+                              isSelected: _currentLocation != 'Current Location',
+                              onTap: () {
+                                _hideLocationDropdown();
+                                _openMapPicker(isDark, palette);
+                              },
+                              palette: palette,
+                              isDark: isDark,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropdownOption({
+    required Widget iconWidget,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required DSColorPalette palette,
+    required bool isDark,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            iconWidget,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: DSTypography.bodyMDStrong.copyWith(
+                  fontSize: 14,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected
+                      ? palette.primary
+                      : palette.textPrimary,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                CupertinoIcons.checkmark_alt,
+                size: 16,
+                color: palette.primary,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openMapPicker(bool isDark, DSColorPalette palette) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => MapPickerSheet(
+        isDark: isDark,
+        palette: palette,
+        onSelected: (address) {
+          setState(() {
+            _currentLocation = address;
+          });
+        },
+      ),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final ride = RideScope.of(context);
+    final isRider = ride.isRiderMode;
+    if (!_wasRiderModeInitialized) {
+      _wasRiderMode = isRider;
+      _wasRiderModeInitialized = true;
+      _revealController.value = isRider ? 1.0 : 0.0;
+    } else if (isRider != _wasRiderMode) {
+      if (isRider) {
+        _revealController.forward();
+      } else {
+        _revealController.reverse();
+      }
+      _wasRiderMode = isRider;
+    }
   }
 
   @override
@@ -50,10 +283,55 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final palette = isDark ? DSPalettes.dark : DSPalettes.light;
     final scaffoldBg = isDark ? palette.background : const Color(0xFFE4DCDF); // Tan scaffold background in light mode
 
+    if (_isAnimating) {
+      final double screenWidth = MediaQuery.of(context).size.width;
+      final double safeAreaTop = MediaQuery.of(context).padding.top;
+      // Position center near the toggle button (top right area)
+      final Offset center = Offset(screenWidth - 110, safeAreaTop + 30);
+
+      return Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: scaffoldBg,
+        body: Stack(
+          children: [
+            _buildPassengerLayout(context, ride, palette, scaffoldBg),
+            AnimatedBuilder(
+              animation: _revealController,
+              builder: (context, child) {
+                return ClipPath(
+                  clipper: CircularRevealClipper(
+                    fraction: _revealController.value,
+                    center: center,
+                  ),
+                  child: child,
+                );
+              },
+              child: _buildRiderLayout(context, ride, palette, scaffoldBg),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: scaffoldBg, // Canvas
-      body: Stack(
+      backgroundColor: scaffoldBg,
+      body: ride.isRiderMode
+          ? _buildRiderLayout(context, ride, palette, scaffoldBg)
+          : _buildPassengerLayout(context, ride, palette, scaffoldBg),
+    );
+  }
+
+  Widget _buildPassengerLayout(
+    BuildContext context,
+    RideController ride,
+    DSColorPalette palette,
+    Color scaffoldBg,
+  ) {
+    final isDark = ride.isDarkMode;
+    return Container(
+      color: scaffoldBg,
+      child: Stack(
         children: [
           // Top sky-blue-to-white gradient background that blends smoothly into Tan
           if (!isDark)
@@ -70,6 +348,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     colors: [
                       Color(0xFFD2E5EA), // Sky Blue at top
                       Color(0xFFFFFFFF), // Fades to white
+                      // Color(0xFFFFFFFF), // Fades to white
                       Color(0xFFE4DCDF), // Smoothly blends into Tan screen background
                     ],
                     stops: [0.0, 0.6, 1.0],
@@ -87,49 +366,164 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: _buildAppBar(context, ride, palette),
                 ),
 
-                if (!ride.isRiderMode) ...[
-                  // 2. Sticky "Where to?" search bar (Passenger Mode)
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _SliverHeaderDelegate(
-                      height: 72.0, // Reduced sticky height matching 48px + paddings
-                      palette: palette,
-                      scaffoldBg: scaffoldBg,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        child: _buildSearchTriggerButton(context, ride, palette),
-                      ),
+                // 2. Sticky "Where to?" search bar (Passenger Mode)
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverHeaderDelegate(
+                    height: 72.0, // Reduced sticky height matching 48px + paddings
+                    palette: palette,
+                    scaffoldBg: scaffoldBg,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      child: _buildSearchTriggerButton(context, ride, palette),
                     ),
                   ),
+                ),
 
-                  // 3. Feed Content (Promo Banner, Suggestions Grid, Accessibility)
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(
-                      20,           // Screen Padding horizontal: 20px
-                      12.0,         // space below search bar
-                      20,           // Screen Padding horizontal: 20px
-                      110.0,        // bottom padding for floating bottom bar clearance
+                // 3. Feed Content (Promo Banner, Suggestions Grid, Accessibility)
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    20,           // Screen Padding horizontal: 20px
+                    12.0,         // space below search bar
+                    20,           // Screen Padding horizontal: 20px
+                    0.0,          // No bottom padding here, we'll put it at the bottom spacer
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate(
+                      _buildRideFeedWidgets(context, ride, palette),
                     ),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate(
-                        _buildRideFeedWidgets(context, ride, palette),
+                  ),
+                ),
+
+                // Spacer between Accessibility list and image
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 24),
+                ),
+
+                // Promo Image Banner (Edge-to-edge)
+                SliverToBoxAdapter(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24.0),
+                        topRight: Radius.circular(24.0),
+                      ),
+                      child: AspectRatio(
+                        aspectRatio: 3 / 4,
+                        child: Image.asset(
+                          AppAssets.spottTheMove,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ] else ...[
-                  // Rider mode: Publish Route form
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(
-                      16,
-                      16.0,
-                      16,
-                      110.0,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRiderLayout(
+    BuildContext context,
+    RideController ride,
+    DSColorPalette palette,
+    Color scaffoldBg,
+  ) {
+    final isDark = ride.isDarkMode;
+    return Container(
+      color: scaffoldBg,
+      child: Stack(
+        children: [
+          // Top soft pink/red-to-white gradient background that blends smoothly into Tan
+          if (!isDark)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 380, // Height to cover Safe Area + App Bar + Form Banner top area
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFFCC82B9), // Soft pink/red
+                      Color(0xFFFFFFFF), // Fades to white
+                      // Color(0xFFFFFFFF), // Fades to white
+                      Color(0xFFE4DCDF), // Smoothly blends into Tan screen background
+                    ],
+                    stops: [0.0, 0.6, 1.0],
+                  ),
+                ),
+              ),
+            ),
+          SafeArea(
+            bottom: false,
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                // 1. Unified App Bar (Scrolls up)
+                SliverToBoxAdapter(
+                  child: _buildAppBar(context, ride, palette),
+                ),
+
+                // Rider mode: Publish Route form
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    16,
+                    16.0,
+                    16,
+                    0.0, // No bottom padding here, we'll put it at the bottom spacer
+                  ),
+                  sliver: SliverToBoxAdapter(
+                    child: RiderPublishForm(ride: ride, palette: palette),
+                  ),
+                ),
+
+                // Spacer between form and image
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 24),
+                ),
+
+                // Promo Image Banner (Edge-to-edge)
+                SliverToBoxAdapter(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    sliver: SliverToBoxAdapter(
-                      child: RiderPublishForm(ride: ride, palette: palette),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24.0),
+                        topRight: Radius.circular(24.0),
+                      ),
+                      child: AspectRatio(
+                        aspectRatio: 3 / 4,
+                        child: Image.asset(
+                          AppAssets.spottTheMove,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
-                ],
+                ),
               ],
             ),
           ),
@@ -157,55 +551,63 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         children: [
           // Current Location Stack (Left Column)
           Expanded(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  CupertinoIcons.location_solid,
-                  color: palette.primary,
-                  size: 14, // Location icon: 14px
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Your location',
-                        style: DSTypography.caption.copyWith(
-                          color: palette.textSecondary,
-                          fontSize: 11, // Small label text: 11px
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 2), // Gap between label and city
-                      Row(
+            child: CompositedTransformTarget(
+              link: _layerLink,
+              child: GestureDetector(
+                onTap: _showLocationDropdown,
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedLocation10,
+                      size: 14.0,
+                      color: palette.primary,
+                      strokeWidth: 2,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Flexible(
-                            child: Text(
-                              'Current Location',
-                              overflow: TextOverflow.ellipsis,
-                              style: DSTypography.bodyMDStrong.copyWith(
-                                color: palette.textPrimary,
-                                fontSize: 18, // City text: 18px
-                                fontWeight: FontWeight.bold,
-                              ),
+                          Text(
+                            'Your location',
+                            style: DSTypography.caption.copyWith(
+                              color: palette.textSecondary,
+                              fontSize: 11, // Small label text: 11px
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(width: 2),
-                          Icon(
-                            CupertinoIcons.chevron_down,
-                            color: palette.textPrimary,
-                            size: 12,
+                          const SizedBox(height: 2), // Gap between label and city
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  _currentLocation,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: DSTypography.bodyMDStrong.copyWith(
+                                    color: palette.textPrimary,
+                                    fontSize: 18, // City text: 18px
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 2),
+                              Icon(
+                                CupertinoIcons.chevron_down,
+                                color: palette.textPrimary,
+                                size: 12,
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
 
@@ -248,13 +650,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       padding: const EdgeInsets.all(2.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFD2E5EA), // Sky blue
-            Colors.white,
-          ],
+          colors: isRider
+              ? [
+                  Colors.white,
+                  const Color(0xFFCC82B9), // Soft pink/red
+
+                ]
+              : [
+                  Colors.white,
+                  const Color(0xFFD2E5EA), // Sky blue
+
+                ],
         ),
         boxShadow: [
           BoxShadow(
@@ -578,14 +987,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       const SizedBox(height: 16), // Reduced spacing above Accessibility section
 
-      // 4. Scroll Section: Accessibility
-      Text(
-        'Accessibility',
-        style: DSTypography.displaySM.copyWith(
-          color: palette.textPrimary,
-          fontSize: 20, // H2: 20px SemiBold
-          fontWeight: FontWeight.w500, // Reduced font weight: Medium
-        ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Accessibility',
+            style: DSTypography.displaySM.copyWith(
+              color: palette.textPrimary,
+              fontSize: 20, // H2: 20px SemiBold
+              fontWeight: FontWeight.w500, // Reduced font weight: Medium
+            ),
+          ),
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.accessibilityViewAll),
+            child: Text(
+              'View all',
+              style: DSTypography.bodySMStrong.copyWith(
+                color: palette.textSecondary,
+                fontSize: 14, // Action: 14px Medium
+              ),
+            ),
+          ),
+        ],
       ),
       const SizedBox(height: 16),
       SizedBox(
@@ -603,13 +1026,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  _buildAccessibilityCard(AppAssets.route, palette),
+                  _buildAccessibilityCard(context, AppAssets.route, palette),
                   const SizedBox(width: DSSpacing.md),
-                  _buildAccessibilityCard(AppAssets.safety, palette),
+                  _buildAccessibilityCard(context, AppAssets.safety, palette),
                   const SizedBox(width: DSSpacing.md),
-                  _buildAccessibilityCard(AppAssets.headOut, palette),
+                  _buildAccessibilityCard(context, AppAssets.headOut, palette),
                   const SizedBox(width: DSSpacing.md),
-                  _buildAccessibilityCard(AppAssets.addMemberCard, palette),
+                  _buildAccessibilityCard(context, AppAssets.addMemberCard, palette),
                 ],
               ),
             );
@@ -620,73 +1043,123 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ];
   }
 
-  Widget _buildAccessibilityCard(String assetPath, DSColorPalette palette) {
+  Widget _buildAccessibilityCard(BuildContext context, String assetPath, DSColorPalette palette) {
     String title = 'Accessibility';
     String description = 'Seamless transit features designed for everyone.';
+    String headline = '';
+    List<String> paragraphs = [];
+    String buttonText = 'Close';
+    bool isDarkTheme = palette.isDark;
+    String? actionType;
 
     if (assetPath == AppAssets.route) {
       title = 'Flexible Route';
       description = 'Customizable routes and stops for your journey.';
+      headline = 'Customizable Routes & Quick Stops';
+      paragraphs = [
+        'Tailor your journey to match your exact routine. With Spotter\'s Flexible Route, you can customize your start points, add multiple passenger stops, and dynamically adjust paths to avoid high-traffic corridors.',
+        'Our route planning features help drivers and co-riders coordinate pickup zones smoothly without causing delays or adding extra miles.'
+      ];
+      buttonText = 'Configure route';
+      actionType = 'route';
     } else if (assetPath == AppAssets.safety) {
       title = 'Safety First';
       description = 'Emergency support and ride sharing verification.';
+      headline = 'Your one-stop shop for safety tools';
+      paragraphs = [
+        'Our Safety Toolkit is available on every ride you take with Spotter. Just tap the safety shield on the map to access a variety of safety features.',
+        'Wherever you are, you can always contact emergency services and report a safety concern directly through the app. You can also add one or more loved ones as trusted contacts and receive automatic prompts to share your trip information with them in real time.'
+      ];
+      buttonText = 'Add a trusted contact';
+      actionType = 'sos';
     } else if (assetPath == AppAssets.headOut) {
       title = 'Ready to Roll';
       description = 'Instantly book nearby rides and head out today.';
+      headline = 'Instantly Book Nearby Rides';
+      paragraphs = [
+        'Ready to head out? Spotter matches you with top-rated nearby drivers instantly. Safe, reliable, and convenient commutes are just a tap away.',
+        'Check vehicle details, driver ratings, and real-time ETAs directly from your home feed before confirming your booking.'
+      ];
+      buttonText = 'Book a ride now';
+      actionType = 'route';
     } else if (assetPath == AppAssets.addMemberCard) {
       title = 'Add Members';
       description = 'Split fares and invite friends to share your pool.';
+      headline = 'Share the Ride, Split the Fare';
+      paragraphs = [
+        'Carpooling is more fun with friends and family. Invite members to your Spotter pool to split fares automatically and travel together.',
+        'Manage trusted members, set up payment splitting preferences, and keep track of group ride history with ease.'
+      ];
+      buttonText = 'Invite a member';
+      actionType = 'invite';
     }
 
-    final cardBgColor = palette.isDark ? Colors.transparent : const Color(0xFFEDE6EA);
+    final cardBgColor = palette.isDark ? Colors.transparent : const  Color(0xFFF3EDF0);//Color(0xFFEDE6EA);
 
-    return Container(
-      width: 230,
-      decoration: BoxDecoration(
-        color: cardBgColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: SizedBox(
-              height: 130,
-              width: 230,
-              child: Image.asset(
-                assetPath,
-                fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          AppRoutes.accessibilityDetail,
+          arguments: {
+            'title': title,
+            'assetPath': assetPath,
+            'headline': headline,
+            'paragraphs': paragraphs,
+            'buttonText': buttonText,
+            'isDarkTheme': isDarkTheme,
+            'actionType': actionType,
+          },
+        );
+      },
+      child: Container(
+        width: 230,
+        decoration: BoxDecoration(
+          color: cardBgColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: SizedBox(
+                height: 130,
+                width: 230,
+                child: Image.asset(
+                  assetPath,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: DSTypography.bodyMDStrong.copyWith(
-                    color: palette.textPrimary,
-                    fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: DSTypography.bodyMDStrong.copyWith(
+                      color: palette.textPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  description,
-                  style: DSTypography.caption.copyWith(
-                    color: palette.textSecondary,
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: DSTypography.caption.copyWith(
+                      color: palette.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -707,7 +1180,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFEDE6EA), // Lavender background
+              color: palette.isDark ? const Color(0xFF1E352F) : const Color(0xFFF3EDF0),
               borderRadius: BorderRadius.circular(16), // Border radius: 16px
             ),
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
@@ -819,5 +1292,44 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
         oldDelegate.child != child ||
         oldDelegate.palette != palette ||
         oldDelegate.scaffoldBg != scaffoldBg;
+  }
+}
+
+class CircularRevealClipper extends CustomClipper<Path> {
+  final double fraction;
+  final Offset center;
+
+  CircularRevealClipper({
+    required this.fraction,
+    required this.center,
+  });
+
+  @override
+  Path getClip(Size size) {
+    final double maxRadius = _calcMaxRadius(size, center);
+    final double radius = maxRadius * fraction;
+
+    final Path path = Path();
+    path.addOval(Rect.fromCircle(center: center, radius: radius));
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CircularRevealClipper oldClipper) {
+    return oldClipper.fraction != fraction || oldClipper.center != center;
+  }
+
+  static double _calcMaxRadius(Size size, Offset center) {
+    final double dx1 = center.dx;
+    final double dy1 = center.dy;
+    final double dx2 = size.width - center.dx;
+    final double dy2 = size.height - center.dy;
+
+    final double d1 = dx1 * dx1 + dy1 * dy1;
+    final double d2 = dx2 * dx2 + dy1 * dy1;
+    final double d3 = dx1 * dx1 + dy2 * dy2;
+    final double d4 = dx2 * dx2 + dy2 * dy2;
+
+    return math.sqrt(math.max(math.max(d1, d2), math.max(d3, d4)));
   }
 }

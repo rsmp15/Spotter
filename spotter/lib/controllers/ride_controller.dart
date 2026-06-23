@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -45,7 +46,15 @@ class RideController extends ChangeNotifier {
   String? loadErrorMessage;
   String shareLink = MockRideRepository.seedData.shareLink;
   RecoverableActionState actionState = RecoverableActionState.idle;
-  bool isDarkMode = false;
+  ThemeMode themeMode = ThemeMode.light;
+
+  bool get isDarkMode {
+    if (themeMode == ThemeMode.system) {
+      return PlatformDispatcher.instance.platformBrightness == Brightness.dark;
+    }
+    return themeMode == ThemeMode.dark;
+  }
+
   bool isRiderMode = false;
   int activeTabIndex = 0;
 
@@ -126,8 +135,11 @@ class RideController extends ChangeNotifier {
 
 
   void toggleDarkMode() {
-    isDarkMode = !isDarkMode;
-    
+    updateThemeMode(isDarkMode ? ThemeMode.light : ThemeMode.dark);
+  }
+
+  void updateThemeMode(ThemeMode mode) {
+    themeMode = mode;
     notifyListeners();
   }
 

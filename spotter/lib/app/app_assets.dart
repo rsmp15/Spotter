@@ -13,6 +13,7 @@ class AppAssets {
   static const String support = 'Support.png';
   static const String headOut = 'head_out.png';
   static const String addMemberCard = 'add_member_card.png';
+  static const String spottTheMove = 'spott_the_move.jpg';
 
   static String forRideId(String id) {
     switch (id.toLowerCase()) {
